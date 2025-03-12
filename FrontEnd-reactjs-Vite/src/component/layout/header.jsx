@@ -55,10 +55,10 @@ const Header = () => {
                 />
             </div>
             <div>
-                <Link to="" style={styles.link}>
+                <Link to="/login" style={styles.link}>
                     <Button type="text">Đăng nhập</Button>
                 </Link>
-                <Link to="" style={styles.link}>
+                <Link to="/register" style={styles.link}>
                     <Button color="default" variant="solid">
                         Đăng ký
                     </Button>

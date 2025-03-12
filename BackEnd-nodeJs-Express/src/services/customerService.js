@@ -9,7 +9,7 @@ const createUserService = async (name, email, password) => {
             name: name,
             email: email,
             password: hashPass,
-            role: "Hehe"
+            role: "User"
         })
         return result;
 

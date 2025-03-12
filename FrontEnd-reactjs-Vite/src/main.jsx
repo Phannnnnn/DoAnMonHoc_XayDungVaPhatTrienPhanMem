@@ -5,6 +5,7 @@ import './styles/global.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import RegisterPage from './pages/Register.jsx'
 import UserPage from './pages/UserPage.jsx'
+import LoginPage from './pages/LoginPage.jsx'
 
 const router = createBrowserRouter(
   [
@@ -19,14 +20,17 @@ const router = createBrowserRouter(
         {
           path: "user",
           element: <UserPage />
+        },
+        {
+          path: "register",
+          element: <RegisterPage />
+        },
+        {
+          path: "login",
+          element: <LoginPage />
         }
       ]
     },
-    {
-      path: "register",
-      element: <RegisterPage />
-    }
-    ,
   ]
 );
 
