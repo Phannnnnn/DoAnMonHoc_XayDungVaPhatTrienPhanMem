@@ -20,10 +20,6 @@ app.use(express.json());
 //Cài đăt template engine(hanldebars)
 viewEngineConfig(app);
 
-// const apiRoutes = require('./routes/api');
-//khai báo route
-// app.use('/v1/api/', apiRoutes);
-
 //Khai báo route đường ai nấy đi
 route(app);
 

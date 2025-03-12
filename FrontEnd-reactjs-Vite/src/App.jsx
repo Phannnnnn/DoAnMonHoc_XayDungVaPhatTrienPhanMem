@@ -1,5 +1,9 @@
 import axios from '../ultill/axios.custom'
 import { useEffect, useState } from 'react'
+import Header from './component/layout/header'
+import { Outlet } from 'react-router-dom'
+import classNames from 'classnames'
+import Footer from './component/layout/footer'
 
 function App() {
 
@@ -14,9 +18,11 @@ function App() {
   // }, [])
 
   return (
-    <>
-      what ever
-    </>
+    <div>
+      <Header />
+      <Outlet />
+      <Footer />
+    </div>
   )
 }
 
