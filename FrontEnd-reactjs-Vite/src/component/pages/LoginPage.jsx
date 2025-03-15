@@ -1,17 +1,39 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Typography } from 'antd';
+import React, { useContext, useState } from 'react';
+import { Form, Input, Button, Typography, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { UserLogin } from '../../ultill/api';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/auth.contex';
 const { Title, Text, Link } = Typography;
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const { auth, setAuth } = useContext(AuthContext);
 
-    const onFinish = (values) => {
+    const onFinish = async (values) => {
         setLoading(true);
-        console.log('Login values:', values);
-        setTimeout(() => {
+        const { email, password } = values;
+
+        const res = await UserLogin(email, password);
+        if (res && res.EC === 0) {
+            localStorage.setItem('token', res.accessToken);
+            setAuth({
+                isAuthenticated: true,
+                user: {
+                    email: res?.userLogin?.email ?? "",
+                    name: res?.userLogin?.name ?? "",
+                    role: res?.userLogin?.role ?? ""
+                }
+            });
             setLoading(false);
-        }, 2000);
+            navigate("/");
+            setLoading(false);
+        }
+        else {
+            message.error('Email hoăc mật khẩu khôngchính xác!.');
+            setLoading(false);
+        }
     };
 
     return (
@@ -62,7 +84,7 @@ const LoginPage = () => {
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit" block loading={loading}>
-                        Login
+                        Đăng nhập
                     </Button>
                 </Form.Item>
             </Form>

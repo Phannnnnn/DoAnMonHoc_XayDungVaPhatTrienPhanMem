@@ -1,8 +1,8 @@
 const siteRoute = require('./site');
-const registerRoute = require('./registerApi');
+const userRoute = require('./userApi');
 
 function route(app) {
-    app.use('/v1/api', registerRoute);
+    app.use('/v1/api', userRoute);
     app.use('/', siteRoute);
 }
 

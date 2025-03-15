@@ -25,7 +25,7 @@ const RegisterPage = () => {
             setLoading(false);
         }
         else {
-            message.error('Đăng ký không thành công!');
+            message.error('Đăng ký không thành công vui lòng kiểm tra lại thông tin email!');
         }
     };
 
