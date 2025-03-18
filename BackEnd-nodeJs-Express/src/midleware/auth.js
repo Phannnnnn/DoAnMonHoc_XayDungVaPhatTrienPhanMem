@@ -16,11 +16,13 @@ const auth = (req, res, next) => {
     const token = authHeader.split(' ')[1];
     try {
         const decode = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Decoded Token:', decode);
-        req.user = decode;
+        req.user = {
+            name: decode.name,
+            email: decode.email,
+            role: decode.role
+        };
         next();
     } catch (error) {
-        console.error('JWT Error:', error.message);
         return res.status(401).json({ EC: "Token không hợp lệ hoặc đã hết hạn!" });
     }
 }

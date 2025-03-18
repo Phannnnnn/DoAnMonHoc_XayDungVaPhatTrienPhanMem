@@ -3,7 +3,7 @@ import { Form, Input, Button, Typography, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { UserLogin } from '../../ultill/api';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/auth.contex';
+import { AuthContext } from '../../context/auth.context';
 const { Title, Text, Link } = Typography;
 
 const LoginPage = () => {
@@ -23,10 +23,9 @@ const LoginPage = () => {
                 user: {
                     email: res?.userLogin?.email ?? "",
                     name: res?.userLogin?.name ?? "",
-                    role: res?.userLogin?.role ?? ""
+                    role: res?.userLogin?.role ?? "",
                 }
             });
-            setLoading(false);
             navigate("/");
             setLoading(false);
         }

@@ -1,8 +1,9 @@
 import React, { useContext, useState } from 'react';
-import { Menu, Input, Button, Avatar, Dropdown } from 'antd';
+import { Menu, Input, Button, Avatar, Dropdown, Typography } from 'antd';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { BookOutlined, UserOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
-import { AuthContext } from '../../context/auth.contex.jsx';
+import { AuthContext } from '../../context/auth.context';
+const { Text } = Typography;
 
 const { Search } = Input;
 const onSearch = (value, _e, info) => console.log(info?.source, value);
@@ -10,22 +11,17 @@ const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { auth, setAuth } = useContext(AuthContext);
-    console.log(auth);
 
-    // Giả lập trạng thái đăng nhập và thông tin user
     const [user, setUser] = useState({
         name: auth?.userLogin?.name ?? "",
-        avatar: '', // Nếu chưa có avatar, sẽ hiển thị icon mặc định
+        avatar: '',
     });
 
     const handleLogout = () => {
         setAuth({
             isAuthenticated: false,
-            user: {
-                email: "",
-                name: "",
-                role: ""
-            }
+            user: null
+
         });
         setUser({});
         localStorage.clear("token");
@@ -34,15 +30,34 @@ const Header = () => {
 
     const userMenu = [
         {
-            key: 'profile',
-            icon: <UserOutlined />,
-            label: <Link to="">Trang cá nhân</Link>,
+            key: "header",
+            label: (
+                <div style={{ padding: "10px 15px", textAlign: "center" }}>
+                    <Avatar size={64} src={user?.avatar} icon={!user?.avatar && <UserOutlined />} />
+                    <div style={{ marginTop: 8 }}>
+                        <Text strong>{auth?.user?.name || "Tên người dùng"}</Text>
+                    </div>
+                </div>
+            ),
+            disabled: true, // Không cho click vào
         },
-        {
-            key: 'coursesmanager',
-            icon: <SettingOutlined />,
-            label: <Link to="/coursesmanager">Quản lý khóa học</Link>,
-        },
+        { key: "divider2", type: "divider" },
+        ...(auth?.user?.role === "admin" ? [
+            {
+                key: 'coursesmanager',
+                icon: <SettingOutlined />,
+                label: <Link to="/coursesmanager">Quản lý khóa học</Link>,
+            },
+        ]
+            :
+            [
+                {
+                    key: 'coursesmanager',
+                    icon: <SettingOutlined />,
+                    label: <Link to="/coursesmanager">Khóa học đã đăng ký</Link>,
+                },
+            ]),
+        { key: "divider2", type: "divider" },
         {
             key: 'logout',
             icon: <LogoutOutlined />,
@@ -53,7 +68,11 @@ const Header = () => {
     const menuItems = [
         { label: <Link to="/">Trang chủ</Link>, key: '/' },
         { label: <Link to="/course">Khoá học</Link>, key: '/course' },
-        auth.isAuthenticated && { label: <Link to="/usermanager">Người dùng</Link>, key: '/usermanager' },
+
+        ...(auth?.user?.role === "admin" ? [
+            { label: <Link to="/usermanager">Người dùng</Link>, key: '/usermanager' },
+        ]
+            : [])
     ];
 
     return (
@@ -77,9 +96,14 @@ const Header = () => {
             <div style={styles.actions}>
                 <div>
                     {auth.isAuthenticated ? (
+                        // <Dropdown menu={{ items: userMenu }} placement="bottomRight" arrow>
+                        //     <div style={{ cursor: 'pointer' }}>
+                        //         <Avatar src={user.avatar} icon={!user.avatar && <UserOutlined />} />
+                        //     </div>
+                        // </Dropdown>
                         <Dropdown menu={{ items: userMenu }} placement="bottomRight" arrow>
-                            <div style={{ cursor: 'pointer' }}>
-                                <Avatar src={user.avatar} icon={!user.avatar && <UserOutlined />} />
+                            <div style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+                                <Avatar src={user?.avatar} icon={!user?.avatar && <UserOutlined />} />
                             </div>
                         </Dropdown>
                     ) : (<>

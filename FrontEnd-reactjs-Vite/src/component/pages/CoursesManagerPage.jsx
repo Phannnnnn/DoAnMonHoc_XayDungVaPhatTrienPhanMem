@@ -1,7 +1,6 @@
-import React from "react";
-
 const CoursesManagerPage = () => {
-    return <div>Quản lý khóa học</div>
+    return <div>Danh sách khóa học của tôi</div>
 };
 
 export default CoursesManagerPage;
+

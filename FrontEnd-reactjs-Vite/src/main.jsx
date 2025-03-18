@@ -10,7 +10,9 @@ import CoursesPage from './component/pages/CoursesPage.jsx'
 import UserManagePage from './component/pages/UserManagerPage.jsx'
 import CoursesManagerPage from './component/pages/CoursesManagerPage.jsx'
 import RegisterPage from './component/pages/Register.jsx'
-import { AuthWrapper } from './context/auth.contex.jsx'
+import { AuthWrapper } from './context/auth.context.jsx'
+import PrivateRoute from './component/routes/PrivateRoute.jsx'
+
 const router = createBrowserRouter(
   [
     {
@@ -39,11 +41,11 @@ const router = createBrowserRouter(
         },
         {
           path: "usermanager",
-          element: <UserManagePage />
+          element: <PrivateRoute element={<UserManagePage />} role="admin" />,
         },
         {
           path: "coursesmanager",
-          element: <CoursesManagerPage />
+          element: <PrivateRoute element={<CoursesManagerPage />} role="admin" />,
         }
       ]
     },

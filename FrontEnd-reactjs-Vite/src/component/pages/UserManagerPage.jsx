@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { message, notification, Table } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
+import { Table } from 'antd';
 import { GetListUser } from '../../ultill/api';
+import { AuthContext } from '../../context/auth.context';
 
 const columns = [
     {
@@ -27,8 +28,10 @@ const columns = [
 
 const UserManagerPage = () => {
     const [data, setData] = useState([]);
+    const { loading, setLoading } = useContext(AuthContext);
 
     useEffect(() => {
+        setLoading(true);
         const getListUser = async () => {
             try {
                 const res = await GetListUser();
@@ -39,11 +42,30 @@ const UserManagerPage = () => {
             } catch (error) {
             }
         }
+        setLoading(false);
         getListUser();
     }, [])
 
-    return <Table style={{ padding: 32 }} bordered columns={columns} dataSource={data}
-        rowKey={"_id"}
-    />;
+    return (
+        <div>
+            {loading === true ?
+                <div style={{
+                    position: "fixed",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)"
+                }}>
+                    <Spin />
+                </div>
+                :
+                <Table style={{ padding: 32 }} bordered columns={columns} dataSource={data}
+                    rowKey={"_id"}
+                />
+            }
+        </div>
+    )
+
+
+
 }
 export default UserManagerPage;
