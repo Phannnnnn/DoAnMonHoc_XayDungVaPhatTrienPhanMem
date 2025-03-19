@@ -36,7 +36,6 @@ const User = () => {
             try {
                 const res = await GetListUser();
                 if (res && Array.isArray(res)) {
-                    console.log(res);
                     setData(res);
                 } else {
                 }

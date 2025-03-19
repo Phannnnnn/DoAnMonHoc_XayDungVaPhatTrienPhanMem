@@ -40,6 +40,7 @@ const userLoginService = async (email, password) => {
             }
             else {
                 const payload = {
+                    id: userLogin._id,
                     name: userLogin.name,
                     email: userLogin.email,
                     role: userLogin.role

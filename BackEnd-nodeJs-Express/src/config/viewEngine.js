@@ -19,6 +19,9 @@ const viewEngineConfig = (app) => {
 
     //config static files: image/css/js
     app.use(express.static(path.join('./src', 'public')));
+
+    // Cấu hình để truy cập ảnh đã upload
+    app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 }
 
 module.exports = viewEngineConfig;

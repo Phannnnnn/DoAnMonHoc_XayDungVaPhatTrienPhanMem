@@ -13,7 +13,6 @@ const Courses = () => {
             try {
                 const res = await GetCourseList();
                 if (res && Array.isArray(res)) {
-                    console.log(res);
                     setCourses(res);
                 } else {
                     setCourses([]);
@@ -49,7 +48,6 @@ const Courses = () => {
     };
 
     const handleAddCourse = () => {
-        console.log('Add new course');
     };
 
     const handleViewTrash = () => {
@@ -66,7 +64,7 @@ const Courses = () => {
                         icon={<PlusOutlined />}
                         onClick={handleAddCourse}
                     >
-                        Thêm khóa học
+                        <Link to={"/manager/create"}>Thêm khóa học</Link>
                     </Button>
                     <Button
                         type="text"

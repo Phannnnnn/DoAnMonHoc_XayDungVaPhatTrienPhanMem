@@ -40,24 +40,10 @@ const AdminPage = () => {
                     </div>
                 </div>
             ),
-            disabled: true, // Không cho click vào
+            disabled: true,
         },
         { key: "divider1", type: "divider" },
-        ...(auth?.user?.role === "admin" ? [
-            {
-                key: 'coursesmanager',
-                icon: <SettingOutlined />,
-                label: <Link to="/coursesmanager">Quản lý khóa học</Link>,
-            },
-        ]
-            :
-            [
-                {
-                    key: 'coursesmanager',
-                    icon: <SettingOutlined />,
-                    label: <Link to="/coursesmanager">Khóa học đã đăng ký</Link>,
-                },
-            ]),
+        ...([]),
         { key: "divider2", type: "divider" },
         {
             key: 'logout',
@@ -104,21 +90,11 @@ const AdminPage = () => {
                 </div>
                 <div style={styles.actions}>
                     <div>
-                        {auth.isAuthenticated ? (
-                            <Dropdown menu={{ items: userMenu }} trigger={"click"} placement="bottomRight" arrow>
-                                <div style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
-                                    <Avatar src={user?.avatar} icon={!user?.avatar && <UserOutlined />} />
-                                </div>
-                            </Dropdown>
-                        ) : (<>
-                            <Link to="/login" style={styles.link}>
-                                <Button type="text">Đăng nhập</Button>
-                            </Link>
-                            <Link to="/register" style={styles.link}>
-                                <Button type="primary">Đăng ký</Button>
-                            </Link>
-                        </>
-                        )}
+                        <Dropdown menu={{ items: userMenu }} trigger={"click"} placement="bottomRight" arrow>
+                            <div style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+                                <Avatar src={user?.avatar} icon={!user?.avatar && <UserOutlined />} />
+                            </div>
+                        </Dropdown>
                     </div>
                 </div>
             </header>

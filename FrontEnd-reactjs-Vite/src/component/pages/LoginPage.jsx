@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { UserLogin } from '../../ultill/userApi';
@@ -9,28 +9,43 @@ const { Title, Text, Link } = Typography;
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth, auth } = useContext(AuthContext);
+
+    useEffect(() => {
+        console.log("Auth đã được cập nhật:", auth);
+    }, [auth]);
 
     const onFinish = async (values) => {
-        setLoading(true);
-        const { email, password } = values;
+        try {
+            setLoading(true);
+            const { email, password } = values;
 
-        const res = await UserLogin(email, password);
-        if (res && res.EC === 0) {
-            localStorage.setItem('token', res.accessToken);
-            setAuth({
-                isAuthenticated: true,
-                user: {
-                    email: res?.userLogin?.email ?? "",
-                    name: res?.userLogin?.name ?? "",
-                    role: res?.userLogin?.role ?? "",
-                }
-            });
-            navigate("/");
-            setLoading(false);
-        }
-        else {
-            message.error('Email hoăc mật khẩu khôngchính xác!.');
+            const res = await UserLogin(email, password);
+
+            if (res && res.EC === 0) {
+                localStorage.setItem('token', res.accessToken);
+
+                const authData = {
+                    isAuthenticated: true,
+                    user: {
+                        id: res?.userLogin?._id ?? "",
+                        email: res?.userLogin?.email ?? "",
+                        name: res?.userLogin?.name ?? "",
+                        role: res?.userLogin?.role ?? "",
+                    }
+                };
+
+                await setAuth(authData);
+
+                message.success('Đăng nhập thành công!');
+                navigate("/");
+            } else {
+                message.error('Email hoặc mật khẩu không chính xác!');
+            }
+        } catch (error) {
+            console.error("Lỗi đăng nhập:", error);
+            message.error('Có lỗi xảy ra khi đăng nhập!');
+        } finally {
             setLoading(false);
         }
     };
