@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Table } from 'antd';
-import { GetListUser } from '../../ultill/api';
-import { AuthContext } from '../../context/auth.context';
+import { GetListUser } from '../../ultill/userApi';
+import { AuthContext } from '../context/auth.context';
 
 const columns = [
     {
@@ -26,7 +26,7 @@ const columns = [
     },
 ];
 
-const UserManagerPage = () => {
+const User = () => {
     const [data, setData] = useState([]);
     const { loading, setLoading } = useContext(AuthContext);
 
@@ -36,6 +36,7 @@ const UserManagerPage = () => {
             try {
                 const res = await GetListUser();
                 if (res && Array.isArray(res)) {
+                    console.log(res);
                     setData(res);
                 } else {
                 }
@@ -68,4 +69,4 @@ const UserManagerPage = () => {
 
 
 }
-export default UserManagerPage;
+export default User;

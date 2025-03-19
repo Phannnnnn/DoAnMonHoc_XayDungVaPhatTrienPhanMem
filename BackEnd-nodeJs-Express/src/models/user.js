@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    role: { type: String, enum: ["user", "admin"], default: "user" },
-    img: { type: String, default: "" },
+    name: { type: String, required: true, trim: true }, // Tên người dùng
+    email: { type: String, required: true, unique: true, trim: true }, // Email duy nhất
+    password: { type: String, required: true }, // Mật khẩu (nên mã hóa trước khi lưu)
+    role: { type: String, enum: ['user', 'admin'], default: 'user' }, // Phân quyền
+    avatar: { type: String, default: '' }, // Ảnh đại diện
+    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }], // Khóa học đã đăng ký (dành cho học viên)
+    createdCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }], // Khóa học đã tạo (dành cho giảng viên)
 }, { timestamps: true });
 
 const User = mongoose.model('user', userSchema);

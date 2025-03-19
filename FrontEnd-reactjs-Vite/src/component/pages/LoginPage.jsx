@@ -1,15 +1,15 @@
 import React, { useContext, useState } from 'react';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { UserLogin } from '../../ultill/api';
+import { UserLogin } from '../../ultill/userApi';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/auth.context';
+import { AuthContext } from '../context/auth.context';
 const { Title, Text, Link } = Typography;
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { auth, setAuth } = useContext(AuthContext);
+    const { setAuth } = useContext(AuthContext);
 
     const onFinish = async (values) => {
         setLoading(true);

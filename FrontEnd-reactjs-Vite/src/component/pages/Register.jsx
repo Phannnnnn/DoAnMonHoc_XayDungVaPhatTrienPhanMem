@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 const { Title, Text, Link } = Typography;
-import { UserRegister } from '../../ultill/api.js';
+import { UserRegister } from '../../ultill/userApi.js';
 import { useNavigate } from "react-router";
 
 

@@ -2,9 +2,9 @@ import Header from './component/layout/header'
 import { Outlet } from 'react-router-dom'
 import Footer from './component/layout/footer'
 import { useContext, useEffect } from 'react'
-import { AuthContext } from './context/auth.context';
 import axios from './ultill/axios.custom';
 import { Spin } from "antd";
+import { AuthContext } from './component/context/auth.context';
 
 function App() {
   const { loading, setLoading, setAuth } = useContext(AuthContext);
@@ -48,7 +48,6 @@ function App() {
         </>
       }
     </div>
-
   )
 }
 

@@ -2,16 +2,19 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './styles/global.css'
+import './styles/course.css';
+
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import UserPage from './component/pages/UserPage.jsx'
 import LoginPage from './component/pages/LoginPage.jsx'
 import HomePage from './component/pages/HomePage.jsx'
 import CoursesPage from './component/pages/CoursesPage.jsx'
-import UserManagePage from './component/pages/UserManagerPage.jsx'
-import CoursesManagerPage from './component/pages/CoursesManagerPage.jsx'
 import RegisterPage from './component/pages/Register.jsx'
-import { AuthWrapper } from './context/auth.context.jsx'
 import PrivateRoute from './component/routes/PrivateRoute.jsx'
+import { AuthWrapper } from './component/context/auth.context.jsx'
+import AdminPage from './component/admin/AdminPage.jsx'
+import User from './component/admin/User.jsx'
+import Courses from './component/admin/Courses.jsx'
+import CreateCourse from './component/admin/CreateCourse.jsx'
 
 const router = createBrowserRouter(
   [
@@ -22,10 +25,6 @@ const router = createBrowserRouter(
         {
           index: true,
           element: <HomePage />
-        },
-        {
-          path: "user",
-          element: <UserPage />
         },
         {
           path: "register",
@@ -39,16 +38,26 @@ const router = createBrowserRouter(
           path: "course",
           element: <CoursesPage />
         },
-        {
-          path: "usermanager",
-          element: <PrivateRoute element={<UserManagePage />} role="admin" />,
-        },
-        {
-          path: "coursesmanager",
-          element: <PrivateRoute element={<CoursesManagerPage />} role="admin" />,
-        }
       ]
     },
+    {
+      path: "/manager",
+      element: <PrivateRoute element={<AdminPage />} role="admin" />,
+      children: [
+        {
+          path: "user",
+          element: <User />
+        },
+        {
+          path: "course",
+          element: <Courses />
+        },
+        {
+          path: "create",
+          element: <CreateCourse />
+        },
+      ],
+    }
   ]
 );
 
