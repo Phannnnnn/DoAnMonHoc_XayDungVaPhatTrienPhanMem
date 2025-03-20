@@ -8,6 +8,12 @@ import '../../styles/course.css'
 const Courses = () => {
     const [courses, setCourses] = useState([]);
 
+    //format giá tiền
+    const formatPrice = (price) => {
+        if (price === 0) return "Miễn phí";
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "đ";
+    };
+
     useEffect(() => {
         const getCourseList = async () => {
             try {
@@ -25,13 +31,7 @@ const Courses = () => {
 
     const getItems = (course) => [
         {
-            key: '1',
-            label: 'Sửa khóa học',
-            icon: <EditOutlined />,
-            onClick: () => handleEdit(course)
-        },
-        {
-            key: '2',
+            key: '3',
             label: 'Xóa khóa học',
             icon: <DeleteOutlined />,
             danger: true,
@@ -39,15 +39,8 @@ const Courses = () => {
         },
     ];
 
-    const handleEdit = (course) => {
-        console.log('Edit course:', course);
-    };
-
     const handleDelete = (course) => {
         console.log('Delete course:', course);
-    };
-
-    const handleAddCourse = () => {
     };
 
     const handleViewTrash = () => {
@@ -59,13 +52,15 @@ const Courses = () => {
             <div className="courses-header">
                 <h1 className="title">Danh sách khóa học</h1>
                 <div className="buttons-container">
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={handleAddCourse}
-                    >
-                        <Link to={"/manager/create"}>Thêm khóa học</Link>
-                    </Button>
+                    <Link to={"/manager/create"}>
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                        >
+                            Thêm khóa học
+                        </Button>
+                    </Link>
+
                     <Button
                         type="text"
                         icon={<DeleteFilled />}
@@ -82,7 +77,7 @@ const Courses = () => {
                     <div className="empty-container">
                         <Empty
                             image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-                            description={<>Bạn chưa đăng khóa học nào. <Link > Đăng khóa học.</Link></>}
+                            description={<>Bạn chưa đăng khóa học nào. <Link to={"/manager/create"}> Đăng khóa học.</Link></>}
                         />
                     </div>
                 )
@@ -99,10 +94,10 @@ const Courses = () => {
                                         <Button type="text" icon={<MoreOutlined />} />
                                     </Dropdown>
                                 </div>
-                                <img src={course.course_img || ""} alt={course.name} />
+                                <Link to={`/manager/edit/${course._id}`}><img src={course.course_img || ""} alt={course.name} /></Link>
                                 <div className="course-info">
                                     <h3>{course.name || "Không có tiêu đề"}</h3>
-                                    <span className="price">{course?.price !== 0 ? course?.price : "Miễn phí"}</span>
+                                    <span className="price">{formatPrice(course?.price)}</span>
                                 </div>
                             </div>
                         ))

@@ -12,7 +12,6 @@ const CourseCreate = (name, description, course_img, price, teacher_id) => {
     return axios.post(URL_API, data);
 }
 
-
 export {
     GetCourseList,
     CourseCreate

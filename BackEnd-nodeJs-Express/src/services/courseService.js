@@ -33,7 +33,6 @@ const getCourseService = async (id) => {
     try {
         let result = await Course.findById({ _id: id })
         return result;
-
     } catch (error) {
         console.log(error);
         return null;
@@ -42,10 +41,8 @@ const getCourseService = async (id) => {
 
 const getCourseListService = async () => {
     try {
-        let result = await Course.find({
-        })
+        let result = await Course.find({})
         return result;
-
     } catch (error) {
         console.log(error);
         return null;

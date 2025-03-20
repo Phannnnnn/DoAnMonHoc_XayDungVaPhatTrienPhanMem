@@ -15,6 +15,7 @@ import AdminPage from './component/admin/AdminPage.jsx'
 import User from './component/admin/User.jsx'
 import Courses from './component/admin/Courses.jsx'
 import CreateCourse from './component/admin/CreateCourse.jsx'
+import CourseEdit from './component/admin/CourseEdit.jsx';
 
 const router = createBrowserRouter(
   [
@@ -56,6 +57,10 @@ const router = createBrowserRouter(
           path: "create",
           element: <CreateCourse />
         },
+        {
+          path: "edit/:id",
+          element: <CourseEdit />
+        }
       ],
     }
   ]
