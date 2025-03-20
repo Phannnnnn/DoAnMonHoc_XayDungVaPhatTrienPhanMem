@@ -21,8 +21,14 @@ const updateCourseService = () => {
 
 }
 
-const deleteCourseService = () => {
-
+const deleteCourseService = async (id) => {
+    try {
+        let result = await Course.delete({ _id: id })
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
 }
 
 const destroyCourseService = () => {
@@ -48,8 +54,6 @@ const getCourseListService = async () => {
         return null;
     }
 }
-
-
 
 module.exports = {
     createCourseService,

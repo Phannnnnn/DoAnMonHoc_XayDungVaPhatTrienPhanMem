@@ -43,10 +43,6 @@ const Courses = () => {
         console.log('Delete course:', course);
     };
 
-    const handleViewTrash = () => {
-        console.log('View trash');
-    };
-
     return (
         <>
             <div className="courses-header">
@@ -61,14 +57,15 @@ const Courses = () => {
                         </Button>
                     </Link>
 
-                    <Button
-                        type="text"
-                        icon={<DeleteFilled />}
-                        onClick={handleViewTrash}
-                        className="trash-btn"
-                    >
-                        Thùng rác
-                    </Button>
+                    <Link to={"/manager/trash"}>
+                        <Button
+                            type="text"
+                            icon={<DeleteFilled />}
+                            className="trash-btn"
+                        >
+                            Thùng rác
+                        </Button>
+                    </Link>
                 </div>
             </div>
             <Divider style={{ margin: '0 0 16px 0' }} />
@@ -97,7 +94,7 @@ const Courses = () => {
                                 <Link to={`/manager/edit/${course._id}`}><img src={course.course_img || ""} alt={course.name} /></Link>
                                 <div className="course-info">
                                     <h3>{course.name || "Không có tiêu đề"}</h3>
-                                    <span className="price">{formatPrice(course?.price)}</span>
+                                    <span className="price" style={{ fontSize: '16px', fontWeight: '600' }}>{formatPrice(course?.price)}</span>
                                 </div>
                             </div>
                         ))

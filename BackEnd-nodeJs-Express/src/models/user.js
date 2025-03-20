@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
 
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true, trim: true }, // Tên người dùng
@@ -10,6 +11,8 @@ const userSchema = new mongoose.Schema({
     createdCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }], // Khóa học đã tạo (dành cho giảng viên)
 }, { timestamps: true });
 
+userSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
 const User = mongoose.model('user', userSchema);
+
 
 module.exports = User;

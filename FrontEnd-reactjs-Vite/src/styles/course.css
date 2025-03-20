@@ -66,19 +66,11 @@
 }
 
 .price {
-    display: block;
-    margin-top: 12px;
-    font-size: 18px;
-    font-weight: 600;
     color: #ff4d4f;
-}
-
-/* Thêm style cho giá gốc khi có giảm giá */
-.original-price {
-    text-decoration: line-through;
-    color: #999;
+    font-weight: 500;
     font-size: 14px;
-    margin-right: 8px;
+    margin-top: 8px;
+    display: block;
 }
 
 .course-actions {

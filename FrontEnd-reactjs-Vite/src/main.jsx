@@ -16,6 +16,7 @@ import User from './component/admin/User.jsx'
 import Courses from './component/admin/Courses.jsx'
 import CreateCourse from './component/admin/CreateCourse.jsx'
 import CourseEdit from './component/admin/CourseEdit.jsx';
+import TrashCourse from './component/admin/TrashCourse.jsx';
 
 const router = createBrowserRouter(
   [
@@ -60,6 +61,10 @@ const router = createBrowserRouter(
         {
           path: "edit/:id",
           element: <CourseEdit />
+        },
+        {
+          path: "trash",
+          element: <TrashCourse />
         }
       ],
     }

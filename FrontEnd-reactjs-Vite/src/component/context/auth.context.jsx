@@ -30,7 +30,6 @@ const AuthWrapper = (props) => {
         } else {
             localStorage.removeItem('auth');
         }
-        console.log('Auth state changed:', auth);
     }, [auth]);
 
     // Hàm cập nhật auth

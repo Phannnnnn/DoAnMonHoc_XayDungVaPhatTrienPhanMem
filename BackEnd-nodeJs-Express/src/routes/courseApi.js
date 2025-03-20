@@ -1,5 +1,4 @@
 const express = require('express');
-var jwt = require('jsonwebtoken');
 
 const route = express.Router();
 const auth = require('../midleware/auth');
@@ -11,6 +10,7 @@ route.all('*', auth, verifyRole);
 
 route.post('/course-create', courseController.createCoure);
 route.get('/courselist', courseController.getCourseList);
-route.get('/getcourse', courseController.getCourse);
+route.get('/getcourse/:course_id', courseController.getCourse);
+route.delete('/delete-course/:course_id', courseController.deleteCourse);
 
 module.exports = route;
