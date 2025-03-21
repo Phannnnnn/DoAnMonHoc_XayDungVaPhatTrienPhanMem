@@ -1,59 +1,106 @@
-import React, { Children } from 'react';
-import { Layout, Row, Col, Typography } from 'antd';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Layout, Row, Col, Typography, Space } from 'antd';
 import { FacebookOutlined, TwitterOutlined, InstagramOutlined, YoutubeOutlined } from '@ant-design/icons';
-import '../../styles/footer.css';
+
+const { Footer: AntFooter } = Layout;
+const { Title, Text, Link } = Typography;
 
 const Footer = () => {
     return (
-        <footer className="footer">
-            <div className="footer-container">
-                <div className="footer-section">
-                    <h2>EduOnline</h2>
-                    <p>Empowering learners worldwide with high-quality online education.</p>
-                    <div className="social-icons">
-                        <a href="#"><i className="fa fa-facebook"></i></a>
-                        <a href="#"><i className="fa fa-twitter"></i></a>
-                        <a href="#"><i className="fa fa-instagram"></i></a>
-                        <a href="#"><i className="fa fa-youtube"></i></a>
-                    </div>
-                </div>
+        <AntFooter style={{ background: '#001529', padding: '40px 0' }}>
+            <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 15px' }}>
+                {/* Main Footer Content */}
+                <Row gutter={[32, 32]}>
+                    {/* Logo and Description */}
+                    <Col xs={24} sm={24} md={8} lg={8}>
+                        <Title level={3} style={{ color: '#fff', marginBottom: '16px' }}>EduOnline</Title>
+                        <Text style={{ color: '#aaa', display: 'block', marginBottom: '24px' }}>
+                            Empowering learners worldwide with high-quality online education.
+                        </Text>
+                        <Space size="large">
+                            <Link href="https://facebook.com" target="_blank" style={{ color: '#1890ff' }}>
+                                <FacebookOutlined style={{ fontSize: '24px' }} />
+                            </Link>
+                            <Link href="https://twitter.com" target="_blank" style={{ color: '#1890ff' }}>
+                                <TwitterOutlined style={{ fontSize: '24px' }} />
+                            </Link>
+                            <Link href="https://instagram.com" target="_blank" style={{ color: '#1890ff' }}>
+                                <InstagramOutlined style={{ fontSize: '24px' }} />
+                            </Link>
+                            <Link href="https://youtube.com" target="_blank" style={{ color: '#1890ff' }}>
+                                <YoutubeOutlined style={{ fontSize: '24px' }} />
+                            </Link>
+                        </Space>
+                    </Col>
 
-                <div className="footer-section">
-                    <h3>Courses</h3>
-                    <ul>
-                        <li><a href="#">Web Development</a></li>
-                        <li><a href="#">Mobile Development</a></li>
-                        <li><a href="#">Data Science</a></li>
-                        <li><a href="#">Design</a></li>
-                        <li><a href="#">All Courses</a></li>
-                    </ul>
-                </div>
+                    {/* Courses */}
+                    <Col xs={24} sm={8} md={5} lg={5}>
+                        <Title level={4} style={{ color: '#fff', marginBottom: '16px' }}>Courses</Title>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                            <li style={{ marginBottom: '8px' }}>
+                                <Link style={{ color: '#aaa' }} href="/courses/web-development">Web Development</Link>
+                            </li>
+                            <li style={{ marginBottom: '8px' }}>
+                                <Link style={{ color: '#aaa' }} href="/courses/mobile-development">Mobile Development</Link>
+                            </li>
+                            <li style={{ marginBottom: '8px' }}>
+                                <Link style={{ color: '#aaa' }} href="/courses/data-science">Data Science</Link>
+                            </li>
+                            <li style={{ marginBottom: '8px' }}>
+                                <Link style={{ color: '#aaa' }} href="/courses/design">Design</Link>
+                            </li>
+                            <li>
+                                <Link style={{ color: '#aaa' }} href="/courses">All Courses</Link>
+                            </li>
+                        </ul>
+                    </Col>
 
-                <div className="footer-section">
-                    <h3>Company</h3>
-                    <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                    </ul>
-                </div>
+                    {/* Company */}
+                    <Col xs={24} sm={8} md={5} lg={5}>
+                        <Title level={4} style={{ color: '#fff', marginBottom: '16px' }}>Company</Title>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                            <li style={{ marginBottom: '8px' }}>
+                                <Link style={{ color: '#aaa' }} href="/about">About Us</Link>
+                            </li>
+                            <li style={{ marginBottom: '8px' }}>
+                                <Link style={{ color: '#aaa' }} href="/careers">Careers</Link>
+                            </li>
+                            <li style={{ marginBottom: '8px' }}>
+                                <Link style={{ color: '#aaa' }} href="/blog">Blog</Link>
+                            </li>
+                            <li>
+                                <Link style={{ color: '#aaa' }} href="/contact">Contact Us</Link>
+                            </li>
+                        </ul>
+                    </Col>
 
-                <div className="footer-section">
-                    <h3>Legal</h3>
-                    <ul>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                    </ul>
-                </div>
+                    {/* Legal */}
+                    <Col xs={24} sm={8} md={5} lg={5}>
+                        <Title level={4} style={{ color: '#fff', marginBottom: '16px' }}>Legal</Title>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                            <li style={{ marginBottom: '8px' }}>
+                                <Link style={{ color: '#aaa' }} href="/terms">Terms of Service</Link>
+                            </li>
+                            <li style={{ marginBottom: '8px' }}>
+                                <Link style={{ color: '#aaa' }} href="/privacy">Privacy Policy</Link>
+                            </li>
+                            <li>
+                                <Link style={{ color: '#aaa' }} href="/cookies">Cookie Policy</Link>
+                            </li>
+                        </ul>
+                    </Col>
+                </Row>
+
+                {/* Copyright */}
+                <Row>
+                    <Col span={24}>
+                        <div style={{ borderTop: '1px solid #333', marginTop: '32px', paddingTop: '24px', textAlign: 'center' }}>
+                            <Text style={{ color: '#aaa' }}>© 2025 EduOnline. All rights reserved.</Text>
+                        </div>
+                    </Col>
+                </Row>
             </div>
-
-            <div className="footer-bottom">
-                <p>© 2025 EduOnline. All rights reserved.</p>
-            </div>
-        </footer>
+        </AntFooter>
     );
 };
 

@@ -10,7 +10,7 @@ const courseSchema = new mongoose.Schema({
     students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }], // Học viên đăng ký
 }, { timestamps: true });
 
-courseSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+courseSchema.plugin(mongoose_delete, { deletedAt: true, overrideMethods: 'all' });
 const Course = mongoose.model('course', courseSchema);
 
 module.exports = Course;

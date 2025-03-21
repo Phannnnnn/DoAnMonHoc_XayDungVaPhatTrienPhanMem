@@ -55,11 +55,22 @@ const getCourseListService = async () => {
     }
 }
 
+const getCourseListDeleteService = async () => {
+    try {
+        let result = await Course.findDeleted({})
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 module.exports = {
     createCourseService,
     updateCourseService,
     deleteCourseService,
     destroyCourseService,
     getCourseService,
-    getCourseListService
+    getCourseListService,
+    getCourseListDeleteService
 }

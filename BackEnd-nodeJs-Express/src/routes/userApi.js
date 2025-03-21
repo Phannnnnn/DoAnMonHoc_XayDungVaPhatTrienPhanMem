@@ -13,5 +13,6 @@ route.post('/register', registerController.createUser);
 route.post('/login', registerController.userLogin);
 route.get('/user', registerController.getListUser);
 route.get('/getaccount', registerController.getAccount);
+route.get('/getinfor', registerController.getInforUser);
 
 module.exports = route;

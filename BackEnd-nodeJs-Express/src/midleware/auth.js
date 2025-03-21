@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const auth = (req, res, next) => {
-    const whiteList = ["/", "/login", "/register"];
+    const whiteList = ["/", "/login", "/register", "/courselist"];
     const requestUrl = req.originalUrl;
 
     if (whiteList.some((item) => ('/v1/api' + item) === requestUrl)) {
@@ -10,7 +10,7 @@ const auth = (req, res, next) => {
 
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ EC: "Token không tồn tại hoặc không đúng định dạng!" });
+        return res.json({ EC: "Token không tồn tại hoặc không đúng định dạng!" });
     }
 
     const token = authHeader.split(' ')[1];
@@ -24,7 +24,7 @@ const auth = (req, res, next) => {
         };
         next();
     } catch (error) {
-        return res.status(401).json({ EC: "Token không hợp lệ hoặc đã hết hạn!" });
+        return res.json({ EC: "Token không hợp lệ hoặc đã hết hạn!" });
     }
 }
 

@@ -1,106 +1,316 @@
 import React, { useEffect, useState } from "react";
-import { Empty, Typography, Button, Dropdown, Divider } from 'antd';
-import { GetCourseList } from "../../ultill/courseApi";
+import {
+    Empty, Typography, Button, Dropdown, Divider, Card, Row, Col,
+    Tag, Tooltip, Space, Skeleton, Input, Select, message, Modal
+} from 'antd';
+import {
+    MoreOutlined, EditOutlined, DeleteOutlined, PlusOutlined,
+    DeleteFilled, EyeOutlined, FilterOutlined, SearchOutlined,
+    StarFilled, UserOutlined, BookOutlined, DollarOutlined,
+    ExclamationCircleOutlined
+} from '@ant-design/icons';
+import { DeleteSoftCourse, GetCourseList } from "../../ultill/courseApi";
 import { Link } from "react-router-dom";
-import { MoreOutlined, EditOutlined, DeleteOutlined, PlusOutlined, DeleteFilled } from '@ant-design/icons';
-import '../../styles/course.css'
+import '../../styles/course.css';
+
+const { Title, Text, Paragraph } = Typography;
+const { Option } = Select;
+const { confirm } = Modal;
 
 const Courses = () => {
     const [courses, setCourses] = useState([]);
+    const [filteredCourses, setFilteredCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchText, setSearchText] = useState('');
+    const [filter, setFilter] = useState('all');
 
-    //format giá tiền
+    // Format giá tiền
     const formatPrice = (price) => {
         if (price === 0) return "Miễn phí";
         return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "đ";
     };
 
-    useEffect(() => {
-        const getCourseList = async () => {
-            try {
-                const res = await GetCourseList();
-                if (res && Array.isArray(res)) {
-                    setCourses(res);
-                } else {
-                    setCourses([]);
-                }
-            } catch (error) {
+    // Lấy danh sách khóa học
+    const fetchCourses = async () => {
+        try {
+            setLoading(true);
+            const res = await GetCourseList();
+            if (res && Array.isArray(res)) {
+                setCourses(res);
+                setFilteredCourses(res);
+            } else {
+                setCourses([]);
+                setFilteredCourses([]);
             }
+        } catch (error) {
+            console.error("Error fetching courses:", error);
+            message.error("Không thể tải danh sách khóa học");
+        } finally {
+            setLoading(false);
         }
-        getCourseList();
-    }, [])
+    };
 
+    // Gọi API lần đầu khi component mount
+    useEffect(() => {
+        fetchCourses();
+    }, []);
+
+    // Lọc và tìm kiếm khóa học
+    useEffect(() => {
+        let result = [...courses];
+
+        // Lọc theo giá
+        if (filter === 'free') {
+            result = result.filter(course => course.price === 0);
+        } else if (filter === 'paid') {
+            result = result.filter(course => course.price > 0);
+        }
+
+        // Tìm kiếm theo tên
+        if (searchText) {
+            result = result.filter(course =>
+                course.name.toLowerCase().includes(searchText.toLowerCase())
+            );
+        }
+        setFilteredCourses(result);
+    }, [searchText, filter, courses]);
+
+    // Xác nhận xóa khóa học
+    const showDeleteConfirm = (course) => {
+        confirm({
+            title: 'Bạn có chắc chắn muốn xóa khóa học này?',
+            icon: <ExclamationCircleOutlined />,
+            content: `Khóa học "${course.name}" sẽ được chuyển vào thùng rác.`,
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk() {
+                return handleDelete(course);
+            },
+        });
+    };
+
+    // Xử lý xóa khóa học
+    const handleDelete = async (course) => {
+        try {
+            const res = await DeleteSoftCourse(course._id);
+            if (res) {
+                message.success(`Đã chuyển khóa học "${course.name}" vào thùng rác`);
+                await fetchCourses();
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("Error deleting course:", error);
+            message.error("Không thể xóa khóa học. Vui lòng thử lại sau.");
+            return false;
+        }
+    };
+
+    // Menu dropdown cho từng khóa học
     const getItems = (course) => [
+        {
+            key: '1',
+            label: 'Xem chi tiết',
+            icon: <EyeOutlined />,
+            onClick: () => window.open(`/course/${course._id}`, '_blank')
+        },
+        {
+            key: '2',
+            label: 'Chỉnh sửa',
+            icon: <EditOutlined />,
+            onClick: () => window.location.href = `/manager/edit/${course._id}`
+        },
         {
             key: '3',
             label: 'Xóa khóa học',
             icon: <DeleteOutlined />,
             danger: true,
-            onClick: () => handleDelete(course)
+            onClick: () => showDeleteConfirm(course)
         },
     ];
 
-    const handleDelete = (course) => {
-        console.log('Delete course:', course);
-    };
+    // Tạo khóa học mẫu để hiển thị skeleton loading
+    const skeletonItems = Array.from({ length: 6 }, (_, index) => (
+        <Col xs={24} sm={12} md={8} lg={6} key={`skeleton-${index}`}>
+            <Card
+                hoverable
+                className="course-card-skeleton"
+                cover={<Skeleton.Image active style={{ width: '100%', height: 160 }} />}
+            >
+                <Skeleton active paragraph={{ rows: 2 }} />
+            </Card>
+        </Col>
+    ));
 
     return (
-        <>
+        <div className="courses-page">
+            {/* Header Section */}
             <div className="courses-header">
-                <h1 className="title">Danh sách khóa học</h1>
-                <div className="buttons-container">
-                    <Link to={"/manager/create"}>
-                        <Button
-                            type="primary"
-                            icon={<PlusOutlined />}
-                        >
-                            Thêm khóa học
-                        </Button>
-                    </Link>
-
-                    <Link to={"/manager/trash"}>
-                        <Button
-                            type="text"
-                            icon={<DeleteFilled />}
-                            className="trash-btn"
-                        >
-                            Thùng rác
-                        </Button>
-                    </Link>
-                </div>
+                <Row justify="space-between" align="middle" gutter={[16, 16]}>
+                    <Col>
+                        <Title level={2} style={{ margin: 0 }}>Danh sách khóa học</Title>
+                        <Text type="secondary">
+                            Quản lý và theo dõi khóa học của bạn
+                        </Text>
+                    </Col>
+                    <Col>
+                        <Space>
+                            <Link to="/manager/create">
+                                <Button
+                                    type="primary"
+                                    icon={<PlusOutlined />}
+                                    size="large"
+                                >
+                                    Thêm khóa học
+                                </Button>
+                            </Link>
+                            <Link to="/manager/trash">
+                                <Button
+                                    icon={<DeleteFilled />}
+                                    size="large"
+                                    className="trash-btn"
+                                >
+                                    Thùng rác
+                                </Button>
+                            </Link>
+                        </Space>
+                    </Col>
+                </Row>
             </div>
-            <Divider style={{ margin: '0 0 16px 0' }} />
-            <div className="course-container">
-                {courses.length === 0 ? (
-                    <div className="empty-container">
+
+            <Divider style={{ margin: '16px 0' }} />
+
+            {/* Filter Section */}
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+                <Col xs={24} md={8}>
+                    <Input
+                        placeholder="Tìm kiếm khóa học..."
+                        prefix={<SearchOutlined />}
+                        allowClear
+                        onChange={(e) => setSearchText(e.target.value)}
+                    />
+                </Col>
+                <Col xs={24} md={6}>
+                    <Select
+                        style={{ width: '100%' }}
+                        placeholder="Lọc theo giá"
+                        onChange={(value) => setFilter(value)}
+                        defaultValue="all"
+                    >
+                        <Option value="all">Tất cả khóa học</Option>
+                        <Option value="free">Khóa học miễn phí</Option>
+                        <Option value="paid">Khóa học trả phí</Option>
+                    </Select>
+                </Col>
+            </Row>
+
+            {/* Courses Grid */}
+            <div className="courses-grid">
+                {loading ? (
+                    <Row gutter={[24, 24]}>
+                        {skeletonItems}
+                    </Row>
+                ) : filteredCourses.length === 0 ? (
+                    <Card className="empty-container">
                         <Empty
                             image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-                            description={<>Bạn chưa đăng khóa học nào. <Link to={"/manager/create"}> Đăng khóa học.</Link></>}
-                        />
-                    </div>
-                )
-                    :
-                    (
-                        courses.map((course) => (
-                            <div className="course-card" key={course._id}>
-                                <div className="course-actions">
-                                    <Dropdown
-                                        menu={{ items: getItems(course) }}
-                                        placement="bottomRight"
-                                        trigger={['click']}
-                                    >
-                                        <Button type="text" icon={<MoreOutlined />} />
-                                    </Dropdown>
-                                </div>
-                                <Link to={`/manager/edit/${course._id}`}><img src={course.course_img || ""} alt={course.name} /></Link>
-                                <div className="course-info">
-                                    <h3>{course.name || "Không có tiêu đề"}</h3>
-                                    <span className="price" style={{ fontSize: '16px', fontWeight: '600' }}>{formatPrice(course?.price)}</span>
-                                </div>
-                            </div>
-                        ))
-                    )}
-            </div >
-        </>
+                            imageStyle={{ height: 160 }}
+                            description={
+                                searchText || filter !== 'all' ? (
+                                    <Text>Không tìm thấy khóa học phù hợp</Text>
+                                ) : (
+                                    <Text>
+                                        Bạn chưa đăng khóa học nào. <Link to="/manager/create">Đăng khóa học mới</Link>
+                                    </Text>
+                                )
+                            }
+                        >
+                            {(searchText || filter !== 'all') && (
+                                <Button type="primary" onClick={() => { setSearchText(''); setFilter('all'); }}>
+                                    Xóa bộ lọc
+                                </Button>
+                            )}
+                        </Empty>
+                    </Card>
+                ) : (
+                    <Row gutter={[24, 24]}>
+                        {filteredCourses.map((course) => (
+                            <Col xs={24} sm={12} md={8} lg={6} key={course._id}>
+                                <Card
+                                    hoverable
+                                    className="course-card"
+                                    cover={
+                                        <div className="course-image-container">
+                                            <img
+                                                alt={course.name}
+                                                src={course.course_img || "https://via.placeholder.com/300x180?text=No+Image"}
+                                                className="course-image"
+                                            />
+                                            {course.price === 0 && (
+                                                <Tag color="green" className="price-tag">Miễn phí</Tag>
+                                            )}
+                                            <div className="course-actions">
+                                                <Dropdown
+                                                    menu={{ items: getItems(course) }}
+                                                    placement="bottomRight"
+                                                    trigger={['click']}
+                                                    arrow
+                                                >
+                                                    <Button type="primary" shape="circle" icon={<MoreOutlined />} />
+                                                </Dropdown>
+                                            </div>
+                                        </div>
+                                    }
+                                    actions={[
+                                        <Tooltip title="Chỉnh sửa">
+                                            <Link to={`/manager/edit/${course._id}`}>
+                                                <EditOutlined key="edit" />
+                                            </Link>
+                                        </Tooltip>,
+                                        <Tooltip title="Xem chi tiết">
+                                            <Link to={`/course/${course._id}`} target="_blank">
+                                                <EyeOutlined key="view" />
+                                            </Link>
+                                        </Tooltip>,
+                                        <Tooltip title="Xóa">
+                                            <DeleteOutlined key="delete" onClick={() => showDeleteConfirm(course)} />
+                                        </Tooltip>,
+                                    ]}
+                                >
+                                    <div className="course-content">
+                                        <Title level={4} ellipsis={{ rows: 2 }} style={{ height: 48, marginBottom: 12 }}>
+                                            {course.name || "Không có tiêu đề"}
+                                        </Title>
+
+                                        <div className="course-meta">
+                                            <Space split={<Divider type="vertical" />}>
+                                                {course.students && (
+                                                    <Text type="secondary">
+                                                        <UserOutlined /> {course.students.length || 0}
+                                                    </Text>
+                                                )}
+                                                {course.category && (
+                                                    <Text type="secondary">
+                                                        <BookOutlined /> {course.category}
+                                                    </Text>
+                                                )}
+                                            </Space>
+                                        </div>
+
+                                        <div className="course-price">
+                                            <Text strong style={{ fontSize: 18, color: course.price > 0 ? '#f86d2d' : '#52c41a' }}>
+                                                <DollarOutlined /> {formatPrice(course.price)}
+                                            </Text>
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+                )}
+            </div>
+        </div>
     );
 };
 

@@ -18,9 +18,15 @@ const GetListUser = () => {
     return axios.get(URL_API);
 }
 
+const GetInforUser = (_id) => {
+    const URL_API = "/v1/api/getinfor";
+    const data = { _id };
+    return axios.get(URL_API, data);
+}
 
 export {
     UserRegister,
     UserLogin,
-    GetListUser
+    GetListUser,
+    GetInforUser
 }

@@ -9,7 +9,6 @@ import LoginPage from './component/pages/LoginPage.jsx'
 import HomePage from './component/pages/HomePage.jsx'
 import CoursesPage from './component/pages/CoursesPage.jsx'
 import RegisterPage from './component/pages/Register.jsx'
-import PrivateRoute from './component/routes/PrivateRoute.jsx'
 import { AuthWrapper } from './component/context/auth.context.jsx'
 import AdminPage from './component/admin/AdminPage.jsx'
 import User from './component/admin/User.jsx'
@@ -17,6 +16,8 @@ import Courses from './component/admin/Courses.jsx'
 import CreateCourse from './component/admin/CreateCourse.jsx'
 import CourseEdit from './component/admin/CourseEdit.jsx';
 import TrashCourse from './component/admin/TrashCourse.jsx';
+import PrivateRoute from './component/routes/PrivateRoute.jsx'
+import AdminHomePage from './component/admin/AdminHomePage.jsx';
 
 const router = createBrowserRouter(
   [
@@ -44,8 +45,12 @@ const router = createBrowserRouter(
     },
     {
       path: "/manager",
-      element: <PrivateRoute element={<AdminPage />} role="admin" />,
+      element: <PrivateRoute element={<AdminPage />} role={["admin", "teacher"]} />,
       children: [
+        {
+          path: "",
+          element: <AdminHomePage />
+        },
         {
           path: "user",
           element: <User />

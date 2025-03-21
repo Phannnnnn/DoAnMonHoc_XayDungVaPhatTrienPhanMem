@@ -1,13 +1,17 @@
 import React, { useContext, useState } from 'react';
 import { Menu, Input, Button, Avatar, Dropdown, Typography, Layout, Space, Divider } from 'antd';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
     BookOutlined,
     UserOutlined,
     LogoutOutlined,
     SettingOutlined,
+    SearchOutlined,
     HomeOutlined,
     ReadOutlined,
+    TeamOutlined,
+    InfoCircleOutlined,
+    QuestionCircleOutlined
 } from '@ant-design/icons';
 import { AuthContext } from '../context/auth.context';
 
@@ -15,11 +19,11 @@ const { Header: AntHeader } = Layout;
 const { Text, Title } = Typography;
 const { Search } = Input;
 
-const Header = () => {
+const AdminHeader = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { auth, setAuth } = useContext(AuthContext);
-    console.log(auth);
+
     const [user, setUser] = useState({
         name: auth?.userLogin?.name ?? "",
         avatar: '',
@@ -44,18 +48,18 @@ const Header = () => {
                     <div style={styles.userName}>{auth?.user?.name || "Phan"}</div>
                     <div style={styles.userEmail}>{user?.email || "byphan0976@gmail.com"}</div>
                     <div style={styles.userRole}>
-                        {auth?.user?.role === "admin" ? "Quản trị viên" : "Học viên"}
+                        {auth?.user?.role === "admin" ? "Quản trị viên" : "Giảng viên"}
                     </div>
                 </div>
             </div>
             <Divider style={styles.menuDivider} />
             <div style={styles.menuItem}>
                 <UserOutlined style={styles.menuItemIcon} />
-                <Link to="/profile" style={styles.menuItemLink}>Hồ sơ cá nhân</Link>
+                <Link to="" style={styles.menuItemLink}>Hồ sơ cá nhân</Link>
             </div>
             <div style={styles.menuItem}>
                 <SettingOutlined style={styles.menuItemIcon} />
-                <Link to="/settings" style={styles.menuItemLink}>Cài đặt tài khoản</Link>
+                <Link to="" style={styles.menuItemLink}>Cài đặt tài khoản</Link>
             </div>
             <Divider style={styles.menuDivider} />
             <div style={styles.menuItem} onClick={handleLogout}>
@@ -68,39 +72,37 @@ const Header = () => {
     const menuItems = [
         {
             label: (
-                <Link to="/">
-                    <Space key="home">
-                        <HomeOutlined /> Trang chủ
+                <Link to="/manager">
+                    <Space key="dasboard">
+                        <HomeOutlined /> Trang chủ quản trị
                     </Space>
                 </Link>
             ),
-            key: '/',
+            key: '/manager',
         },
         {
             label: (
-                <Link to="/course">
+                <Link to="/manager/course">
                     <Space key="course">
                         <ReadOutlined /> Khoá học
                     </Space>
                 </Link>
             ),
-            key: '/course',
+            key: '/manager/course',
         },
         ...(auth?.user?.role === "admin" || "teacher" ? [
             {
                 label: (
-                    <Link to="/manager">
-                        <Space key="manager">
-                            <SettingOutlined /> Trang quản trị
+                    <Link to="/manager/user">
+                        <Space key="user">
+                            <SettingOutlined />Người dùng
                         </Space>
                     </Link>
                 ),
-                key: '/manager',
+                key: '/manager/user',
             },
         ] : [])
     ];
-
-    const onSearch = (value, _e, info) => console.log(info?.source, value);
 
     return (
         <>
@@ -142,12 +144,6 @@ const Header = () => {
 
                     {/* Search and User Actions */}
                     <div style={styles.actionsContainer}>
-                        <Search
-                            placeholder="Tìm kiếm..."
-                            onSearch={onSearch}
-                            style={styles.search}
-                        />
-
                         <div style={styles.userContainer}>
                             {auth.isAuthenticated ? (
                                 <Dropdown
@@ -323,4 +319,4 @@ const styles = {
     },
 };
 
-export default Header;
+export default AdminHeader;

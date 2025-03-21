@@ -12,21 +12,34 @@ function App() {
   useEffect(() => {
     const fetchAccount = async () => {
       setLoading(true);
-      const URL_API = "/v1/api/getaccount";
-      const res = await axios.get(URL_API);
-      if (res && !res.EC) {
-        setAuth({
-          isAuthenticated: true,
-          user: {
-            email: res.email ?? "",
-            name: res.name ?? "",
-            role: res.role ?? "",
-          }
-        })
+      try {
+        const URL_API = "/v1/api/getaccount";
+        const res = await axios.get(URL_API);
+
+        // Thêm log để kiểm tra cấu trúc response
+        console.log("API Response:", res);
+
+        if (res && res.data && !res.data.EC) {
+          // Giả sử response có cấu trúc đúng là res.data.user
+          const userData = res.data.user || res.data || res;
+
+          setAuth({
+            isAuthenticated: true,
+            user: {
+              id: userData._id || userData.id || "",
+              email: userData.email || "",
+              name: userData.name || "",
+              role: userData.role || "",
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Fetch account error:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
-    fetchAccount()
+    fetchAccount();
   }, [])
 
   return (

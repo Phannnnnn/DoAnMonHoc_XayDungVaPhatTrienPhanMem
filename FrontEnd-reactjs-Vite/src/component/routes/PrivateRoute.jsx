@@ -1,18 +1,23 @@
-import { Navigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/auth.context";
 
 const PrivateRoute = ({ element, role }) => {
-    const { auth } = useContext(AuthContext);
+    const { auth } = useContext(AuthContext)
 
-    // Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
-    if (!auth.isAuthenticated) {
-        return <Navigate to="/login" replace />;
+    if (!auth?.user) {
+        return <Navigate to="/login" />;
     }
 
-    // Nếu có role yêu cầu nhưng user không có quyền, chuyển hướng về trang chủ
-    if (role && auth.user.role !== role) {
-        return <Navigate to="/" replace />;
+    if (Array.isArray(role)) {
+        // Nếu role là mảng, kiểm tra xem user.role có trong danh sách không
+        if (!role.includes(auth.user.role)) {
+            return <Navigate to="/" />;
+        }
+    } else {
+        // Nếu chỉ có một role, kiểm tra như bình thường
+        if (auth.user.role !== role) {
+            return <Navigate to="/" />;
+        }
     }
 
     return element;

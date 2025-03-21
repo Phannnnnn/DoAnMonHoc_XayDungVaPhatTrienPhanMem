@@ -1,19 +1,22 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Form, Input, Button, Typography, message } from 'antd';
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { Form, Input, Button, Typography, message, Divider, Space, Row, Col } from 'antd';
+import {
+    EyeInvisibleOutlined,
+    EyeTwoTone,
+    LockOutlined,
+    MailOutlined,
+    UserOutlined
+} from '@ant-design/icons';
 import { UserLogin } from '../../ultill/userApi';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth.context';
-const { Title, Text, Link } = Typography;
+
+const { Title, Text, Link, Paragraph } = Typography;
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { setAuth, auth } = useContext(AuthContext);
-
-    useEffect(() => {
-        console.log("Auth đã được cập nhật:", auth);
-    }, [auth]);
 
     const onFinish = async (values) => {
         try {
@@ -51,63 +54,258 @@ const LoginPage = () => {
     };
 
     return (
-        <div style={{
-            maxWidth: 400,
-            margin: 'auto',
-            marginTop: 20,
-            marginBottom: 20,
-            padding: 24,
-            border: '1px solid #f0f0f0',
-            borderRadius: 8,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-        }}>
-            <Title level={3}>Đăng nhập</Title>
-            <Text type="secondary">Nhập email và mật khẩu của bạn để đăng nhập</Text>
+        <div className="login-container">
+            <div className="login-box">
+                <Row gutter={[0, 0]} className="login-row">
+                    <Col xs={24} md={12} className="login-left">
+                        <div className="login-image-container">
+                            <div className="login-welcome">
+                                <UserOutlined className="welcome-icon" />
+                                <Title level={2}>Chào mừng trở lại!</Title>
+                                <Paragraph>
+                                    Đăng nhập để tiếp tục học tập và phát triển kỹ năng của bạn.
+                                </Paragraph>
+                            </div>
+                        </div>
+                    </Col>
 
-            <Form
-                layout="vertical"
-                onFinish={onFinish}
-                style={{ marginTop: 20 }}
-            >
-                <Form.Item
-                    label="Email"
-                    name="email"
-                    rules={[
-                        { required: true, message: 'Vui lòng nhập vào email!' },
-                        { type: 'email', message: 'Vui lòng nhập đúng định dạng email!' },
-                    ]}
-                >
-                    <Input placeholder="m@example.com" />
-                </Form.Item>
+                    <Col xs={24} md={12} className="login-right">
+                        <div className="login-form-container">
+                            <div className="login-header">
+                                <Title level={3}>Đăng nhập</Title>
+                                <Text type="secondary">
+                                    Nhập thông tin đăng nhập của bạn để tiếp tục
+                                </Text>
+                            </div>
 
-                <Form.Item
-                    label="Mật khẩu"
-                    name="password"
-                    rules={[{ required: true, message: 'Vui lòng nhập vào mật khẩu!' }]}
-                    style={{ marginBottom: 0 }}
-                >
-                    <Input.Password
-                        placeholder="Password"
-                        iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                    />
-                </Form.Item>
+                            <Form
+                                layout="vertical"
+                                onFinish={onFinish}
+                                className="login-form"
+                            >
+                                <Form.Item
+                                    name="email"
+                                    rules={[
+                                        { required: true, message: 'Vui lòng nhập vào email!' },
+                                        { type: 'email', message: 'Vui lòng nhập đúng định dạng email!' },
+                                    ]}
+                                >
+                                    <Input
+                                        prefix={<MailOutlined className="site-form-item-icon" />}
+                                        placeholder="Email"
+                                        size="large"
+                                    />
+                                </Form.Item>
 
-                <div style={{ textAlign: 'right', marginBottom: 16 }}>
-                    <Link href="#">Quên mật khẩu</Link>
-                </div>
+                                <Form.Item
+                                    name="password"
+                                    rules={[{ required: true, message: 'Vui lòng nhập vào mật khẩu!' }]}
+                                >
+                                    <Input.Password
+                                        prefix={<LockOutlined className="site-form-item-icon" />}
+                                        placeholder="Mật khẩu"
+                                        size="large"
+                                        iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                                    />
+                                </Form.Item>
 
-                <Form.Item>
-                    <Button type="primary" htmlType="submit" block loading={loading}>
-                        Đăng nhập
-                    </Button>
-                </Form.Item>
-            </Form>
+                                <div className="login-options">
+                                    <Link href="#" className="forgot-password">
+                                        Quên mật khẩu?
+                                    </Link>
+                                </div>
 
-            <Text>
-                Bạn chưa có tài khoản? <Link href="/register">Đăng ký</Link>
-            </Text>
+                                <Form.Item>
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        block
+                                        loading={loading}
+                                        size="large"
+                                        className="login-button"
+                                    >
+                                        Đăng nhập
+                                    </Button>
+                                </Form.Item>
+                            </Form>
+
+                            <Divider plain>
+                                <Text type="secondary">Hoặc</Text>
+                            </Divider>
+
+                            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+                                <Button block size="large" className="social-button google-button">
+                                    Đăng nhập với Google
+                                </Button>
+                                <Button block size="large" className="social-button facebook-button">
+                                    Đăng nhập với Facebook
+                                </Button>
+                            </Space>
+
+                            <div className="register-link">
+                                <Text>
+                                    Bạn chưa có tài khoản? <Link href="/register">Đăng ký ngay</Link>
+                                </Text>
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
+            </div>
+
+            <style jsx>{`
+                .login-container {
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: #f5f8fa;
+                    padding: 20px;
+                }
+                
+                .login-box {
+                    width: 100%;
+                    max-width: 900px;
+                    background-color: #fff;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+                }
+                
+                .login-row {
+                    min-height: 600px;
+                }
+                
+                .login-left {
+                    background: linear-gradient(135deg, #1890ff, #0050b3);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .login-image-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    width: 100%;
+                    color: white;
+                    text-align: center;
+                    padding: 40px;
+                }
+                
+                .login-welcome {
+                    z-index: 2;
+                    position: relative;
+                }
+                
+                .welcome-icon {
+                    font-size: 64px;
+                    margin-bottom: 24px;
+                    background: rgba(255, 255, 255, 0.2);
+                    padding: 20px;
+                    border-radius: 50%;
+                }
+                
+                .login-image-container h2 {
+                    color: white !important;
+                    margin-bottom: 16px;
+                }
+                
+                .login-image-container p {
+                    color: rgba(255, 255, 255, 0.9) !important;
+                    font-size: 16px;
+                }
+                
+                .login-right {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 40px;
+                }
+                
+                .login-form-container {
+                    width: 100%;
+                    max-width: 360px;
+                }
+                
+                .login-header {
+                    margin-bottom: 24px;
+                    text-align: center;
+                }
+                
+                .login-form {
+                    margin-top: 24px;
+                }
+                
+                .login-options {
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-bottom: 24px;
+                }
+                
+                .forgot-password {
+                    font-size: 14px;
+                }
+                
+                .login-button {
+                    height: 48px;
+                    font-size: 16px;
+                    font-weight: 500;
+                    margin-top: 16px;
+                }
+                
+                .social-button {
+                    height: 48px;
+                    font-size: 14px;
+                    border-radius: 6px;
+                }
+                
+                .google-button {
+                    background-color: #ffffff;
+                    color: rgba(0, 0, 0, 0.85);
+                    border: 1px solid #e6e6e6;
+                }
+                
+                .google-button:hover {
+                    background-color: #f5f5f5;
+                    border-color: #d9d9d9;
+                }
+                
+                .facebook-button {
+                    background-color: #1877f2;
+                    color: #ffffff;
+                    border: none;
+                }
+                
+                .facebook-button:hover {
+                    background-color: #166fe5;
+                }
+                
+                .register-link {
+                    margin-top: 24px;
+                    text-align: center;
+                }
+                
+                /* Responsive Styles */
+                @media (max-width: 768px) {
+                    .login-left {
+                        display: none;
+                    }
+                    
+                    .login-right {
+                        padding: 40px 20px;
+                    }
+                }
+                
+                /* Form Icons Styling */
+                .site-form-item-icon {
+                    color: rgba(0, 0, 0, 0.45);
+                }
+            `}</style>
         </div>
     );
-}
+};
 
 export default LoginPage;

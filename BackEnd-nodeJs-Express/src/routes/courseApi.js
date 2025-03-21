@@ -10,7 +10,9 @@ route.all('*', auth, verifyRole);
 
 route.post('/course-create', courseController.createCoure);
 route.get('/courselist', courseController.getCourseList);
+route.get('/courselist-delete', courseController.getCourseListDelete);
 route.get('/getcourse/:course_id', courseController.getCourse);
 route.delete('/delete-course/:course_id', courseController.deleteCourse);
+route.delete('/restore-course/:course_id', courseController.deleteCourse);
 
 module.exports = route;

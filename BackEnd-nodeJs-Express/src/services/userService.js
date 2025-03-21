@@ -78,8 +78,20 @@ const getListUserService = async () => {
     }
 }
 
+
+const getInforUserService = async (_id) => {
+    try {
+        const infor = await User.findOne({ _id: _id }, { password: 0 });
+        return infor
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 module.exports = {
     createUserService,
     userLoginService,
-    getListUserService
+    getListUserService,
+    getInforUserService
 }

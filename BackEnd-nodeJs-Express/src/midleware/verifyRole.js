@@ -1,5 +1,5 @@
 const verifyRole = (req, res, next) => {
-    const whiteList = ["/", "/login", "/register", "/getaccount"];
+    const whiteList = ["/", "/login", "/register", "/getaccount", "/courselist"];
     const requestUrl = req.originalUrl;
 
     // Cho phép truy cập nếu URL thuộc danh sách trắng
