@@ -14,5 +14,6 @@ route.post('/login', registerController.userLogin);
 route.get('/user', registerController.getListUser);
 route.get('/getaccount', registerController.getAccount);
 route.get('/getinfor', registerController.getInforUser);
+route.delete('/delete-soft-user', registerController.deleteSoftUser);
 
 module.exports = route;

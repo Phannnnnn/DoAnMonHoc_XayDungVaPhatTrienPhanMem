@@ -18,6 +18,7 @@ import CourseEdit from './component/admin/CourseEdit.jsx';
 import TrashCourse from './component/admin/TrashCourse.jsx';
 import PrivateRoute from './component/routes/PrivateRoute.jsx'
 import AdminHomePage from './component/admin/AdminHomePage.jsx';
+import CreateUser from './component/admin/CreateUser.jsx';
 
 const router = createBrowserRouter(
   [
@@ -70,6 +71,10 @@ const router = createBrowserRouter(
         {
           path: "trash",
           element: <TrashCourse />
+        },
+        {
+          path: "user-create",
+          element: <CreateUser />
         }
       ],
     }

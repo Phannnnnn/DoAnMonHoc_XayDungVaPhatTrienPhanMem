@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons';
 import { GetListUser } from '../../ultill/userApi';
 import { AuthContext } from '../context/auth.context';
+import { Link } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -36,24 +37,9 @@ const User = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            // Đây là nơi sẽ gọi API thực tế
-            const response = await GetListUser(showDeleted);
-            // Giả lập dữ liệu cho mục đích demo
-            const mockUsers = Array.from({ length: 50 }, (_, index) => ({
-                _id: `user_${index + 1}`,
-                name: `Người dùng ${index + 1}`,
-                email: `user${index + 1}@example.com`,
-                role: ['user', 'teacher', 'admin'][Math.floor(Math.random() * 3)],
-                avatar: '',
-                enrolledCourses: Array.from({ length: Math.floor(Math.random() * 5) }, (_, i) => `course_${i}`),
-                createdCourses: Array.from({ length: Math.floor(Math.random() * 3) }, (_, i) => `course_${i}`),
-                createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString(),
-                deleted: Math.random() > 0.8,
-                deletedAt: Math.random() > 0.8 ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString() : null,
-            }));
-
-            setUsers(mockUsers);
-            applyFilters(mockUsers);
+            const res = await GetListUser();
+            setUsers(res);
+            applyFilters(res);
             setLoading(false);
         } catch (error) {
             message.error('Không thể tải danh sách người dùng');
@@ -107,7 +93,8 @@ const User = () => {
     };
 
     const handleDelete = (userId) => {
-        // Gọi API xóa người dùng (xóa mềm)
+        const res = '';
+
         message.success('Đã xóa người dùng thành công');
         const updatedUsers = users.map(user =>
             user._id === userId ? { ...user, deleted: true, deletedAt: new Date().toISOString() } : user
@@ -221,7 +208,7 @@ const User = () => {
                                 disabled={authState?.user?.role !== 'admin' && record.role === 'admin'}
                             />
                             <Popconfirm
-                                title="Bạn có chắc chắn muốn xóa người dùng này?"
+                                title="Bạn có muốn xóa người dùng này?"
                                 onConfirm={() => handleDelete(record._id)}
                                 okText="Xóa"
                                 cancelText="Hủy"
@@ -236,18 +223,36 @@ const User = () => {
                             </Popconfirm>
                         </>
                     ) : (
-                        <Popconfirm
-                            title="Bạn có chắc chắn muốn khôi phục người dùng này?"
-                            onConfirm={() => handleRestore(record._id)}
-                            okText="Khôi phục"
-                            cancelText="Hủy"
-                        >
-                            <Button
-                                type="primary"
-                                icon={<UndoOutlined />}
-                                size="small"
-                            />
-                        </Popconfirm>
+                        <>
+                            <Tooltip title="Khôi phục">
+                                <Popconfirm
+                                    title="Bạn có muốn khôi phục người dùng này?"
+                                    onConfirm={() => handleRestore(record._id)}
+                                    okText="Khôi phục"
+                                    cancelText="Hủy"
+                                >
+                                    <Button
+                                        type="primary"
+                                        icon={<UndoOutlined />}
+                                        size="small"
+                                    />
+                                </Popconfirm>
+                            </Tooltip>
+                            <Tooltip title="Xóa vĩnh viễn">
+                                <Popconfirm
+                                    title="Bạn có muốn xóa vĩnh viễn người dùng này?"
+                                    onConfirm={() => handleRestore(record._id)}
+                                    okText="Xóa vĩnh viễn"
+                                    cancelText="Hủy"
+                                >
+                                    <Button
+                                        danger
+                                        icon={<DeleteOutlined />}
+                                        size="small"
+                                    />
+                                </Popconfirm>
+                            </Tooltip>
+                        </>
                     )}
                 </Space>
             ),
@@ -263,12 +268,14 @@ const User = () => {
                     </Col>
                     <Col>
                         <Space>
-                            <Button
-                                type="primary"
-                                icon={<UserAddOutlined />}
-                            >
-                                Thêm người dùng
-                            </Button>
+                            <Link to={"/manager/user-create"}>
+                                <Button
+                                    type="primary"
+                                    icon={<UserAddOutlined />}
+                                >
+                                    Thêm người dùng
+                                </Button>
+                            </Link>
                         </Space>
                     </Col>
                 </Row>

@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, message, Typography, Input, Empty, Card, Tag, Tooltip } from 'antd';
-import { DeleteOutlined, UndoOutlined, SearchOutlined, FilterOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
-import { GetCourseListDelete } from '../../ultill/courseApi';
-import { GetInforUser } from '../../ultill/userApi';
+import { Table, Button, Space, message, Typography, Input, Empty, Card, Tooltip, Popconfirm } from 'antd';
+import { DeleteOutlined, UndoOutlined, SearchOutlined } from '@ant-design/icons';
+import { DestroyCourse, GetCourseListDelete, restoreCourse } from '../../ultill/courseApi';
 import moment from 'moment';
 
 const { Title, Text } = Typography;
 const { Search } = Input;
+
+const confirm = (e) => {
+    console.log(e);
+    message.success('Click on Yes');
+};
 
 const TrashCourse = () => {
     // State để lưu trữ danh sách khóa học đã xóa
@@ -50,14 +54,44 @@ const TrashCourse = () => {
 
     // Hàm xử lý khôi phục khóa học
     const handleRestore = (record) => {
-        message.success(`Đã khôi phục khóa học: ${record.title}`);
-        setTrashedCourses(trashedCourses.filter(course => course.id !== record.id));
+        try {
+            const res = restoreCourse(record.id);
+            if (res) {
+                message.success(`Đã khôi phục khóa học: ${record.title}`);
+                setTrashedCourses(trashedCourses.filter(course => course.id !== record.id));
+            }
+        }
+        catch (error) {
+            message.error(`Khôi phục khóa học không thành công!`);
+        }
+    };
+
+    const showDeleteConfirm = (record) => {
+        confirm({
+            title: 'Bạn có chắc chắn muốn xóa vĩnh viến khóa học này?',
+            // icon: React.createElement(ExclamationCircleOutlined),
+            content: `Khóa học "${record.name}" sẽ không thể khôi phục!`,
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk() {
+                return handleDeletePermanently(record);
+            },
+        });
     };
 
     // Hàm xử lý xóa vĩnh viễn
     const handleDeletePermanently = (record) => {
-        message.success(`Đã xóa vĩnh viễn khóa học: ${record.title}`);
-        setTrashedCourses(trashedCourses.filter(course => course.id !== record.id));
+        try {
+            const res = DestroyCourse(record.id);
+            if (res) {
+                message.success(`Đã xóa vĩnh viễn khóa học: ${record.title}`);
+                setTrashedCourses(trashedCourses.filter(course => course.id !== record.id));
+            }
+        }
+        catch (error) {
+            message.error(`Xóa khóa học không thành công!`);
+        }
     };
 
     // Hàm xử lý search
@@ -121,18 +155,20 @@ const TrashCourse = () => {
                     <Tooltip title="Khôi phục">
                         <Button
                             type="primary"
-                            icon={<UndoOutlined />}
                             size="small"
                             onClick={() => handleRestore(record)}
-                        />
+                        ><UndoOutlined /></Button>
                     </Tooltip>
                     <Tooltip title="Xóa vĩnh viễn">
-                        <Button
-                            danger
-                            icon={<DeleteOutlined />}
-                            size="small"
-                            onClick={() => handleDeletePermanently(record)}
-                        />
+                        <Popconfirm
+                            title="Xóa vĩnh viễn khóa học ?"
+                            description="Khóa học sẽ không thể khôi phục!"
+                            onConfirm={() => handleDeletePermanently(record)}
+                            okText="Xóa vĩnh viễn"
+                            cancelText="Hủy"
+                        >
+                            <Button danger><DeleteOutlined /></Button>
+                        </Popconfirm>
                     </Tooltip>
                 </Space>
             ),

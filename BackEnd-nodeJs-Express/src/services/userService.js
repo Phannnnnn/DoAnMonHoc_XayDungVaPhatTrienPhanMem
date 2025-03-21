@@ -4,7 +4,7 @@ var jwt = require('jsonwebtoken');
 const saltRounds = 10;
 
 //Dang ky tai khoan
-const createUserService = async (name, email, password) => {
+const createUserService = async (name, email, password, role) => {
     try {
         //Kiem tra tai khoan da ton tai chua
         const user = await User.findOne({ email });
@@ -17,9 +17,9 @@ const createUserService = async (name, email, password) => {
             name: name,
             email: email,
             password: hashPass,
+            role: role ? role : "user"
         })
-        return result;
-
+        return { result, EC: 0 };
     } catch (error) {
         console.log(error);
         return null;
@@ -70,19 +70,28 @@ const userLoginService = async (email, password) => {
 //Danh sach nguoi dung
 const getListUserService = async () => {
     try {
-        const userList = await User.find({}, { password: 0 });
-        return userList
+        const userList = await User.findWithDeleted({}, { password: 0 });
+        return userList;
     } catch (error) {
         console.log(error);
         return null;
     }
 }
 
-
 const getInforUserService = async (_id) => {
     try {
         const infor = await User.findOne({ _id: _id }, { password: 0 });
-        return infor
+        return infor;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+const deleteSoftUserService = async (_id) => {
+    try {
+        const result = await User.delete({ _id: _id });
+        return result;
     } catch (error) {
         console.log(error);
         return null;
@@ -93,5 +102,6 @@ module.exports = {
     createUserService,
     userLoginService,
     getListUserService,
-    getInforUserService
+    getInforUserService,
+    deleteSoftUserService
 }

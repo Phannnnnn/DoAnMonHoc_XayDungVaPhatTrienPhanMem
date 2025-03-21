@@ -28,10 +28,22 @@ const DeleteSoftCourse = (course_id) => {
     return axios.delete(URL_API);
 }
 
+const DestroyCourse = (course_id) => {
+    const URL_API = `/v1/api/delete-course-destroy/${course_id}`;
+    return axios.delete(URL_API);
+}
+
+const restoreCourse = (course_id) => {
+    const URL_API = `/v1/api/restore-course/${course_id}`;
+    return axios.patch(URL_API);
+}
+
 export {
     GetCourseList,
     GetCourseListDelete,
     CourseCreate,
     GetCourse,
-    DeleteSoftCourse
+    DeleteSoftCourse,
+    restoreCourse,
+    DestroyCourse
 }

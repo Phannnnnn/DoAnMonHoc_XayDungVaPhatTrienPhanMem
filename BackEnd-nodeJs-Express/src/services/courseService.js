@@ -31,8 +31,14 @@ const deleteCourseService = async (id) => {
     }
 }
 
-const destroyCourseService = () => {
-
+const destroyCourseService = async (id) => {
+    try {
+        let result = await Course.deleteOne({ _id: id })
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
 }
 
 const getCourseService = async (id) => {
@@ -44,6 +50,17 @@ const getCourseService = async (id) => {
         return null;
     }
 }
+
+const restoreCourseService = async (id) => {
+    try {
+        let result = await Course.restore({ _id: id })
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 
 const getCourseListService = async () => {
     try {
@@ -57,7 +74,7 @@ const getCourseListService = async () => {
 
 const getCourseListDeleteService = async () => {
     try {
-        let result = await Course.findDeleted({})
+        let result = await Course.findDeleted({ deletedAt: { $ne: null } })
         return result;
     } catch (error) {
         console.log(error);
@@ -72,5 +89,6 @@ module.exports = {
     destroyCourseService,
     getCourseService,
     getCourseListService,
-    getCourseListDeleteService
+    getCourseListDeleteService,
+    restoreCourseService
 }

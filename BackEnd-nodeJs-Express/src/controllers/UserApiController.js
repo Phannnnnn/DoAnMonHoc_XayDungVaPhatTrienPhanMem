@@ -1,9 +1,9 @@
-const { createUserService, userLoginService, getListUserService, getInforUserService } = require("../services/userService");
+const { createUserService, userLoginService, getListUserService, getInforUserService, deleteSoftUserService } = require("../services/userService");
 
 const createUser = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
-    const data = await createUserService(name, email, password);
+    const data = await createUserService(name, email, password, role);
     res.status(201).json(data);
 }
 
@@ -28,10 +28,17 @@ const getInforUser = async (req, res) => {
     res.status(200).json(data);
 }
 
+const deleteSoftUser = async (req, res) => {
+    const { _id } = req.body;
+    const data = await deleteSoftUserService(_id);
+    res.status(200).json(data);
+}
+
 module.exports = {
     createUser,
     userLogin,
     getListUser,
     getAccount,
-    getInforUser
+    getInforUser,
+    deleteSoftUser
 }

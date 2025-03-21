@@ -13,6 +13,7 @@ route.get('/courselist', courseController.getCourseList);
 route.get('/courselist-delete', courseController.getCourseListDelete);
 route.get('/getcourse/:course_id', courseController.getCourse);
 route.delete('/delete-course/:course_id', courseController.deleteCourse);
-route.delete('/restore-course/:course_id', courseController.deleteCourse);
+route.delete('/delete-course-destroy/:course_id', courseController.destroyCourse);
+route.patch('/restore-course/:course_id', courseController.restoreCourse);
 
 module.exports = route;

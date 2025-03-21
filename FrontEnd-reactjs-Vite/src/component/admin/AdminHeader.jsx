@@ -95,7 +95,7 @@ const AdminHeader = () => {
                 label: (
                     <Link to="/manager/user">
                         <Space key="user">
-                            <SettingOutlined />Người dùng
+                            <UserOutlined />Người dùng
                         </Space>
                     </Link>
                 ),

@@ -1,557 +1,436 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { GetCourse } from "../../ultill/courseApi";
-import { Form, Input, Button, Upload, message, Radio, Card, Space, Divider, Spin, Modal, Tooltip } from 'antd';
+import {
+    Form,
+    Input,
+    Button,
+    Upload,
+    message,
+    Radio,
+    Card,
+    Typography,
+    Divider,
+    Spin,
+    Modal,
+    Tooltip,
+    Row,
+    Col,
+    InputNumber,
+    Empty
+} from 'antd';
 import {
     UploadOutlined,
     PlusOutlined,
-    MinusCircleOutlined,
+    DeleteOutlined,
     EditOutlined,
     SaveOutlined,
     ArrowLeftOutlined,
     InfoCircleOutlined,
-    FileImageOutlined
+    PictureOutlined,
+    DollarOutlined,
+    BookOutlined
 } from '@ant-design/icons';
 import { AuthContext } from "../context/auth.context";
+
+const { Title, Text } = Typography;
+const { TextArea } = Input;
 
 const CourseEdit = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const { auth } = useContext(AuthContext);
-    const [imageUrl, setImageUrl] = useState('');
-    const [uploadType, setUploadType] = useState('url');
-    const [courseType, setCourseType] = useState('paid');
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const [imageUrl, setImageUrl] = useState('');
     const [previewVisible, setPreviewVisible] = useState(false);
+    const [courseType, setCourseType] = useState('paid');
 
+    // Tải dữ liệu khóa học
     useEffect(() => {
-        const getCourse = async () => {
+        const fetchCourseData = async () => {
             try {
                 setLoading(true);
-                const res = await GetCourse(id);
+                const response = await GetCourse(id);
 
-                if (res) {
+                if (response) {
+                    // Cập nhật form với dữ liệu từ API
                     form.setFieldsValue({
-                        name: res.name,
-                        description: res.description,
-                        course_img: res.course_img,
-                        courseType: res.price === 0 ? 'free' : 'paid',
-                        price: res.price,
-                        lessons: res.lessons || []
+                        name: response.name,
+                        description: response.description,
+                        courseImage: response.course_img,
+                        courseType: response.price === 0 ? 'free' : 'paid',
+                        price: response.price || 0,
+                        lessons: response.lessons || []
                     });
 
-                    setImageUrl(res.course_img);
-                    setCourseType(res.price === 0 ? 'free' : 'paid');
+                    setImageUrl(response.course_img);
+                    setCourseType(response.price === 0 ? 'free' : 'paid');
                 }
             } catch (error) {
-                message.error('Không thể tải thông tin khóa học. Vui lòng thử lại sau.');
+                message.error('Không thể tải thông tin khóa học');
+                console.error('Error fetching course:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        getCourse();
+        fetchCourseData();
     }, [id, form]);
 
-    const uploadProps = {
-        name: 'file',
-        action: `${import.meta.env.VITE_BACKEND_URL}/v1/api/upload`,
-        headers: {
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        showUploadList: false,
-        onChange(info) {
-            if (info.file.status === 'uploading') {
-                message.loading('Đang tải ảnh lên...', 0);
-            }
-            if (info.file.status === 'done') {
-                message.destroy();
-                message.success({
-                    content: 'Tải ảnh thành công',
-                    icon: <FileImageOutlined style={{ color: '#52c41a' }} />
-                });
-                const filePath = info.file.response.filePath;
-                const fullUrl = `${import.meta.env.VITE_BACKEND_URL}${filePath}`;
-                setImageUrl(fullUrl);
-                form.setFieldsValue({ course_img: filePath });
-            } else if (info.file.status === 'error') {
-                message.destroy();
-                message.error('Tải ảnh thất bại. Vui lòng thử lại.');
-            }
-        },
+    // Upload ảnh
+    const handleImageUpload = (info) => {
+        if (info.file.status === 'uploading') {
+            message.loading({ content: 'Đang tải ảnh...', key: 'upload' });
+            return;
+        }
+
+        if (info.file.status === 'done') {
+            message.success({ content: 'Tải ảnh thành công', key: 'upload' });
+            const filePath = info.file.response.filePath;
+            const fullUrl = `${import.meta.env.VITE_BACKEND_URL}${filePath}`;
+            setImageUrl(fullUrl);
+            form.setFieldsValue({ courseImage: filePath });
+        } else if (info.file.status === 'error') {
+            message.error({ content: 'Tải ảnh thất bại', key: 'upload' });
+        }
     };
 
-    const handleUploadTypeChange = (e) => {
-        setUploadType(e.target.value);
-        setImageUrl('');
-        form.setFieldsValue({ course_img: undefined });
-    };
-
-    const onFinish = async (values) => {
+    // Xử lý khi submit form
+    const handleSubmit = async (values) => {
         try {
             setSubmitting(true);
-            const finalValues = {
-                ...values,
+
+            // Chuẩn bị dữ liệu gửi đi
+            const formData = {
+                name: values.name,
+                description: values.description,
+                course_img: values.courseImage,
+                price: values.courseType === 'free' ? 0 : values.price,
                 teacher_id: auth?.user?.id,
-                price: values.courseType === 'free' ? 0 : Number(values.price)
+                lessons: values.lessons || []
             };
 
-            // Giả định gọi API cập nhật khóa học ở đây
-            console.log("Values gửi đi:", finalValues);
+            console.log('Dữ liệu gửi đi:', formData);
 
-            // Delay giả lập để hiện thị trạng thái đang xử lý
+            // TODO: Gọi API cập nhật khóa học ở đây
+            // Mô phỏng gọi API
             setTimeout(() => {
-                message.success({
-                    content: 'Cập nhật khóa học thành công!',
-                    icon: <SaveOutlined style={{ color: '#52c41a' }} />
-                });
+                message.success('Cập nhật khóa học thành công');
                 navigate('/manager/course');
                 setSubmitting(false);
             }, 1000);
         } catch (error) {
-            console.error("Lỗi:", error);
-            message.error('Có lỗi xảy ra khi cập nhật khóa học!');
+            message.error('Có lỗi xảy ra khi cập nhật khóa học');
+            console.error('Lỗi cập nhật:', error);
             setSubmitting(false);
         }
     };
 
+    // Hiển thị spinner khi đang tải
     if (loading) {
         return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: 'calc(100vh - 64px)'
-            }}>
-                <Spin size="large" tip="Đang tải thông tin khóa học..." />
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+                <Spin size="large" tip="Đang tải thông tin khóa học..." fullscreen />
             </div>
         );
     }
 
     return (
-        <div style={{
-            maxWidth: '1000px',
-            margin: '0 auto',
-            padding: '24px',
-        }}>
+        <div className="course-edit-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
             <Card
                 title={
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <Button
-                            icon={<ArrowLeftOutlined />}
                             type="text"
+                            icon={<ArrowLeftOutlined />}
                             onClick={() => navigate('/manager/course')}
-                            style={{ marginRight: '12px' }}
+                            style={{ marginRight: '8px' }}
                         />
-                        <div>
-                            <EditOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
-                            Chỉnh sửa khóa học
-                        </div>
+                        <EditOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+                        <span>Chỉnh sửa khóa học</span>
                     </div>
                 }
-                bordered={false}
-                style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.08)', borderRadius: '12px' }}
+                variant="outlined"
+                style={{ boxShadow: '0 1px 2px -2px rgba(0, 0, 0, 0.16), 0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09)' }}
             >
                 <Form
                     form={form}
                     layout="vertical"
-                    onFinish={onFinish}
-                    requiredMark="optional"
+                    onFinish={handleSubmit}
+                    initialValues={{
+                        courseType: 'paid',
+                        lessons: []
+                    }}
                     disabled={submitting}
                 >
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px' }}>
-                        <div style={{ flex: '1', minWidth: '300px' }}>
+                    <Row gutter={24}>
+                        {/* Thông tin cơ bản */}
+                        <Col xs={24} md={14}>
                             <Card
-                                title="Thông tin cơ bản"
-                                type="inner"
-                                bordered={false}
-                                style={{ background: '#f9f9f9', marginBottom: '24px' }}
+                                className="info-card"
+                                title={<Title level={5}><BookOutlined /> Thông tin cơ bản</Title>}
+                                style={{ marginBottom: '24px' }}
+                                size="small"
                             >
                                 <Form.Item
-                                    label="Tên khóa học"
                                     name="name"
-                                    rules={[{ required: true, message: 'Vui lòng nhập tên khóa học!' }]}
+                                    label="Tên khóa học"
+                                    rules={[{ required: true, message: 'Vui lòng nhập tên khóa học' }]}
                                 >
-                                    <Input
-                                        placeholder="Nhập tên khóa học"
-                                        maxLength={100}
-                                        showCount
-                                    />
+                                    <Input placeholder="Nhập tên khóa học" maxLength={100} showCount />
                                 </Form.Item>
 
                                 <Form.Item
-                                    label="Mô tả"
                                     name="description"
+                                    label="Mô tả khóa học"
                                 >
-                                    <Input.TextArea
-                                        rows={4}
-                                        placeholder="Nhập mô tả ngắn về khóa học"
+                                    <TextArea
+                                        placeholder="Mô tả chi tiết về khóa học này..."
+                                        autoSize={{ minRows: 4, maxRows: 8 }}
                                         maxLength={500}
                                         showCount
                                     />
                                 </Form.Item>
 
                                 <Form.Item
-                                    label={
-                                        <Space>
-                                            Loại khóa học
-                                            <Tooltip title="Khóa học có phí hoặc miễn phí sẽ ảnh hưởng đến số lượng học viên đăng ký">
-                                                <InfoCircleOutlined style={{ color: '#1890ff' }} />
-                                            </Tooltip>
-                                        </Space>
-                                    }
                                     name="courseType"
-                                    rules={[{ required: true, message: 'Vui lòng chọn loại khóa học!' }]}
+                                    label={
+                                        <span>
+                                            Loại khóa học
+                                            <Tooltip title="Chọn khóa học có phí hoặc miễn phí">
+                                                <InfoCircleOutlined style={{ marginLeft: '4px', color: '#1890ff' }} />
+                                            </Tooltip>
+                                        </span>
+                                    }
+                                    rules={[{ required: true, message: 'Vui lòng chọn loại khóa học' }]}
                                 >
                                     <Radio.Group
-                                        onChange={(e) => {
-                                            setCourseType(e.target.value);
-                                            if (e.target.value === 'free') {
-                                                form.setFieldsValue({ price: 0 });
-                                            } else {
-                                                form.setFieldsValue({ price: undefined });
-                                            }
-                                        }}
+                                        onChange={(e) => setCourseType(e.target.value)}
+                                        optionType="button"
                                         buttonStyle="solid"
                                     >
-                                        <Radio.Button value="paid">Có phí</Radio.Button>
-                                        <Radio.Button value="free">Miễn phí</Radio.Button>
+                                        <Radio.Button value="paid">
+                                            <DollarOutlined /> Có phí
+                                        </Radio.Button>
+                                        <Radio.Button value="free">
+                                            Miễn phí
+                                        </Radio.Button>
                                     </Radio.Group>
                                 </Form.Item>
 
                                 {courseType === 'paid' && (
                                     <Form.Item
-                                        label="Giá (VNĐ)"
                                         name="price"
+                                        label="Giá khóa học"
                                         rules={[
-                                            { required: true, message: 'Vui lòng nhập giá khóa học!' },
-                                            {
-                                                type: 'number',
-                                                transform: (value) => Number(value),
-                                                message: 'Giá khóa học phải là số!'
-                                            },
-                                            {
-                                                validator: (_, value) => {
-                                                    const numValue = Number(value);
-                                                    if (isNaN(numValue) || numValue <= 0) {
-                                                        return Promise.reject('Giá khóa học phải là số và lớn hơn 0!');
-                                                    }
-                                                    return Promise.resolve();
-                                                }
-                                            }
+                                            { required: true, message: 'Vui lòng nhập giá khóa học' },
+                                            { type: 'number', min: 1, message: 'Giá phải lớn hơn 0' }
                                         ]}
                                     >
-                                        <Input
-                                            type="number"
-                                            min="1"
-                                            placeholder="Nhập giá khóa học"
-                                            prefix="VNĐ"
-                                            addonAfter={
-                                                <Tooltip title="Giá niêm yết của khóa học">
-                                                    <InfoCircleOutlined />
-                                                </Tooltip>
-                                            }
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                form.setFieldsValue({
-                                                    price: value ? Number(value) : undefined
-                                                });
-                                            }}
+                                        <InputNumber
+                                            min={1}
+                                            style={{ width: '100%' }}
+                                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                            parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                                            placeholder="Nhập giá khóa học (VNĐ)"
+                                            addonAfter="VNĐ"
                                         />
                                     </Form.Item>
                                 )}
                             </Card>
-                        </div>
+                        </Col>
 
-                        <div style={{ flex: '1', minWidth: '300px' }}>
+                        {/* Ảnh khóa học */}
+                        <Col xs={24} md={10}>
                             <Card
-                                title="Ảnh khóa học"
-                                type="inner"
-                                bordered={false}
-                                style={{ background: '#f9f9f9', marginBottom: '24px' }}
+                                className="image-card"
+                                title={<Title level={5}><PictureOutlined /> Ảnh khóa học</Title>}
+                                style={{ marginBottom: '24px' }}
+                                size="small"
                             >
                                 <Form.Item
-                                    name="course_img"
-                                    rules={[{ required: true, message: 'Vui lòng thêm ảnh khóa học!' }]}
+                                    name="courseImage"
+                                    rules={[{ required: true, message: 'Vui lòng thêm ảnh cho khóa học' }]}
                                 >
-                                    <div>
-                                        <Radio.Group
-                                            value={uploadType}
-                                            onChange={handleUploadTypeChange}
-                                            style={{ marginBottom: '16px' }}
-                                            buttonStyle="solid"
+                                    <div className="upload-container">
+                                        <Upload
+                                            name="file"
+                                            listType="picture-card"
+                                            className="avatar-uploader"
+                                            showUploadList={false}
+                                            action={`${import.meta.env.VITE_BACKEND_URL}/v1/api/upload`}
+                                            headers={{
+                                                authorization: `Bearer ${localStorage.getItem("token")}`
+                                            }}
+                                            onChange={handleImageUpload}
                                         >
-                                            <Radio.Button value="upload">
-                                                <UploadOutlined /> Tải ảnh lên
-                                            </Radio.Button>
-                                            <Radio.Button value="url">
-                                                <LinkOutlined /> Dùng URL
-                                            </Radio.Button>
-                                        </Radio.Group>
-
-                                        {uploadType === 'upload' ? (
-                                            <Upload {...uploadProps}>
-                                                <div
-                                                    style={{
-                                                        width: '100%',
-                                                        height: '200px',
-                                                        border: imageUrl ? 'none' : '1px dashed #d9d9d9',
-                                                        borderRadius: '8px',
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                        flexDirection: 'column',
-                                                        background: imageUrl ? 'none' : '#fafafa',
-                                                        cursor: 'pointer',
-                                                        position: 'relative',
-                                                        overflow: 'hidden'
-                                                    }}
-                                                >
-                                                    {imageUrl ? (
-                                                        <>
-                                                            <img
-                                                                src={imageUrl}
-                                                                alt="Ảnh khóa học"
-                                                                style={{
-                                                                    width: '100%',
-                                                                    height: '200px',
-                                                                    objectFit: 'cover',
-                                                                    borderRadius: '8px'
-                                                                }}
-                                                                onClick={() => setPreviewVisible(true)}
-                                                            />
-                                                            <div
-                                                                style={{
-                                                                    position: 'absolute',
-                                                                    top: 0,
-                                                                    left: 0,
-                                                                    width: '100%',
-                                                                    height: '100%',
-                                                                    background: 'rgba(0,0,0,0.5)',
-                                                                    display: 'flex',
-                                                                    justifyContent: 'center',
-                                                                    alignItems: 'center',
-                                                                    opacity: 0,
-                                                                    transition: 'opacity 0.3s',
-                                                                    borderRadius: '8px'
-                                                                }}
-                                                                className="image-overlay"
-                                                                onMouseOver={(e) => e.currentTarget.style.opacity = 1}
-                                                                onMouseOut={(e) => e.currentTarget.style.opacity = 0}
-                                                            >
-                                                                <Button type="primary" ghost icon={<UploadOutlined />}>
-                                                                    Thay đổi ảnh
-                                                                </Button>
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <UploadOutlined style={{ fontSize: '32px', color: '#999' }} />
-                                                            <div style={{ marginTop: '8px', color: '#666' }}>
-                                                                Nhấp hoặc kéo ảnh vào đây để tải lên
-                                                            </div>
-                                                            <div style={{ marginTop: '4px', color: '#999', fontSize: '12px' }}>
-                                                                Khuyến nghị: JPG, PNG (tỷ lệ 16:9)
-                                                            </div>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </Upload>
-                                        ) : (
-                                            <>
-                                                <Input
-                                                    placeholder="Nhập URL ảnh"
-                                                    onChange={(e) => {
-                                                        const inputUrl = e.target.value;
-                                                        setImageUrl(inputUrl);
-                                                        form.setFieldsValue({ course_img: inputUrl });
-                                                    }}
-                                                    value={imageUrl}
-                                                    addonAfter={
-                                                        <Button
-                                                            type="text"
-                                                            size="small"
-                                                            onClick={() => setPreviewVisible(true)}
-                                                            disabled={!imageUrl}
-                                                        >
-                                                            Xem
-                                                        </Button>
-                                                    }
-                                                />
-                                                {imageUrl && (
-                                                    <div style={{ marginTop: '12px' }}>
-                                                        <img
-                                                            src={imageUrl}
-                                                            alt="Ảnh khóa học"
-                                                            style={{
-                                                                width: '100%',
-                                                                height: '180px',
-                                                                objectFit: 'cover',
-                                                                borderRadius: '8px'
-                                                            }}
-                                                            onClick={() => setPreviewVisible(true)}
-                                                            onError={(e) => {
-                                                                e.target.onerror = null;
-                                                                message.error({
-                                                                    content: 'Không thể tải ảnh. Vui lòng kiểm tra URL.',
-                                                                    icon: <WarningOutlined style={{ color: '#ff4d4f' }} />
-                                                                });
-                                                                setImageUrl('');
-                                                                form.setFieldsValue({ course_img: undefined });
-                                                            }}
-                                                        />
+                                            {imageUrl ? (
+                                                <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                                    <img
+                                                        src={imageUrl}
+                                                        alt="Ảnh khóa học"
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    />
+                                                    <div
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: 0,
+                                                            left: 0,
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            display: 'flex',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                            background: 'rgba(0,0,0,0.45)',
+                                                            opacity: 0,
+                                                            transition: 'all 0.3s',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        className="image-overlay"
+                                                        onMouseOver={(e) => (e.currentTarget.style.opacity = 1)}
+                                                        onMouseOut={(e) => (e.currentTarget.style.opacity = 0)}
+                                                    >
+                                                        <Text style={{ color: 'white' }}>Nhấn để thay đổi</Text>
                                                     </div>
-                                                )}
-                                            </>
+                                                </div>
+                                            ) : (
+                                                <div style={{ padding: '24px 0' }}>
+                                                    <PlusOutlined />
+                                                    <div style={{ marginTop: 8 }}>Tải ảnh lên</div>
+                                                </div>
+                                            )}
+                                        </Upload>
+
+                                        {imageUrl && (
+                                            <div style={{ marginTop: '8px', textAlign: 'center' }}>
+                                                <Button
+                                                    type="link"
+                                                    onClick={() => setPreviewVisible(true)}
+                                                >
+                                                    Xem trước
+                                                </Button>
+                                            </div>
                                         )}
                                     </div>
                                 </Form.Item>
+
+                                <Text type="secondary">
+                                    Hình ảnh là một phần quan trọng của khóa học. Hãy chọn hình ảnh chất lượng cao,
+                                    rõ ràng và liên quan đến nội dung khóa học để thu hút người học.
+                                </Text>
                             </Card>
-                        </div>
-                    </div>
+                        </Col>
+                    </Row>
 
-                    <Divider orientation="left">
-                        <Space>
-                            <PlusOutlined />
-                            Nội dung khóa học
-                        </Space>
-                    </Divider>
-
-                    <Form.List name="lessons">
-                        {(fields, { add, remove }) => (
-                            <Card
-                                bordered={false}
-                                style={{ background: '#f9f9f9' }}
+                    {/* Nội dung khóa học */}
+                    <Card
+                        className="lessons-card"
+                        title={<Title level={5}><BookOutlined /> Nội dung khóa học</Title>}
+                        extra={
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={() => {
+                                    const lessons = form.getFieldValue('lessons') || [];
+                                    const newLessons = [...lessons, { title: '', content: '' }];
+                                    form.setFieldsValue({ lessons: newLessons });
+                                }}
                             >
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    marginBottom: '16px'
-                                }}>
-                                    <Space>
-                                        <h3 style={{ margin: 0 }}>Danh sách bài học ({fields.length})</h3>
-                                        <Tooltip title="Thêm nội dung chi tiết cho từng bài học của khóa học">
-                                            <InfoCircleOutlined style={{ color: '#1890ff' }} />
-                                        </Tooltip>
-                                    </Space>
-                                    <Button
-                                        type="primary"
-                                        onClick={() => add()}
-                                        icon={<PlusOutlined />}
-                                    >
-                                        Thêm bài học
-                                    </Button>
-                                </div>
-                                {fields.length === 0 ? (
-                                    <div style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        padding: '48px 24px',
-                                        backgroundColor: 'white',
-                                        borderRadius: '8px',
-                                        border: '1px dashed #d9d9d9'
-                                    }}>
-                                        <FileTextOutlined style={{ fontSize: '48px', color: '#bfbfbf', marginBottom: '16px' }} />
-                                        <p style={{ color: '#8c8c8c', marginBottom: '16px' }}>Chưa có bài học nào</p>
-                                        <Button
-                                            type="primary"
-                                            onClick={() => add()}
-                                            icon={<PlusOutlined />}
+                                Thêm bài học
+                            </Button>
+                        }
+                    >
+                        <Form.List name="lessons">
+                            {(fields, { add, remove }) => (
+                                <>
+                                    {fields.length === 0 ? (
+                                        <Empty
+                                            image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                            description="Chưa có bài học nào. Hãy thêm bài học đầu tiên!"
                                         >
-                                            Tạo bài học đầu tiên
-                                        </Button>
-                                    </div>
-                                ) : (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                        {fields.map(({ key, name, ...restField }, index) => (
-                                            <Card
-                                                key={key}
-                                                style={{
-                                                    backgroundColor: 'white',
-                                                    borderRadius: '8px',
-                                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                                                    borderLeft: '4px solid #1890ff'
-                                                }}
-                                                bodyStyle={{ padding: '16px' }}
+                                            <Button
+                                                type="primary"
+                                                icon={<PlusOutlined />}
+                                                onClick={() => add()}
                                             >
-                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-                                                    <div style={{
-                                                        minWidth: '32px',
-                                                        height: '32px',
-                                                        borderRadius: '50%',
-                                                        background: '#1890ff',
-                                                        color: 'white',
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                        fontWeight: 'bold',
-                                                        marginTop: '4px'
-                                                    }}>
-                                                        {index + 1}
-                                                    </div>
-                                                    <div style={{ flex: 1 }}>
-                                                        <Form.Item
-                                                            {...restField}
-                                                            name={[name, 'title']}
-                                                            rules={[{ required: true, message: 'Vui lòng nhập tiêu đề bài học!' }]}
-                                                            style={{ marginBottom: '12px' }}
+                                                Thêm bài học
+                                            </Button>
+                                        </Empty>
+                                    ) : (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                            {fields.map(({ key, name, ...restField }, index) => (
+                                                <Card
+                                                    key={key}
+                                                    size="small"
+                                                    style={{
+                                                        marginBottom: 8,
+                                                        borderLeft: '3px solid #1890ff'
+                                                    }}
+                                                >
+                                                    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                                                        <div
+                                                            style={{
+                                                                width: '28px',
+                                                                height: '28px',
+                                                                borderRadius: '50%',
+                                                                backgroundColor: '#1890ff',
+                                                                color: 'white',
+                                                                display: 'flex',
+                                                                justifyContent: 'center',
+                                                                alignItems: 'center',
+                                                                marginRight: '16px',
+                                                                fontWeight: 'bold',
+                                                                flexShrink: 0
+                                                            }}
                                                         >
-                                                            <Input
-                                                                placeholder="Tiêu đề bài học"
-                                                                maxLength={100}
-                                                                showCount
-                                                            />
-                                                        </Form.Item>
-                                                        <Form.Item
-                                                            {...restField}
-                                                            name={[name, 'content']}
-                                                            rules={[{ required: true, message: 'Vui lòng nhập nội dung bài học!' }]}
-                                                            style={{ marginBottom: 0 }}
-                                                        >
-                                                            <Input.TextArea
-                                                                placeholder="Nội dung chi tiết của bài học..."
-                                                                rows={4}
-                                                                maxLength={2000}
-                                                                showCount
-                                                            />
-                                                        </Form.Item>
+                                                            {index + 1}
+                                                        </div>
+                                                        <div style={{ flex: 1 }}>
+                                                            <Form.Item
+                                                                {...restField}
+                                                                name={[name, 'title']}
+                                                                rules={[{ required: true, message: 'Vui lòng nhập tiêu đề bài học' }]}
+                                                                style={{ marginBottom: '12px' }}
+                                                            >
+                                                                <Input placeholder="Tiêu đề bài học" />
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                {...restField}
+                                                                name={[name, 'content']}
+                                                                rules={[{ required: true, message: 'Vui lòng nhập nội dung bài học' }]}
+                                                                style={{ marginBottom: 0 }}
+                                                            >
+                                                                <TextArea
+                                                                    placeholder="Nội dung chi tiết bài học..."
+                                                                    autoSize={{ minRows: 3, maxRows: 6 }}
+                                                                />
+                                                            </Form.Item>
+                                                        </div>
+                                                        <Button
+                                                            type="text"
+                                                            danger
+                                                            icon={<DeleteOutlined />}
+                                                            onClick={() => remove(name)}
+                                                            style={{ marginLeft: '8px' }}
+                                                        />
                                                     </div>
-                                                    <Button
-                                                        type="text"
-                                                        danger
-                                                        icon={<MinusCircleOutlined />}
-                                                        onClick={() => {
-                                                            Modal.confirm({
-                                                                title: 'Xóa bài học?',
-                                                                content: 'Bạn có chắc muốn xóa bài học này?',
-                                                                okText: 'Xóa',
-                                                                cancelText: 'Hủy',
-                                                                okButtonProps: { danger: true },
-                                                                onOk: () => remove(name)
-                                                            });
-                                                        }}
-                                                    />
-                                                </div>
-                                            </Card>
-                                        ))}
-                                    </div>
-                                )}
-                            </Card>
-                        )}
-                    </Form.List>
+                                                </Card>
+                                            ))}
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </Form.List>
+                    </Card>
 
-                    <Divider />
-
+                    {/* Buttons */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px' }}>
                         <Button
                             onClick={() => navigate('/manager/course')}
                         >
-                            Hủy
+                            Hủy bỏ
                         </Button>
                         <Button
                             type="primary"
@@ -565,39 +444,17 @@ const CourseEdit = () => {
                 </Form>
             </Card>
 
+            {/* Modal xem trước ảnh */}
             <Modal
-                visible={previewVisible}
+                open={previewVisible}
                 title="Xem trước ảnh khóa học"
                 footer={null}
                 onCancel={() => setPreviewVisible(false)}
             >
-                <img
-                    alt="Ảnh khóa học"
-                    style={{ width: '100%' }}
-                    src={imageUrl}
-                />
+                <img alt="Ảnh khóa học" style={{ width: '100%' }} src={imageUrl} />
             </Modal>
         </div>
     );
 };
-
-// Thêm thiếu các icon
-const LinkOutlined = () => (
-    <svg viewBox="64 64 896 896" focusable="false" data-icon="link" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-        <path d="M574 665.4a8.03 8.03 0 00-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8a8.03 8.03 0 00-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zm258.6-474c-84.6-84.6-221.5-84.6-306 0L410.3 307.6a8.03 8.03 0 000 11.3l39.7 39.7c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.3 562.6a8.03 8.03 0 000 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5 0-306.1zM610.1 372.3a8.03 8.03 0 00-11.3 0L372.3 598.7a8.03 8.03 0 000 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z"></path>
-    </svg>
-);
-
-const FileTextOutlined = () => (
-    <svg viewBox="64 64 896 896" focusable="false" data-icon="file-text" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-        <path d="M854.6 288.6L639.4 73.4c-6-6-14.1-9.4-22.6-9.4H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V311.3c0-8.5-3.4-16.7-9.4-22.7zM790.2 326H602V137.8L790.2 326zm1.8 562H232V136h302v216a42 42 0 0042 42h216v494zM504 618H320c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h184c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zM312 490v48c0 4.4 3.6 8 8 8h384c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H320c-4.4 0-8 3.6-8 8z"></path>
-    </svg>
-);
-
-const WarningOutlined = () => (
-    <svg viewBox="64 64 896 896" focusable="false" data-icon="warning" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-        <path d="M464 720a48 48 0 1096 0 48 48 0 10-96 0zm16-304v184c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V416c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8zm475.7 440l-416-720c-6.2-10.7-16.9-16-27.7-16s-21.6 5.3-27.7 16l-416 720C56 877.4 71.4 904 96 904h832c24.6 0 40-26.6 27.7-48zm-783.5-27.9L512 239.9l339.8 588.2H172.2z"></path>
-    </svg>
-);
 
 export default CourseEdit;

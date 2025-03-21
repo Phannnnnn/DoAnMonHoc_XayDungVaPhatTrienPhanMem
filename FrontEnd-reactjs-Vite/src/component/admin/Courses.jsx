@@ -5,15 +5,15 @@ import {
 } from 'antd';
 import {
     MoreOutlined, EditOutlined, DeleteOutlined, PlusOutlined,
-    DeleteFilled, EyeOutlined, FilterOutlined, SearchOutlined,
-    StarFilled, UserOutlined, BookOutlined, DollarOutlined,
+    DeleteFilled, EyeOutlined, SearchOutlined,
+    UserOutlined, BookOutlined, DollarOutlined,
     ExclamationCircleOutlined
 } from '@ant-design/icons';
 import { DeleteSoftCourse, GetCourseList } from "../../ultill/courseApi";
 import { Link } from "react-router-dom";
 import '../../styles/course.css';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 const { Option } = Select;
 const { confirm } = Modal;
 
@@ -215,7 +215,7 @@ const Courses = () => {
                     <Card className="empty-container">
                         <Empty
                             image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-                            imageStyle={{ height: 160 }}
+                            styles={{ image: { height: 160 } }}
                             description={
                                 searchText || filter !== 'all' ? (
                                     <Text>Không tìm thấy khóa học phù hợp</Text>
