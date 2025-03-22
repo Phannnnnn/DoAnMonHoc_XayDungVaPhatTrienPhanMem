@@ -28,7 +28,12 @@ const CreateCourse = () => {
 
             if (res) {
                 message.success('Tạo khóa học thành công!');
-                navigate("/manager/course");
+                if (auth?.user?.role === "admin") {
+                    navigate("/manager/course");
+                }
+                else {
+                    navigate("/course-manager");
+                }
             } else {
                 message.error(res?.message || 'Có lỗi xảy ra khi tạo khóa học!');
             }

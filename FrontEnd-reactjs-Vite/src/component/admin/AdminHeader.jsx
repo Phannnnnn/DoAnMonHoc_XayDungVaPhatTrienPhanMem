@@ -23,12 +23,17 @@ const AdminHeader = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { auth, setAuth } = useContext(AuthContext);
+    const [open, setOpen] = useState(false);
 
     const [user, setUser] = useState({
-        name: auth?.userLogin?.name ?? "",
-        avatar: '',
+        name: auth?.user?.name ?? "",
+        avatar: auth?.user?.avatar ?? "",
         email: auth?.user?.email ?? "email@example.com",
     });
+
+    const handleMenuClick = () => {
+        setOpen(false); // Đóng menu sau khi chọn
+    };
 
     const handleLogout = () => {
         setAuth({
@@ -45,24 +50,24 @@ const AdminHeader = () => {
             <div style={styles.userMenuHeader}>
                 <Avatar size={64} src={user?.avatar} icon={!user?.avatar && <UserOutlined />} style={styles.userMenuAvatar} />
                 <div style={styles.userMenuInfo}>
-                    <div style={styles.userName}>{auth?.user?.name || "Phan"}</div>
-                    <div style={styles.userEmail}>{user?.email || "byphan0976@gmail.com"}</div>
+                    <div style={styles.userName}>{auth?.user?.name || "Username"}</div>
+                    <div style={styles.userEmail}>{user?.email || "example@gmail.com"}</div>
                     <div style={styles.userRole}>
-                        {auth?.user?.role === "admin" ? "Quản trị viên" : "Giảng viên"}
+                        {auth?.user?.role === "admin" ? "Quản trị viên" : auth?.user?.role === "teacher" ? "Giảng viên" : "Học viên"}
                     </div>
                 </div>
             </div>
             <Divider style={styles.menuDivider} />
-            <div style={styles.menuItem}>
+            <div style={styles.menuItem} onClick={handleMenuClick}>
                 <UserOutlined style={styles.menuItemIcon} />
-                <Link to="" style={styles.menuItemLink}>Hồ sơ cá nhân</Link>
+                <Link to="/profile" style={styles.menuItemLink}>Hồ sơ cá nhân</Link>
             </div>
-            <div style={styles.menuItem}>
+            <div style={styles.menuItem} onClick={handleMenuClick}>
                 <SettingOutlined style={styles.menuItemIcon} />
-                <Link to="" style={styles.menuItemLink}>Cài đặt tài khoản</Link>
+                <Link to="/settings" style={styles.menuItemLink}>Cài đặt tài khoản</Link>
             </div>
             <Divider style={styles.menuDivider} />
-            <div style={styles.menuItem} onClick={handleLogout}>
+            <div style={styles.menuItem} onClick={() => { handleLogout(); handleMenuClick(); }}>
                 <LogoutOutlined style={styles.menuItemIcon} color="#ff4d4f" />
                 <span style={styles.logoutText}>Đăng xuất</span>
             </div>
@@ -74,7 +79,7 @@ const AdminHeader = () => {
             label: (
                 <Link to="/manager">
                     <Space key="dasboard">
-                        <HomeOutlined /> Trang chủ quản trị
+                        <HomeOutlined /> Trang quản trị
                     </Space>
                 </Link>
             ),
@@ -90,18 +95,16 @@ const AdminHeader = () => {
             ),
             key: '/manager/course',
         },
-        ...(auth?.user?.role === "admin" || "teacher" ? [
-            {
-                label: (
-                    <Link to="/manager/user">
-                        <Space key="user">
-                            <UserOutlined />Người dùng
-                        </Space>
-                    </Link>
-                ),
-                key: '/manager/user',
-            },
-        ] : [])
+        {
+            label: (
+                <Link to="/manager/user">
+                    <Space key="user">
+                        <UserOutlined />Người dùng
+                    </Space>
+                </Link>
+            ),
+            key: '/manager/user',
+        },
     ];
 
     return (
@@ -155,22 +158,13 @@ const AdminHeader = () => {
                                     <div style={styles.userAvatar}>
                                         <Avatar
                                             size="default"
-                                            src={user?.avatar}
+                                            src={user?.avatar ?? 'https://i.pinimg.com/474x/f3/b6/2b/f3b62bb38f63d5ac42707c3cbdb73203.jpg'}
                                             icon={!user?.avatar && <UserOutlined />}
                                             style={styles.avatar}
                                         />
                                     </div>
                                 </Dropdown>
-                            ) : (
-                                <Space size="middle">
-                                    <Link to="/login">
-                                        <Button type="default">Đăng nhập</Button>
-                                    </Link>
-                                    <Link to="/register">
-                                        <Button type="primary">Đăng ký</Button>
-                                    </Link>
-                                </Space>
-                            )}
+                            ) : (<></>)}
                         </div>
                     </div>
                 </div>

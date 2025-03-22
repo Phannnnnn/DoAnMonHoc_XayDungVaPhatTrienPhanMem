@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
     Card,
     Col,
@@ -38,13 +38,11 @@ const CoursesPage = () => {
 
     const [coursesData, setCoursesData] = useState([]);
 
-
     useEffect(() => {
         const fetchCourses = async () => {
             try {
                 const data = await GetCourseList();
                 if (data) {
-                    console.log(data);
                     setCoursesData(data);
                 }
             } catch (error) {

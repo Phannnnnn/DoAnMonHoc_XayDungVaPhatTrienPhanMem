@@ -10,6 +10,7 @@ route.all('*', auth, verifyRole);
 
 route.post('/course-create', courseController.createCoure);
 route.get('/courselist', courseController.getCourseList);
+route.get('/courselist/:teacher_id', courseController.getCourseListByTeacherId);
 route.get('/courselist-delete', courseController.getCourseListDelete);
 route.get('/getcourse/:course_id', courseController.getCourse);
 route.delete('/delete-course/:course_id', courseController.deleteCourse);

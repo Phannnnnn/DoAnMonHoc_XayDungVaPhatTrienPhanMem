@@ -1,5 +1,5 @@
 const verifyRole = (req, res, next) => {
-    const whiteList = ["/", "/login", "/register", "/getaccount", "/courselist"];
+    const whiteList = ["/", "/login", "/register", "/getaccount", "/courselist", "/profile-update", "/password-chance"];
     const requestUrl = req.originalUrl;
 
     // Cho phép truy cập nếu URL thuộc danh sách trắng
@@ -15,7 +15,7 @@ const verifyRole = (req, res, next) => {
     }
 
     // Kiểm tra quyền truy cập
-    if (user?.role !== "admin") {
+    if (user?.role !== "admin" && user?.role !== "teacher") {
         return res.status(403).json("Tài khoản không được phép truy cập tài nguyên này!");
     }
 

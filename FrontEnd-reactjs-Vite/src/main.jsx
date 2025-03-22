@@ -19,6 +19,8 @@ import TrashCourse from './component/admin/TrashCourse.jsx';
 import PrivateRoute from './component/routes/PrivateRoute.jsx'
 import AdminHomePage from './component/admin/AdminHomePage.jsx';
 import CreateUser from './component/admin/CreateUser.jsx';
+import Profile from './component/pages/Profile.jsx';
+import CourseMangerPageTeacher from './component/pages/CourseMangerPageTeacher.jsx';
 
 const router = createBrowserRouter(
   [
@@ -41,6 +43,22 @@ const router = createBrowserRouter(
         {
           path: "course",
           element: <CoursesPage />
+        },
+        {
+          path: "profile",
+          element: <PrivateRoute element={<Profile />} role={["admin", "teacher", "user"]} />
+        },
+        {
+          path: "course-manager",
+          element: <PrivateRoute element={<CourseMangerPageTeacher />} role={["admin", "teacher"]} />
+        },
+        {
+          path: "course-create",
+          element: <PrivateRoute element={<CreateCourse />} role={["admin", "teacher"]} />
+        },
+        {
+          path: "course-edit/:id",
+          element: <PrivateRoute element={<CourseEdit />} role={["admin", "teacher"]} />
         },
       ]
     },
@@ -75,7 +93,11 @@ const router = createBrowserRouter(
         {
           path: "user-create",
           element: <CreateUser />
-        }
+        },
+        {
+          path: "profile",
+          element: <PrivateRoute element={<Profile />} role={["admin", "teacher", "user"]} />
+        },
       ],
     }
   ]

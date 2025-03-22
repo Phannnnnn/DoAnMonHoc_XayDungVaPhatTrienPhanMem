@@ -34,12 +34,11 @@ const LoginPage = () => {
                         id: res?.userLogin?._id ?? "",
                         email: res?.userLogin?.email ?? "",
                         name: res?.userLogin?.name ?? "",
+                        avatar: res?.userLogin?.avatar ?? "",
                         role: res?.userLogin?.role ?? "",
                     }
                 };
-
-                await setAuth(authData);
-
+                setAuth(authData);
                 message.success('Đăng nhập thành công!');
                 navigate("/");
             } else {
@@ -144,7 +143,7 @@ const LoginPage = () => {
 
                             <div className="register-link">
                                 <Text>
-                                    Bạn chưa có tài khoản? <Link href="/register">Đăng ký ngay</Link>
+                                    Bạn chưa có tài khoản? <Link to={"/register"}>Đăng ký ngay</Link>
                                 </Text>
                             </div>
                         </div>
@@ -152,7 +151,7 @@ const LoginPage = () => {
                 </Row>
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .login-container {
                     min-height: 100vh;
                     display: flex;

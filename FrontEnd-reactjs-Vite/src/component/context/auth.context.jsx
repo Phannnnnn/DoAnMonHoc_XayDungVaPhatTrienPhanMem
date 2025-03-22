@@ -16,6 +16,7 @@ const AuthWrapper = (props) => {
                 id: "",
                 email: "",
                 name: "",
+                avatar: "",
                 role: ""
             }
         };
@@ -48,6 +49,7 @@ const AuthWrapper = (props) => {
                 id: "",
                 email: "",
                 name: "",
+                avatar: "",
                 role: ""
             }
         });

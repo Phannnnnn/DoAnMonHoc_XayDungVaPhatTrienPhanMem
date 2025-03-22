@@ -26,13 +26,13 @@ const RegisterPage = () => {
         //Goi api dang ki tai khoan
         const res = await UserRegister(name, email, password);
 
-        if (res) {
+        if (res && res.EC === 0) {
             message.success('Đăng ký thành công.');
             navigate("/login");
             setLoading(false);
         }
         else {
-            message.error('Đăng ký không thành công vui lòng kiểm tra lại thông tin email!');
+            message.error('Đăng ký không thành công vui lòng kiểm tra lại thông tin!');
             setLoading(false);
         }
     };
@@ -95,7 +95,14 @@ const RegisterPage = () => {
 
                                 <Form.Item
                                     name="password"
-                                    rules={[{ required: true, message: 'Vui lòng nhập vào mật khẩu!' }]}
+                                    rules={[
+                                        { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                                        { min: 8, message: 'Mật khẩu phải có ít nhất 8 ký tự!' },
+                                        {
+                                            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+                                            message: 'Mật khẩu phải có ít nhất 1 chữ hoa, 1 chữ thường và 1 số!'
+                                        }
+                                    ]}
                                 >
                                     <Input.Password
                                         prefix={<LockOutlined className="site-form-item-icon" />}
@@ -109,13 +116,13 @@ const RegisterPage = () => {
                                     name="confirmPassword"
                                     dependencies={['password']}
                                     rules={[
-                                        { required: true, message: 'Vui lòng xác nhận mật khẩu!' },
+                                        { required: true, message: 'Vui lòng xác nhận mật khẩu mới!' },
                                         ({ getFieldValue }) => ({
                                             validator(_, value) {
                                                 if (!value || getFieldValue('password') === value) {
                                                     return Promise.resolve();
                                                 }
-                                                return Promise.reject(new Error('Các mật khẩu đã nhập không khớp. Hãy thử lại!'));
+                                                return Promise.reject(new Error('Mật khẩu xác nhận không khớp!'));
                                             },
                                         }),
                                     ]}
@@ -157,7 +164,7 @@ const RegisterPage = () => {
 
                             <div className="login-link">
                                 <Text>
-                                    Bạn đã có tài khoản? <Link href="/login">Đăng nhập</Link>
+                                    Bạn đã có tài khoản? <Link to={"/login"}>Đăng nhập</Link>
                                 </Text>
                             </div>
                         </div>
@@ -165,7 +172,7 @@ const RegisterPage = () => {
                 </Row>
             </div>
 
-            <style jsx>{`
+            <style >{`
                 .register-container {
                     min-height: 100vh;
                     display: flex;

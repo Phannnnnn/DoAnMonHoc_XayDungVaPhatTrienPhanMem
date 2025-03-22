@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Menu, Input, Button, Avatar, Dropdown, Typography, Layout, Space, Divider } from 'antd';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -19,12 +19,22 @@ const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { auth, setAuth } = useContext(AuthContext);
-    console.log(auth);
-    const [user, setUser] = useState({
-        name: auth?.userLogin?.name ?? "",
-        avatar: '',
-        email: auth?.user?.email ?? "email@example.com",
-    });
+    const [user, setUser] = useState({});
+    const [open, setOpen] = useState(false);
+
+    const handleMenuClick = () => {
+        setOpen(false);
+    };
+
+
+    useEffect(() => {
+        setUser({
+            name: auth?.user?.name ?? "",
+            avatar: auth?.user?.avatar ?? "",
+            email: auth?.user?.email ?? "",
+            role: auth?.user?.role ?? ""
+        })
+    }, [auth]);
 
     const handleLogout = () => {
         setAuth({
@@ -41,24 +51,24 @@ const Header = () => {
             <div style={styles.userMenuHeader}>
                 <Avatar size={64} src={user?.avatar} icon={!user?.avatar && <UserOutlined />} style={styles.userMenuAvatar} />
                 <div style={styles.userMenuInfo}>
-                    <div style={styles.userName}>{auth?.user?.name || "Phan"}</div>
-                    <div style={styles.userEmail}>{user?.email || "byphan0976@gmail.com"}</div>
+                    <div style={styles.userName}>{auth?.user?.name || "Username"}</div>
+                    <div style={styles.userEmail}>{user?.email || "example@gmail.com"}</div>
                     <div style={styles.userRole}>
-                        {auth?.user?.role === "admin" ? "Quản trị viên" : "Học viên"}
+                        {auth?.user?.role === "admin" ? "Quản trị viên" : auth?.user?.role === "teacher" ? "Giảng viên" : "Học viên"}
                     </div>
                 </div>
             </div>
             <Divider style={styles.menuDivider} />
-            <div style={styles.menuItem}>
+            <div style={styles.menuItem} onClick={handleMenuClick}>
                 <UserOutlined style={styles.menuItemIcon} />
                 <Link to="/profile" style={styles.menuItemLink}>Hồ sơ cá nhân</Link>
             </div>
-            <div style={styles.menuItem}>
+            <div style={styles.menuItem} onClick={handleMenuClick}>
                 <SettingOutlined style={styles.menuItemIcon} />
                 <Link to="/settings" style={styles.menuItemLink}>Cài đặt tài khoản</Link>
             </div>
             <Divider style={styles.menuDivider} />
-            <div style={styles.menuItem} onClick={handleLogout}>
+            <div style={styles.menuItem} onClick={() => { handleLogout(); handleMenuClick(); }}>
                 <LogoutOutlined style={styles.menuItemIcon} color="#ff4d4f" />
                 <span style={styles.logoutText}>Đăng xuất</span>
             </div>
@@ -86,7 +96,7 @@ const Header = () => {
             ),
             key: '/course',
         },
-        ...(auth?.user?.role === "admin" || "teacher" ? [
+        ...(auth?.user?.role === "admin" ? [
             {
                 label: (
                     <Link to="/manager">
@@ -96,6 +106,18 @@ const Header = () => {
                     </Link>
                 ),
                 key: '/manager',
+            },
+        ] : []),
+        ...(auth?.user?.role === "teacher" ? [
+            {
+                label: (
+                    <Link to="/course-manager">
+                        <Space key="course-manager">
+                            <SettingOutlined />Quản lý khóa học
+                        </Space>
+                    </Link>
+                ),
+                key: '/course-manager',
             },
         ] : [])
     ];
@@ -155,6 +177,7 @@ const Header = () => {
                                     trigger={["click"]}
                                     placement="bottomRight"
                                     arrow
+                                    onOpenChange={setOpen} open={open}
                                 >
                                     <div style={styles.userAvatar}>
                                         <Avatar

@@ -5,6 +5,11 @@ const GetCourseList = () => {
     return axios.get(URL_API);
 }
 
+const GetCourseListByTeacherId = (teacher_id) => {
+    const URL_API = `/v1/api/courselist/${teacher_id}`;
+    return axios.get(URL_API);
+}
+
 const GetCourseListDelete = () => {
     const URL_API = "/v1/api/courselist-delete";
     return axios.get(URL_API);
@@ -45,5 +50,6 @@ export {
     GetCourse,
     DeleteSoftCourse,
     restoreCourse,
-    DestroyCourse
+    DestroyCourse,
+    GetCourseListByTeacherId
 }

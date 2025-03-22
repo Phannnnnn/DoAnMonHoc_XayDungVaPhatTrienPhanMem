@@ -1,4 +1,4 @@
-const { createUserService, userLoginService, getListUserService, getInforUserService, deleteSoftUserService } = require("../services/userService");
+const { createUserService, userLoginService, getListUserService, getInforUserService, deleteSoftUserService, updateUserService, passwordChanceService } = require("../services/userService");
 
 const createUser = async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -6,6 +6,12 @@ const createUser = async (req, res) => {
     const data = await createUserService(name, email, password, role);
     res.status(201).json(data);
 }
+
+const updateUser = async (req, res) => {
+    const data = await updateUserService(req);
+    res.status(201).json(data);
+}
+
 
 const userLogin = async (req, res) => {
     const { email, password } = req.body;
@@ -34,11 +40,19 @@ const deleteSoftUser = async (req, res) => {
     res.status(200).json(data);
 }
 
+const passwordChance = async (req, res) => {
+    const { email, pass_old, pass_new } = req.body;
+    const data = await passwordChanceService(email, pass_old, pass_new);
+    res.status(200).json(data);
+}
+
 module.exports = {
     createUser,
     userLogin,
     getListUser,
     getAccount,
     getInforUser,
-    deleteSoftUser
+    deleteSoftUser,
+    updateUser,
+    passwordChance
 }

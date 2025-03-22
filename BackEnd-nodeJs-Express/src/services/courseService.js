@@ -72,6 +72,16 @@ const getCourseListService = async () => {
     }
 }
 
+const getCourseListByTeacherIdService = async (teacher_id) => {
+    try {
+        let result = await Course.findWithDeleted({ teacher_id: teacher_id })
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 const getCourseListDeleteService = async () => {
     try {
         let result = await Course.findDeleted({ deletedAt: { $ne: null } })
@@ -90,5 +100,6 @@ module.exports = {
     getCourseService,
     getCourseListService,
     getCourseListDeleteService,
-    restoreCourseService
+    restoreCourseService,
+    getCourseListByTeacherIdService
 }

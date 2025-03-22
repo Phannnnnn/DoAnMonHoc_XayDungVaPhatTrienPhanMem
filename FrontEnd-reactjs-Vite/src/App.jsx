@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom'
 import Footer from './component/layout/footer'
 import { useContext, useEffect } from 'react'
 import axios from './ultill/axios.custom';
-import { Spin } from "antd";
+import { Avatar, Spin } from "antd";
 import { AuthContext } from './component/context/auth.context';
 
 function App() {
@@ -16,9 +16,6 @@ function App() {
         const URL_API = "/v1/api/getaccount";
         const res = await axios.get(URL_API);
 
-        // Thêm log để kiểm tra cấu trúc response
-        console.log("API Response:", res);
-
         if (res && res.data && !res.data.EC) {
           // Giả sử response có cấu trúc đúng là res.data.user
           const userData = res.data.user || res.data || res;
@@ -29,6 +26,7 @@ function App() {
               id: userData._id || userData.id || "",
               email: userData.email || "",
               name: userData.name || "",
+              avatar: userData.avatar || "",
               role: userData.role || "",
             }
           });

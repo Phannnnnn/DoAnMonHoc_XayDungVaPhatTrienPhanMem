@@ -43,6 +43,7 @@ const userLoginService = async (email, password) => {
                     id: userLogin._id,
                     name: userLogin.name,
                     email: userLogin.email,
+                    avatar: userLogin.avatar,
                     role: userLogin.role
                 }
                 //Tao token
@@ -88,6 +89,16 @@ const getInforUserService = async (_id) => {
     }
 }
 
+const updateUserService = async (req) => {
+    try {
+        const result = await User.updateOne({ _id: req.body._id }, req.body);
+        return { result, EC: 0 };
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 const deleteSoftUserService = async (_id) => {
     try {
         const result = await User.delete({ _id: _id });
@@ -98,10 +109,37 @@ const deleteSoftUserService = async (_id) => {
     }
 }
 
+async function passwordChanceService(email, pass_old, pass_new) {
+    try {
+        const userLogin = await User.findOne({ email: email });
+        if (!userLogin) {
+            return { Error: 'Tài khoản không tồn tại!' };
+        }
+
+        const isMatchPass = await bcrypt.compare(pass_old, userLogin.password);
+
+        if (!isMatchPass) {
+            return { Error: 'Email hoặc mật khẩu không hợp lệ!' };
+        }
+
+        const saltRounds = 10;
+        const hashPass = await bcrypt.hash(pass_new, saltRounds);
+
+        const result = await User.updateOne({ email: email }, { $set: { password: hashPass } });
+
+        return result.modifiedCount > 0 ? { Success: 'Mật khẩu đã được thay đổi!' } : { Error: 'Không thể cập nhật mật khẩu!' };
+    } catch (error) {
+        console.log(error);
+        return { Error: 'Đã xảy ra lỗi hệ thống!' };
+    }
+}
+
 module.exports = {
     createUserService,
     userLoginService,
     getListUserService,
     getInforUserService,
-    deleteSoftUserService
+    deleteSoftUserService,
+    updateUserService,
+    passwordChanceService
 }

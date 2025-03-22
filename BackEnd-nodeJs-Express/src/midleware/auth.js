@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const auth = (req, res, next) => {
-    const whiteList = ["/", "/login", "/register", "/courselist"];
+    const whiteList = ["/", "/login", "/register", "/courselist", "/profile-update", "/password-chance"];
     const requestUrl = req.originalUrl;
 
     if (whiteList.some((item) => ('/v1/api' + item) === requestUrl)) {
@@ -20,6 +20,7 @@ const auth = (req, res, next) => {
             id: decode.id,
             name: decode.name,
             email: decode.email,
+            avatar: decode.avatar,
             role: decode.role
         };
         next();

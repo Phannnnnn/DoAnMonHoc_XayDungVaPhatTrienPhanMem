@@ -1,3 +1,4 @@
+import { data } from "react-router-dom";
 import axios from "./axios.custom";
 
 const UserRegister = (name, email, password) => {
@@ -18,6 +19,16 @@ const UserLogin = (email, password) => {
     return axios.post(URL_API, data);
 }
 
+const passwordChance = (data) => {
+    const URL_API = "/v1/api/password-chance";
+    return axios.put(URL_API, data);
+}
+
+const UpdateUser = (updatedValues) => {
+    const URL_API = `/v1/api/profile-update`;
+    return axios.put(URL_API, updatedValues);
+}
+
 const GetListUser = () => {
     const URL_API = "/v1/api/user";
     return axios.get(URL_API);
@@ -32,7 +43,9 @@ const GetInforUser = (_id) => {
 export {
     UserRegister,
     UserLogin,
+    UpdateUser,
     GetListUser,
     GetInforUser,
-    CreateNewUser
+    CreateNewUser,
+    passwordChance
 }
