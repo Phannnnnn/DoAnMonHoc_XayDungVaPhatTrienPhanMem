@@ -17,10 +17,11 @@ import {
     TeamOutlined,
     EditOutlined,
     UndoOutlined,
-    PlusOutlined
+    PlusOutlined,
+    DeleteFilled
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { DeleteSoftCourse, GetCourseListByTeacherId, restoreCourse } from '../../ultill/courseApi';
+import { DeleteSoftCourse, DestroyCourse, GetCourseListByTeacherId, restoreCourse } from '../../ultill/courseApi';
 import { AuthContext } from '../context/auth.context';
 
 const { Title, Text } = Typography;
@@ -44,7 +45,6 @@ const CourseManagerPageTeacher = () => {
 
 
     const handleDelete = async (course_id) => {
-
         const res = await DeleteSoftCourse(course_id);
         if (res && res?.modifiedCount > 0) {
             message.success('Khóa học đã được đưa vào thùng rác.');
@@ -53,6 +53,14 @@ const CourseManagerPageTeacher = () => {
                     course._id === course_id ? { ...course, deleted: true } : course
                 )
             );
+        }
+    };
+
+    const handleDestroy = async (course_id) => {
+        const res = await DestroyCourse(course_id);
+        if (res && res?.deletedCount > 0) {
+            message.success('Khóa học đã bị xóa.');
+            setCourses(prevCourses => prevCourses.filter(course => course._id !== course_id));
         }
     };
 
@@ -150,15 +158,30 @@ const CourseManagerPageTeacher = () => {
                         </>
                     )}
                     {record.deleted === true && (
-                        <Tooltip title="Khôi phục">
-                            <Button
-                                type="primary"
-                                size="small"
-                                onClick={() => handleActivate(record._id)}
-                            >
-                                <UndoOutlined />
-                            </Button>
-                        </Tooltip>
+                        <>
+                            <Tooltip title="Khôi phục">
+                                <Button
+                                    type="primary"
+                                    size="small"
+                                    onClick={() => handleActivate(record._id)}
+                                >
+                                    <UndoOutlined />
+                                </Button>
+                            </Tooltip>
+                            <Tooltip title="Xóa vĩnh viễn">
+                                <Popconfirm
+                                    title="Xóa vĩnh viễn khóa học?"
+                                    description="Xóa vĩnh viễn sẽ không thể khôi phục lại khóa học!"
+                                    okText="Xóa vĩnh viễn"
+                                    cancelText="Hủy"
+                                    onConfirm={() => handleDestroy(record._id)}
+                                >
+                                    <Button danger size="small">
+                                        <DeleteFilled />
+                                    </Button>
+                                </Popconfirm>
+                            </Tooltip>
+                        </>
                     )}
                 </Space>
             ),
