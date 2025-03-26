@@ -111,15 +111,14 @@ const Courses = () => {
     const getItems = (course) => [
         {
             key: '1',
-            label: 'Xem chi tiết',
+            label: <Link to={`/course-detail/${course._id}`}>Xem chi tiết</Link>,
             icon: <EyeOutlined />,
-            onClick: () => window.open(`/course/${course._id}`, '_blank')
         },
         {
             key: '2',
-            label: 'Chỉnh sửa',
+            label: <Link to={`/manager/edit/${course._id}`}>Chỉnh sửa</Link>,
             icon: <EditOutlined />,
-            onClick: () => window.location.href = `/manager/edit/${course._id}`
+
         },
         {
             key: '3',
@@ -244,7 +243,7 @@ const Courses = () => {
                                         <div className="course-image-container">
                                             <img
                                                 alt={course.name}
-                                                src={course.course_img || "https://via.placeholder.com/300x180?text=No+Image"}
+                                                src={course.course_img || `${import.meta.env.VITE_BACKEND_URL}/uploads/no-img.png`}
                                                 className="course-image"
                                             />
                                             {course.price === 0 && (
@@ -269,7 +268,7 @@ const Courses = () => {
                                             </Link>
                                         </Tooltip>,
                                         <Tooltip title="Xem chi tiết">
-                                            <Link to={`/course/${course._id}`} target="_blank">
+                                            <Link to={`/course-detail/${course._id}`} target="_blank">
                                                 <EyeOutlined key="view" />
                                             </Link>
                                         </Tooltip>,

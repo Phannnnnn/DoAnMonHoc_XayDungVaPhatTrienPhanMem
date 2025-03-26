@@ -1,10 +1,11 @@
-import Header from './component/layout/header'
-import { Outlet } from 'react-router-dom'
-import Footer from './component/layout/footer'
 import { useContext, useEffect } from 'react'
+import { Outlet } from 'react-router-dom'
 import axios from './ultill/axios.custom';
-import { Avatar, Spin } from "antd";
+import { Spin } from "antd";
 import { AuthContext } from './component/context/auth.context';
+import Header from './component/layout/header'
+import Footer from './component/layout/footer'
+import ScrollToTop from './component/ScrollToTop';
 
 function App() {
   const { loading, setLoading, setAuth } = useContext(AuthContext);
@@ -17,7 +18,6 @@ function App() {
         const res = await axios.get(URL_API);
 
         if (res && res.data && !res.data.EC) {
-          // Giả sử response có cấu trúc đúng là res.data.user
           const userData = res.data.user || res.data || res;
 
           setAuth({
@@ -42,7 +42,7 @@ function App() {
 
   return (
     <div>
-      {loading === true ?
+      {loading === true ? (
         <div style={{
           position: "fixed",
           top: "50%",
@@ -51,13 +51,14 @@ function App() {
         }}>
           <Spin />
         </div>
-        :
+      ) : (
         <>
+          <ScrollToTop />
           <Header />
           <Outlet />
           <Footer />
         </>
-      }
+      )}
     </div>
   )
 }

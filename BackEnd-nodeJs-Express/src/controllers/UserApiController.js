@@ -1,4 +1,4 @@
-const { createUserService, userLoginService, getListUserService, getInforUserService, deleteSoftUserService, updateUserService, passwordChanceService } = require("../services/userService");
+const { createUserService, userLoginService, getListUserService, getInforUserService, deleteSoftUserService, updateUserService, passwordChanceService, getEnrollService } = require("../services/userService");
 
 const createUser = async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -29,8 +29,14 @@ const getAccount = async (req, res) => {
 }
 
 const getInforUser = async (req, res) => {
-    const { _id } = req.body;
+    const { _id } = req.query;
     const data = await getInforUserService(_id);
+    res.status(200).json(data);
+}
+
+const getEnroll = async (req, res) => {
+    const { _id } = req.query;
+    const data = await getEnrollService(_id);
     res.status(200).json(data);
 }
 
@@ -54,5 +60,6 @@ module.exports = {
     getInforUser,
     deleteSoftUser,
     updateUser,
-    passwordChance
+    passwordChance,
+    getEnroll
 }

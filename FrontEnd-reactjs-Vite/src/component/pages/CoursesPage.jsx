@@ -12,7 +12,8 @@ import {
     Pagination,
     Empty,
     Skeleton,
-    Space
+    Space,
+    message
 } from "antd";
 import {
     UserOutlined,
@@ -20,9 +21,13 @@ import {
     ReadOutlined,
     SearchOutlined,
     FilterOutlined,
-    StarFilled
+    StarFilled,
+    AntDesignOutlined
 } from "@ant-design/icons";
 import { GetCourseList } from "../../ultill/courseApi";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/auth.context";
+import { GetInforUser } from "../../ultill/userApi";
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -35,25 +40,43 @@ const CoursesPage = () => {
     const [priceFilter, setPriceFilter] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(false);
-
+    const { auth } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [coursesData, setCoursesData] = useState([]);
 
     useEffect(() => {
         const fetchCourses = async () => {
             try {
+                setLoading(true);
                 const data = await GetCourseList();
-                if (data) {
+                if (Array.isArray(data)) {
                     setCoursesData(data);
+                } else {
+                    console.error("API không trả về mảng:", data);
+                    setCoursesData([]);
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách khóa học:", error);
+                setCoursesData([]);
+            } finally {
+                setLoading(false);
             }
         };
-
         fetchCourses();
     }, []);
-
     const pageSize = 8;
+
+    const onHandleEnroll = async (_id) => {
+        if (auth?.user?.role) {
+            const res = await GetInforUser(auth?.user?.id);
+            const newListEnroll = res?.enrolledCourses ?? [];
+            newListEnroll.includes(_id) ? navigate(`/course-learning/${_id}`) : navigate(`/course-detail/${_id}`);
+        }
+        else {
+            message.info("Vui lòng đăng nhập để sử dụng chức năng này.");
+            navigate("/login");
+        }
+    }
 
     const CourseCard = ({ course }) => (
         <Card
@@ -68,7 +91,13 @@ const CoursesPage = () => {
                 position: "relative"
             }}
         >
-            <img src={course.course_img} alt={course.name} style={{ width: "100%", height: "140px", objectFit: "cover" }} />
+
+            <img
+                onClick={() => onHandleEnroll(course._id)}
+                src={course.course_img || `${import.meta.env.VITE_BACKEND_URL}/uploads/no-img.png`}
+                alt={course.name}
+                style={{ width: "100%", height: "140px", objectFit: "cover" }}
+            />
 
             <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: "12px", flex: 1 }}>
                 {course.name}
@@ -80,12 +109,14 @@ const CoursesPage = () => {
                 </Tag>
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Text><UserOutlined style={{ marginRight: "4px" }} />{course.students.length.toLocaleString()}</Text>
-                    <Text><ReadOutlined style={{ marginRight: "4px" }} />{course.lessons.length} bài học</Text>
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Button type="primary" size="small">Xem chi tiết</Button>
+                    <Text>
+                        <UserOutlined style={{ marginRight: "4px" }} />
+                        {course.students?.length ? course.students.length.toLocaleString() : "0"}
+                    </Text>
+                    <Text>
+                        <ReadOutlined style={{ marginRight: "4px" }} />
+                        {course.lessons?.length ? course.lessons.length : "0"} bài học
+                    </Text>
                 </div>
             </Space>
         </Card>
@@ -135,7 +166,7 @@ const CoursesPage = () => {
                 </Col>
                 <Col xs={24} sm={6}>
                     <Select style={{ width: "100%" }} placeholder="Giá" value={priceFilter} onChange={handlePriceChange} size="large">
-                        <Option value="all">Tất cả giá</Option>
+                        <Option value="all">Tất cả</Option>
                         <Option value="free">Miễn phí</Option>
                         <Option value="paid">Trả phí</Option>
                     </Select>

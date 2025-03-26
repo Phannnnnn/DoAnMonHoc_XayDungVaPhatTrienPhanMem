@@ -37,7 +37,7 @@ const GetListUser = () => {
 const GetInforUser = (_id) => {
     const URL_API = "/v1/api/getinfor";
     const data = { _id };
-    return axios.get(URL_API, data);
+    return axios.get(URL_API, { params: data });
 }
 
 export {

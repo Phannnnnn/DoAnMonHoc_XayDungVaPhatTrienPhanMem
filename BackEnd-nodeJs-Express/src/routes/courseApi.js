@@ -9,7 +9,10 @@ const verifyRole = require('../midleware/verifyRole');
 route.all('*', auth, verifyRole);
 
 route.post('/course-create', courseController.createCoure);
+route.put('/course-update/:id', courseController.updateCoure);
+route.post('/course-create-lesson', courseController.createCoureLesson);
 route.get('/courselist', courseController.getCourseList);
+route.get('/course-lesson-list', courseController.getCourseLessonList);
 route.get('/courselist/:teacher_id', courseController.getCourseListByTeacherId);
 route.get('/courselist-delete', courseController.getCourseListDelete);
 route.get('/getcourse/:course_id', courseController.getCourse);

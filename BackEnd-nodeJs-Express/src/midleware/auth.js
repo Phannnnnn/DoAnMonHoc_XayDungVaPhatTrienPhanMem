@@ -1,16 +1,15 @@
 const jwt = require('jsonwebtoken');
 
 const auth = (req, res, next) => {
-    const whiteList = ["/", "/login", "/register", "/courselist", "/profile-update", "/password-chance"];
-    const requestUrl = req.originalUrl;
+    const whiteList = ["/", "/login", "/register", "/courselist", "/profile-update", "/password-chance", "/course-lesson-list", "/getcourse"];
 
-    if (whiteList.some((item) => ('/v1/api' + item) === requestUrl)) {
+    if (whiteList.some(route => req.path.startsWith(route))) {
         return next();
     }
 
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.json({ EC: "Token không tồn tại hoặc không đúng định dạng!" });
+        return res.status(401).json({ EC: "Token không tồn tại hoặc không đúng định dạng!" });
     }
 
     const token = authHeader.split(' ')[1];
@@ -25,7 +24,11 @@ const auth = (req, res, next) => {
         };
         next();
     } catch (error) {
-        return res.json({ EC: "Token không hợp lệ hoặc đã hết hạn!" });
+        if (error.name === "TokenExpiredError") {
+            return res.status(401).json({ EC: "Token đã hết hạn!" });
+        } else {
+            return res.status(401).json({ EC: "Token không hợp lệ!" });
+        }
     }
 }
 

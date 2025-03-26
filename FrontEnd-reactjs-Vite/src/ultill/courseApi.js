@@ -21,10 +21,21 @@ const GetCourse = (course_id) => {
     return axios.get(URL_API);
 }
 
+const GetCourseLessonList = (course_id) => {
+    const URL_API = `/v1/api/course-lesson-list`;
+    return axios.get(URL_API, { params: { course_id } });
+}
+
 const CourseCreate = (name, description, course_img, price, teacher_id) => {
     const URL_API = "/v1/api/course-create";
     const data = { name, description, course_img, price, teacher_id }
     return axios.post(URL_API, data);
+}
+
+const CourseUpdate = (course_id, data) => {
+    console.log("Data >> : ", data);
+    const URL_API = `/v1/api/course-update/${course_id}`;
+    return axios.put(URL_API, data);
 }
 
 const DeleteSoftCourse = (course_id) => {
@@ -50,5 +61,7 @@ export {
     DeleteSoftCourse,
     restoreCourse,
     DestroyCourse,
-    GetCourseListByTeacherId
+    GetCourseListByTeacherId,
+    GetCourseLessonList,
+    CourseUpdate
 }

@@ -1,9 +1,7 @@
 const verifyRole = (req, res, next) => {
-    const whiteList = ["/", "/login", "/register", "/getaccount", "/courselist", "/profile-update", "/password-chance"];
-    const requestUrl = req.originalUrl;
+    const whiteList = ["/", "/login", "/register", "/getaccount", "/courselist", "/profile-update", "/password-chance", "/course-lesson-list", "/getcourse"];
 
-    // Cho phép truy cập nếu URL thuộc danh sách trắng
-    if (whiteList.some((item) => ('/v1/api' + item) === requestUrl)) {
+    if (whiteList.some(route => req.path.startsWith(route))) {
         return next();
     }
 
@@ -11,12 +9,12 @@ const verifyRole = (req, res, next) => {
 
     // Kiểm tra người dùng đã đăng nhập hay chưa
     if (!user) {
-        return res.status(401).json("Vui lòng đăng nhập để truy cập tài nguyên này!");
+        return res.status(401).json({ EC: 401, message: "Vui lòng đăng nhập để truy cập tài nguyên này!" });
     }
 
     // Kiểm tra quyền truy cập
     if (user?.role !== "admin" && user?.role !== "teacher") {
-        return res.status(403).json("Tài khoản không được phép truy cập tài nguyên này!");
+        return res.status(403).json({ EC: 403, message: "Tài khoản không được phép truy cập tài nguyên này!" });
     }
 
     next();

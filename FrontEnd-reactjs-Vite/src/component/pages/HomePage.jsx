@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     Carousel,
     Button,
@@ -15,73 +15,57 @@ import {
     BookOutlined,
     TrophyOutlined,
     TeamOutlined,
-    ArrowRightOutlined
+    ArrowRightOutlined,
+    ClearOutlined,
+    EllipsisOutlined
 } from '@ant-design/icons';
 import { Link } from "react-router-dom";
+import { GetCourseList } from "../../ultill/courseApi";
 
 const { Title, Paragraph } = Typography;
 const { Meta } = Card;
 
-// Carousel data for the hero section
-const carouselData = [
-    {
-        title: "Thành Quả của Học Viên",
-        description: "Để đạt được kết quả tốt trong mọi việc ta cần xác định mục tiêu rõ ràng cho việc đó. Học lập trình cũng không là ngoại lệ.",
-        buttonText: "XEM THÀNH QUẢ",
-        imageUrl: "https://files.fullstack.edu.vn/f8-prod/banners/Banner_04_2.png"
-    },
-    {
-        title: "Khóa Học Chất Lượng",
-        description: "Học theo lộ trình rõ ràng, bài bản từ cơ bản đến nâng cao, phù hợp cho cả người mới bắt đầu.",
-        buttonText: "XEM KHÓA HỌC",
-        imageUrl: "https://files.fullstack.edu.vn/f8-prod/banners/37/66b5a6b16d31a.png"
-    },
-    {
-        title: "Khóa Học Chất Lượng",
-        description: "Học theo lộ trình rõ ràng, bài bản từ cơ bản đến nâng cao, phù hợp cho cả người mới bắt đầu.",
-        buttonText: "XEM KHÓA HỌC",
-        imageUrl: "https://files.fullstack.edu.vn/f8-prod/banners/Banner_01_2.png"
-    },
-    {
-        title: "Khóa Học Chất Lượng",
-        description: "Học theo lộ trình rõ ràng, bài bản từ cơ bản đến nâng cao, phù hợp cho cả người mới bắt đầu.",
-        buttonText: "XEM KHÓA HỌC",
-        imageUrl: "https://files.fullstack.edu.vn/f8-prod/banners/Banner_03_youtube.png"
-    },
-];
-
-// Featured course data
-const featuredCourses = [
-    {
-        id: 1,
-        title: "HTML, CSS from Zero to Hero",
-        description: "Tìm hiểu các cơ bản của phát triển web với HTML và CSS",
-        imageUrl: "https://i.pinimg.com/474x/62/1f/21/621f21fa891b48023ff7c4dff12c7aa0.jpg",
-        price: 49.99,
-        students: 1234,
-        lessons: 42,
-    },
-    {
-        id: 2,
-        title: "JavaScript Fundamentals",
-        description: "Master JavaScript Lập trình với ví dụ thực tế",
-        imageUrl: "https://i.pinimg.com/474x/6e/c0/04/6ec0044baf090ccf6653d22f948bf929.jpg",
-        price: 69.99,
-        students: 987,
-        lessons: 56,
-    },
-    {
-        id: 3,
-        title: "React.js for Beginners",
-        description: "Xây dựng giao diện người dùng hiện đại với React",
-        imageUrl: "https://i.pinimg.com/474x/82/40/ac/8240ac872c818d2a39ef20d819fdbf0d.jpg",
-        price: 79.99,
-        students: 765,
-        lessons: 38,
-    },
-];
 
 const HomePage = () => {
+
+    const [featuredCourses, setFeaturedCourses] = useState([]);
+
+    const carouselData = [
+        {
+            title: "Thành Quả của Học Viên",
+            description: "Để đạt được kết quả tốt trong mọi việc ta cần xác định mục tiêu rõ ràng cho việc đó. Học lập trình cũng không là ngoại lệ.",
+            imageUrl: "https://files.fullstack.edu.vn/f8-prod/banners/Banner_04_2.png"
+        },
+        {
+            title: "Khóa Học Chất Lượng",
+            description: "Học theo lộ trình rõ ràng, bài bản từ cơ bản đến nâng cao, phù hợp cho cả người mới bắt đầu.",
+            imageUrl: "https://files.fullstack.edu.vn/f8-prod/banners/37/66b5a6b16d31a.png"
+        },
+        {
+            title: "Khóa Học Chất Lượng",
+            description: "Học theo lộ trình rõ ràng, bài bản từ cơ bản đến nâng cao, phù hợp cho cả người mới bắt đầu.",
+            imageUrl: "https://files.fullstack.edu.vn/f8-prod/banners/Banner_01_2.png"
+        },
+        {
+            title: "Khóa Học Chất Lượng",
+            description: "Học theo lộ trình rõ ràng, bài bản từ cơ bản đến nâng cao, phù hợp cho cả người mới bắt đầu.",
+            imageUrl: "https://files.fullstack.edu.vn/f8-prod/banners/Banner_03_youtube.png"
+        },
+    ];
+
+    const fectFeaturedCourses = async () => {
+        const courses = await GetCourseList();
+        const topCourse = courses
+            .sort((a, b) => b.students.length - a.students.length) // Sắp xếp giảm dần theo số students
+            .slice(0, 3);
+        console.log(topCourse);
+        setFeaturedCourses(topCourse);
+    }
+
+    useEffect(() => {
+        fectFeaturedCourses();
+    }, [])
+
     // Custom carousel arrows
     const NextArrow = (props) => (
         <div className="custom-arrow next" onClick={props.onClick}>
@@ -112,9 +96,6 @@ const HomePage = () => {
                                 <Col xs={24} md={12} className="slide-content">
                                     <Title level={2}>{slide.title}</Title>
                                     <Paragraph>{slide.description}</Paragraph>
-                                    <Button type="primary" size="large">
-                                        {slide.buttonText}
-                                    </Button>
                                 </Col>
                                 <Col xs={24} md={12} className="slide-image">
                                     <img src={slide.imageUrl} alt={slide.title} />
@@ -136,22 +117,42 @@ const HomePage = () => {
 
                 <Row gutter={[24, 24]} className="courses-row">
                     {featuredCourses.map(course => (
-                        <Col xs={24} sm={12} md={8} key={course.id}>
+                        <Col xs={24} sm={12} md={8} key={course._id}>
                             <Card
                                 hoverable
-                                cover={<img alt={course.title} src={course.imageUrl} />}
+                                cover={
+                                    <div
+                                        style={{
+                                            height: '250px', // Chiều cao cố định
+                                            overflow: 'hidden',
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <img
+                                            alt={course.name}
+                                            src={course.course_img || `${import.meta.env.VITE_BACKEND_URL}/uploads/no-img.png`}
+                                            style={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'cover' // Đảm bảo ảnh fill đầy không bị méo
+                                            }}
+                                        />
+                                    </div>
+                                }
                                 className="course-card"
                             >
                                 <Meta
-                                    title={course.title}
-                                    description={course.description}
+                                    title={course.name}
+                                    description={course.description || <EllipsisOutlined />}
                                 />
                                 <div className="course-details">
                                     <div className="course-stats">
-                                        <span>{course.lessons} Bài học</span>
-                                        <span>{course.students} Học viên</span>
+                                        <span>{course?.lessons?.length || 0} Bài học</span>
+                                        <span>{course?.students?.length || 0} Học viên</span>
                                     </div>
-                                    <div className="course-price">${course.price}</div>
+                                    <div className="course-price">${course?.price || "Miễn phí"}</div>
                                 </div>
                             </Card>
                         </Col>

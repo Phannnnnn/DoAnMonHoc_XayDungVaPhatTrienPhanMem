@@ -34,6 +34,7 @@ import {
 } from '@ant-design/icons';
 import { GetInforUser, passwordChance, UpdateUser } from '../../ultill/userApi';
 import { AuthContext } from '../context/auth.context';
+import { Link } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -151,7 +152,6 @@ const Profile = () => {
         else {
             message.error(res?.Error ?? "Không thể cập nhật mật khẩu!");
         }
-
     };
 
     // Map role sang tiếng Việt
@@ -270,7 +270,7 @@ const Profile = () => {
         <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <Title level={4}>Khóa học đã đăng ký</Title>
-                <Button type="primary" ghost>Khám phá thêm</Button>
+                <Link to={"/course"}><Button type="primary" ghost>Xem khóa học</Button></Link>
             </div>
             <List
                 itemLayout="horizontal"

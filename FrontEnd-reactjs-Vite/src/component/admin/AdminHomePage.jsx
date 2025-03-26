@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     Typography,
     Card,
@@ -10,28 +10,38 @@ import {
     Space,
     Avatar,
     Divider,
-    Progress
 } from "antd";
 import {
-    UserOutlined,
     BookOutlined,
     TeamOutlined,
     VideoCameraOutlined,
-    CommentOutlined,
-    PlusOutlined,
-    SearchOutlined
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import { GetCourseList } from "../../ultill/courseApi";
 
 const { Title, Text } = Typography;
 
 const AdminHomePage = () => {
+
+    const [statisticsData, setStatisticsData] = useState([]);
+
+    const fectchStatisticsData = async () => {
+        const course = await GetCourseList();
+        console.log(course);
+    }
+
+    useEffect(() => {
+        fectchStatisticsData();
+    }, [])
+
     // Sample data for statistics
-    const statisticsData = [
-        { title: "Tổng Học Viên", value: 2986, icon: <TeamOutlined />, color: "#1890ff" },
-        { title: "Tổng Khóa Học", value: 42, icon: <BookOutlined />, color: "#52c41a" },
-        { title: "Bài Giảng", value: 647, icon: <VideoCameraOutlined />, color: "#faad14" },
-    ];
+    // const statisticsData = [
+    //     { title: "Tổng Học Viên", value: 2986, icon: <TeamOutlined />, color: "#1890ff" },
+    //     { title: "Tổng Khóa Học", value: 42, icon: <BookOutlined />, color: "#52c41a" },
+    //     { title: "Bài Giảng", value: 647, icon: <VideoCameraOutlined />, color: "#faad14" },
+    // ];
+
+
 
     // Sample recent user data
     const recentUsers = [

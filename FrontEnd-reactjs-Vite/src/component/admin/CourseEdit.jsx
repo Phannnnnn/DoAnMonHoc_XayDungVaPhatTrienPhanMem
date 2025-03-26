@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { GetCourse } from "../../ultill/courseApi";
+import { CourseUpdate, GetCourse, GetCourseLessonList } from "../../ultill/courseApi";
 import {
     Form,
     Input,
@@ -53,16 +53,28 @@ const CourseEdit = () => {
             try {
                 setLoading(true);
                 const response = await GetCourse(id);
+                console.log(response);
 
-                if (response) {
-                    // Cập nhật form với dữ liệu từ API
+                if (!response || !response._id) {
+                    message.error('Không tìm thấy khóa học');
+                    return;
+                }
+
+                const lessonList = await GetCourseLessonList(response._id);
+                response.lessons = lessonList.length > 0 ? lessonList : [];
+
+                // ✅ Kiểm tra form trước khi gọi `setFieldsValue`
+                if (form) {
                     form.setFieldsValue({
                         name: response.name,
                         description: response.description,
                         courseImage: response.course_img,
                         courseType: response.price === 0 ? 'free' : 'paid',
                         price: response.price || 0,
-                        lessons: response.lessons || []
+                        lessons: response.lessons.map((lesson, index) => ({
+                            ...lesson,
+                            order: lesson.order || index + 1, // Đảm bảo có thứ tự
+                        })),
                     });
 
                     setImageUrl(response.course_img);
@@ -70,7 +82,7 @@ const CourseEdit = () => {
                 }
             } catch (error) {
                 message.error('Không thể tải thông tin khóa học');
-                console.error('Error fetching course:', error);
+                console.error('Lỗi khi tải khóa học:', error);
             } finally {
                 setLoading(false);
             }
@@ -108,19 +120,17 @@ const CourseEdit = () => {
                 description: values.description,
                 course_img: values.courseImage,
                 price: values.courseType === 'free' ? 0 : values.price,
-                teacher_id: auth?.user?.id,
-                lessons: values.lessons || []
+                lessons: values.lessons || [],
             };
-
             console.log('Dữ liệu gửi đi:', formData);
-
-            // TODO: Gọi API cập nhật khóa học ở đây
-            // Mô phỏng gọi API
-            setTimeout(() => {
-                message.success('Cập nhật khóa học thành công');
-                navigate('/manager/course');
+            const res = await CourseUpdate(id, formData);
+            console.log("res  >>  : ", res);
+            if (res?.modifiedCount > 0) {
+                message.success("Cập nhật khóa học thành công.");
+                auth?.user?.role === "admin" ? navigate("/manager/course") : navigate("/course-manager");
                 setSubmitting(false);
-            }, 1000);
+            }
+
         } catch (error) {
             message.error('Có lỗi xảy ra khi cập nhật khóa học');
             console.error('Lỗi cập nhật:', error);
@@ -327,19 +337,10 @@ const CourseEdit = () => {
                     {/* Nội dung khóa học */}
                     <Card
                         className="lessons-card"
-                        title={<Title level={5}><BookOutlined /> Nội dung khóa học</Title>}
-                        extra={
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => {
-                                    const lessons = form.getFieldValue('lessons') || [];
-                                    const newLessons = [...lessons, { title: '', content: '' }];
-                                    form.setFieldsValue({ lessons: newLessons });
-                                }}
-                            >
-                                Thêm bài học
-                            </Button>
+                        title={
+                            <Title level={5}>
+                                <BookOutlined /> Nội dung khóa học
+                            </Title>
                         }
                     >
                         <Form.List name="lessons">
@@ -353,77 +354,117 @@ const CourseEdit = () => {
                                             <Button
                                                 type="primary"
                                                 icon={<PlusOutlined />}
-                                                onClick={() => add()}
+                                                onClick={() => add({ title: '', content: '', videoId: '', order: fields.length + 1 })}
                                             >
                                                 Thêm bài học
                                             </Button>
                                         </Empty>
                                     ) : (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                            {fields.map(({ key, name, ...restField }, index) => (
-                                                <Card
-                                                    key={key}
-                                                    size="small"
-                                                    style={{
-                                                        marginBottom: 8,
-                                                        borderLeft: '3px solid #1890ff'
-                                                    }}
-                                                >
-                                                    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                                                        <div
-                                                            style={{
-                                                                width: '28px',
-                                                                height: '28px',
-                                                                borderRadius: '50%',
-                                                                backgroundColor: '#1890ff',
-                                                                color: 'white',
-                                                                display: 'flex',
-                                                                justifyContent: 'center',
-                                                                alignItems: 'center',
-                                                                marginRight: '16px',
-                                                                fontWeight: 'bold',
-                                                                flexShrink: 0
-                                                            }}
-                                                        >
-                                                            {index + 1}
-                                                        </div>
-                                                        <div style={{ flex: 1 }}>
-                                                            <Form.Item
-                                                                {...restField}
-                                                                name={[name, 'title']}
-                                                                rules={[{ required: true, message: 'Vui lòng nhập tiêu đề bài học' }]}
-                                                                style={{ marginBottom: '12px' }}
+                                            {fields
+                                                .slice() // Tạo bản sao của mảng để tránh thay đổi mảng gốc
+                                                .sort((a, b) => (form.getFieldValue(['lessons', a.name, 'order']) || 0) - (form.getFieldValue(['lessons', b.name, 'order']) || 0))
+                                                .map(({ key, name, ...restField }, index) => (
+                                                    <Card
+                                                        key={key}
+                                                        size="small"
+                                                        style={{
+                                                            marginBottom: 8,
+                                                            borderLeft: '3px solid #1890ff'
+                                                        }}
+                                                    >
+                                                        <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                                                            <div
+                                                                style={{
+                                                                    width: '28px',
+                                                                    height: '28px',
+                                                                    borderRadius: '50%',
+                                                                    backgroundColor: '#1890ff',
+                                                                    color: 'white',
+                                                                    display: 'flex',
+                                                                    justifyContent: 'center',
+                                                                    alignItems: 'center',
+                                                                    marginRight: '16px',
+                                                                    fontWeight: 'bold',
+                                                                    flexShrink: 0
+                                                                }}
                                                             >
-                                                                <Input placeholder="Tiêu đề bài học" />
-                                                            </Form.Item>
-                                                            <Form.Item
-                                                                {...restField}
-                                                                name={[name, 'content']}
-                                                                rules={[{ required: true, message: 'Vui lòng nhập nội dung bài học' }]}
-                                                                style={{ marginBottom: 0 }}
-                                                            >
-                                                                <TextArea
-                                                                    placeholder="Nội dung chi tiết bài học..."
-                                                                    autoSize={{ minRows: 3, maxRows: 6 }}
-                                                                />
-                                                            </Form.Item>
+                                                                {index + 1}
+                                                            </div>
+                                                            <div style={{ flex: 1 }}>
+                                                                {/* Thứ tự bài học */}
+                                                                <Form.Item
+                                                                    {...restField}
+                                                                    label="Thứ tự bài học"
+                                                                    name={[name, 'order']}
+                                                                    rules={[{ required: true, message: 'Vui lòng nhập thứ tự bài học' }]}
+                                                                    style={{ marginBottom: '12px' }}
+                                                                >
+                                                                    <InputNumber min={1} placeholder="Thứ tự bài học" style={{ width: '100%' }} />
+                                                                </Form.Item>
+
+                                                                {/* Tiêu đề bài học */}
+                                                                <Form.Item
+                                                                    {...restField}
+                                                                    label="Tiêu đề bài học"
+                                                                    name={[name, 'title']}
+                                                                    rules={[{ required: true, message: 'Vui lòng nhập tiêu đề bài học' }]}
+                                                                    style={{ marginBottom: '12px' }}
+                                                                >
+                                                                    <Input placeholder="Nhập tiêu đề bài học" />
+                                                                </Form.Item>
+
+                                                                {/* Video ID */}
+                                                                <Form.Item
+                                                                    {...restField}
+                                                                    label="Video ID"
+                                                                    name={[name, 'video_id']}
+                                                                    rules={[{ required: true, message: 'Vui lòng nhập Video ID' }]}
+                                                                    style={{ marginBottom: '12px' }}
+                                                                >
+                                                                    <Input placeholder="Nhập Video ID (YouTube)" />
+                                                                </Form.Item>
+
+                                                                {/* Nội dung bài học */}
+                                                                <Form.Item
+                                                                    {...restField}
+                                                                    label="Nội dung bài học"
+                                                                    name={[name, 'content']}
+                                                                    rules={[{ required: true, message: 'Vui lòng nhập nội dung bài học' }]}
+                                                                    style={{ marginBottom: 0 }}
+                                                                >
+                                                                    <TextArea
+                                                                        placeholder="Nhập nội dung chi tiết bài học..."
+                                                                        autoSize={{ minRows: 3, maxRows: 6 }}
+                                                                    />
+                                                                </Form.Item>
+                                                            </div>
+                                                            <Button
+                                                                type="text"
+                                                                danger
+                                                                icon={<DeleteOutlined />}
+                                                                onClick={() => remove(name)}
+                                                                style={{ marginLeft: '8px' }}
+                                                            />
                                                         </div>
-                                                        <Button
-                                                            type="text"
-                                                            danger
-                                                            icon={<DeleteOutlined />}
-                                                            onClick={() => remove(name)}
-                                                            style={{ marginLeft: '8px' }}
-                                                        />
-                                                    </div>
-                                                </Card>
-                                            ))}
+                                                    </Card>
+                                                ))}
                                         </div>
                                     )}
+                                    <Button
+                                        type="dashed"
+                                        onClick={() => add({ title: '', content: '', videoId: '', order: fields.length + 1 })}
+                                        block
+                                        icon={<PlusOutlined />}
+                                        style={{ marginTop: '16px' }}
+                                    >
+                                        Thêm bài học mới
+                                    </Button>
                                 </>
                             )}
                         </Form.List>
                     </Card>
+
 
                     {/* Buttons */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px' }}>

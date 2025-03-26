@@ -89,10 +89,20 @@ const getInforUserService = async (_id) => {
     }
 }
 
+const getEnrollService = async (_id) => {
+    try {
+        const infor = await User.find({ _id: _id });
+        return infor;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 const updateUserService = async (req) => {
     try {
         const result = await User.updateOne({ _id: req.body._id }, req.body);
-        return { result, EC: 0 };
+        return result;
     } catch (error) {
         console.log(error);
         return null;
@@ -141,5 +151,6 @@ module.exports = {
     getInforUserService,
     deleteSoftUserService,
     updateUserService,
-    passwordChanceService
+    passwordChanceService,
+    getEnrollService
 }

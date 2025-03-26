@@ -211,12 +211,12 @@ const CourseManagerPageTeacher = () => {
                             <Statistic title="Tổng số khóa học" value={courses.length} prefix={<BookOutlined />} />
                             <Statistic
                                 title="Khóa học đang hoạt động"
-                                value={courses.filter(course => !course.deleted).length}
+                                value={courses ? courses.filter(course => !course.deleted).length : 0}
                                 valueStyle={{ color: '#3f8600' }}
                             />
                             <Statistic
                                 title="Tổng học viên đăng ký"
-                                value={courses.reduce((sum, course) => sum + course.students.length, 0)}
+                                value={courses ? courses.reduce((sum, course) => sum + (course.students?.length || 0), 0) : 0}
                                 prefix={<TeamOutlined />}
                             />
                         </div>

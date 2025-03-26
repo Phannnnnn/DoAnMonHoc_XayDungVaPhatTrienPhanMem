@@ -21,6 +21,18 @@ import AdminHomePage from './component/admin/AdminHomePage.jsx';
 import CreateUser from './component/admin/CreateUser.jsx';
 import Profile from './component/pages/Profile.jsx';
 import CourseMangerPageTeacher from './component/pages/CourseMangerPageTeacher.jsx';
+import CourseDetail from './component/pages/CourseDetail.jsx';
+import CourseLearning from './component/pages/CourseLearning.jsx';
+import { message } from 'antd';
+import ScrollToTop from './component/ScrollToTop.jsx';
+
+// Cấu hình global cho tất cả các thông báo trên trang web
+message.config({
+  top: 60,       // Khoảng cách từ mép trên xuống (có thể chỉnh)
+  duration: 3,   // Thời gian hiển thị mỗi thông báo (giây)
+  maxCount: 3,   // Giới hạn số lượng thông báo hiển thị cùng lúc
+});
+
 
 const router = createBrowserRouter(
   [
@@ -43,6 +55,14 @@ const router = createBrowserRouter(
         {
           path: "course",
           element: <CoursesPage />
+        },
+        {
+          path: "course-detail/:id",
+          element: <CourseDetail />
+        },
+        {
+          path: "course-learning/:id",
+          element: <CourseLearning />
         },
         {
           path: "profile",
