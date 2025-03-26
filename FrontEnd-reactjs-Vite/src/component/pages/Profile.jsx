@@ -300,7 +300,8 @@ const Profile = () => {
         <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <Title level={4}>Khóa học đã tạo</Title>
-                <Button type="primary">Tạo khóa học mới</Button>
+                <Link to={"/manager/create"}><Button type="primary">Tạo khóa học mới</Button></Link>
+
             </div>
             <List
                 itemLayout="horizontal"

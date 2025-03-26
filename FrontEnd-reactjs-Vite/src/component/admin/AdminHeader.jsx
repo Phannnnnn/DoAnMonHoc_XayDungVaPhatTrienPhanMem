@@ -62,10 +62,6 @@ const AdminHeader = () => {
                 <UserOutlined style={styles.menuItemIcon} />
                 <Link to="/profile" style={styles.menuItemLink}>Hồ sơ cá nhân</Link>
             </div>
-            <div style={styles.menuItem} onClick={handleMenuClick}>
-                <SettingOutlined style={styles.menuItemIcon} />
-                <Link to="/settings" style={styles.menuItemLink}>Cài đặt tài khoản</Link>
-            </div>
             <Divider style={styles.menuDivider} />
             <div style={styles.menuItem} onClick={() => { handleLogout(); handleMenuClick(); }}>
                 <LogoutOutlined style={styles.menuItemIcon} color="#ff4d4f" />

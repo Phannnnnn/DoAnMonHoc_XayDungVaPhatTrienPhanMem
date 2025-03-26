@@ -14,56 +14,50 @@ import {
 import {
     BookOutlined,
     TeamOutlined,
+    UserOutlined,
     VideoCameraOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { GetCourseList } from "../../ultill/courseApi";
+import { GetListUser } from "../../ultill/userApi";
+import moment from "moment";
 
 const { Title, Text } = Typography;
 
 const AdminHomePage = () => {
 
     const [statisticsData, setStatisticsData] = useState([]);
+    const [recentUsers, setRecentUsers] = useState([]);
+    const [courseEnrollmentData, setCourseEnrollmentData] = useState([]);
 
     const fectchStatisticsData = async () => {
         const course = await GetCourseList();
-        console.log(course);
+        const user = await GetListUser();
+
+        const userList = user.filter(item => item.role === "user");
+        setRecentUsers(userList);
+        const roleTeacher = user.filter(item => item.role === "teacher");
+
+        setCourseEnrollmentData(course);
+        const students = course.reduce((total, course) => total + course.students.length, 0);
+        const courses = course.length;
+        const lessons = course.reduce((total, course) => total + course.lessons.length, 0);
+
+        setStatisticsData([
+            { title: "Tổng Học Viên", value: students || 0, icon: <TeamOutlined />, color: "#1890ff" },
+            { title: "Tổng Khóa Học", value: courses || 0, icon: <BookOutlined />, color: "#52c41a" },
+            { title: "Bài Giảng", value: lessons || 0, icon: <VideoCameraOutlined />, color: "#faad14" },
+            { title: "Giảng viên", value: roleTeacher?.length || 0, icon: <UserOutlined />, color: "#f15bb5" },
+        ]);
     }
 
     useEffect(() => {
         fectchStatisticsData();
     }, [])
 
-    // Sample data for statistics
-    // const statisticsData = [
-    //     { title: "Tổng Học Viên", value: 2986, icon: <TeamOutlined />, color: "#1890ff" },
-    //     { title: "Tổng Khóa Học", value: 42, icon: <BookOutlined />, color: "#52c41a" },
-    //     { title: "Bài Giảng", value: 647, icon: <VideoCameraOutlined />, color: "#faad14" },
-    // ];
-
-
-
-    // Sample recent user data
-    const recentUsers = [
-        { id: 1, name: "Nguyễn Văn A", email: "nguyenvana@example.com", course: "HTML, CSS from Zero to Hero", date: "21/03/2025", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-        { id: 2, name: "Trần Thị B", email: "tranthib@example.com", course: "JavaScript Fundamentals", date: "20/03/2025", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-        { id: 3, name: "Lê Văn C", email: "levanc@example.com", course: "React.js for Beginners", date: "19/03/2025", avatar: "https://randomuser.me/api/portraits/men/86.jpg" },
-        { id: 4, name: "Phạm Thị D", email: "phamthid@example.com", course: "HTML, CSS from Zero to Hero", date: "18/03/2025", avatar: "https://randomuser.me/api/portraits/women/55.jpg" }
-    ];
-
-    // Sample course enrollment data
-    const courseEnrollmentData = [
-        { id: 1, title: "HTML, CSS from Zero to Hero", students: 1234, progress: 85 },
-        { id: 2, title: "JavaScript Fundamentals", students: 987, progress: 70 },
-        { id: 3, title: "React.js for Beginners", students: 765, progress: 55 },
-        { id: 4, title: "Node.js Basics", students: 432, progress: 45 },
-        { id: 5, title: "Advanced React & Redux", students: 321, progress: 30 }
-    ];
-
-    // Table columns for recent users
     const userColumns = [
         {
-            title: "Học Viên",
+            title: "Người dùng",
             dataIndex: "name",
             key: "name",
             render: (text, record) => (
@@ -79,14 +73,10 @@ const AdminHomePage = () => {
             ),
         },
         {
-            title: "Khóa Học",
-            dataIndex: "course",
-            key: "course",
-        },
-        {
-            title: "Ngày Đăng Ký",
-            dataIndex: "date",
+            title: "Ngày tham gia",
+            dataIndex: "createdAt",
             key: "date",
+            render: (text) => moment(text).format('DD/MM/YYYY HH:mm')
         },
     ];
 
@@ -125,15 +115,14 @@ const AdminHomePage = () => {
                 {/* Recent Users */}
                 <Col xs={24} lg={16}>
                     <Card
-                        title="Học Viên Mới Đăng Ký"
-                        extra={<Link to="#">Xem tất cả</Link>}
+                        title="Người Dùng Mới"
                         style={{ marginBottom: "24px" }}
                     >
                         <Table
                             dataSource={recentUsers}
                             columns={userColumns}
                             pagination={false}
-                            rowKey="id"
+                            rowKey={(record) => record._id || record.index}
                         />
                     </Card>
                 </Col>
@@ -142,16 +131,15 @@ const AdminHomePage = () => {
                 <Col xs={24} lg={8}>
                     <Card
                         title="Tình Trạng Khóa Học"
-                        extra={<Link to="#">Chi tiết</Link>}
                     >
                         <Space direction="vertical" size="middle" style={{ width: "100%" }}>
                             {courseEnrollmentData.map((course) => (
-                                <div key={course.id}>
+                                <div key={course._id}>
                                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                                        <Text ellipsis style={{ maxWidth: "70%" }} title={course.title}>
-                                            {course.title}
+                                        <Text ellipsis style={{ maxWidth: "70%" }} title={course.name}>
+                                            {course.name}
                                         </Text>
-                                        <Text type="secondary">{course.students} học viên</Text>
+                                        <Text type="secondary">{course?.students?.length || 0} học viên</Text>
                                     </div>
                                 </div>
                             ))}
@@ -165,7 +153,6 @@ const AdminHomePage = () => {
                 <Col xs={24}>
                     <Card
                         title="Hoạt Động Gần Đây"
-                        extra={<Button type="link">Xem tất cả</Button>}
                     >
                         <Timeline>
                             <Timeline.Item color="green">Nguyễn Văn A đã đăng ký khóa học "HTML, CSS from Zero to Hero". (21/03/2025)</Timeline.Item>

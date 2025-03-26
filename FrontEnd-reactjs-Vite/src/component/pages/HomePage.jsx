@@ -58,7 +58,6 @@ const HomePage = () => {
         const topCourse = courses
             .sort((a, b) => b.students.length - a.students.length) // Sắp xếp giảm dần theo số students
             .slice(0, 3);
-        console.log(topCourse);
         setFeaturedCourses(topCourse);
     }
 

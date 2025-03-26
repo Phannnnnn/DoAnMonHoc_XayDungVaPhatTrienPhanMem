@@ -159,14 +159,7 @@ const Header = () => {
                         />
                     </div>
 
-                    {/* Search and User Actions */}
                     <div style={styles.actionsContainer}>
-                        <Search
-                            placeholder="Tìm kiếm..."
-                            onSearch={onSearch}
-                            style={styles.search}
-                        />
-
                         <div style={styles.userContainer}>
                             {auth.isAuthenticated ? (
                                 <Dropdown
