@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const auth = (req, res, next) => {
-    const whiteList = ["/", "/login", "/register", "/courselist", "/profile-update", "/password-chance", "/course-lesson-list", "/getcourse"];
+    const whiteList = ["/", "/login", "/register", "/courselist", "/profile-update", "/password-chance", "/lesson-list", "/getcourse"];
 
     if (whiteList.some(route => req.path.startsWith(route))) {
         return next();

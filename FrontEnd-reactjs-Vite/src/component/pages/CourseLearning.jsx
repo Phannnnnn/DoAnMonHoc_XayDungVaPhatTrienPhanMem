@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Typography, Button, Card, Alert, List } from 'antd';
 import { CalendarOutlined, PlayCircleOutlined, FileTextOutlined } from '@ant-design/icons';
-import { GetCourseLessonList } from '../../ultill/courseApi';
 import { useParams } from 'react-router-dom';
+import { GetLessonList } from '../../ultill/lessonApi';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -20,7 +20,7 @@ const CourseLearning = () => {
     useEffect(() => {
         const fetchLessons = async () => {
             try {
-                const res = await GetCourseLessonList(id);
+                const res = await GetLessonList(id);
                 if (!Array.isArray(res)) {
                     throw new Error("Dữ liệu trả về không phải là mảng!");
                 }

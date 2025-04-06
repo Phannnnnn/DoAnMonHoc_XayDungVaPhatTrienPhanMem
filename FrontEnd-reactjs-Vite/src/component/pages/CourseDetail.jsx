@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Row, Col, Typography, Button, Card, Divider, Tag, message } from 'antd';
 import { ClockCircleOutlined, BookOutlined, PlayCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { CourseUpdate, GetCourse, GetCourseLessonList } from '../../ultill/courseApi';
+import { CourseUpdate, GetCourse } from '../../ultill/courseApi';
 import { GetInforUser, UpdateUser } from '../../ultill/userApi';
 import { AuthContext } from '../context/auth.context';
+import { GetLessonList } from '../../ultill/lessonApi';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -18,7 +19,7 @@ const CourseDetail = () => {
         try {
             const course = await GetCourse(id);
             if (course) {
-                const lessons = await GetCourseLessonList(id);
+                const lessons = await GetLessonList(id);
                 const teacher = await GetInforUser(course.teacher_id);
                 course.teacher_id = teacher.name;
                 course.lessons = lessons.length > 0 ? lessons : [];

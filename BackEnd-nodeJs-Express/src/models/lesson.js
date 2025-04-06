@@ -9,7 +9,7 @@ const lessonSchema = new mongoose.Schema({
     order: { type: Number, required: true }, // Số thứ tự trong khóa học
 }, { timestamps: true });
 
-lessonSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+lessonSchema.plugin(mongoose_delete, { deletedAt: true, overrideMethods: 'all' });
 const Lesson = mongoose.model('lesson', lessonSchema);
 
 module.exports = Lesson;

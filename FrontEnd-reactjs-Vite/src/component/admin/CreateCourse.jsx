@@ -159,7 +159,7 @@ const CreateCourse = () => {
                                     {uploadType === 'upload' ? (
                                         <Upload {...uploadProps}>
                                             <Button icon={<UploadOutlined />} style={{ width: '100%' }}>
-                                                Chọn ảnh từ máy tính
+                                                Tải ảnh từ máy tính
                                             </Button>
                                         </Upload>
                                     ) : (
