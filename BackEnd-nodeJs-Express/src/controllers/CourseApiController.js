@@ -1,4 +1,4 @@
-const { createCourseService, getCourseListService, getCourseService, deleteCourseService, getCourseListDeleteService, destroyCourseService, restoreCourseService, getCourseListByTeacherIdService, updateCourseService } = require("../services/courseService");
+const { createCourseService, getCourseListService, getCourseService, deleteCourseService, getCourseListDeleteService, destroyCourseService, restoreCourseService, getCourseListByTeacherIdService, updateCourseService, getActivitiesService } = require("../services/courseService");
 
 const createCoure = async (req, res) => {
     const { name, description, price, course_img, teacher_id } = req.body;
@@ -50,6 +50,11 @@ const restoreCourse = async (req, res) => {
     res.status(200).json(data);
 }
 
+const getActivities = async (req, res) => {
+    const data = await getActivitiesService();
+    res.status(200).json(data);
+}
+
 
 module.exports = {
     createCoure,
@@ -61,4 +66,5 @@ module.exports = {
     restoreCourse,
     getCourseListByTeacherId,
     updateCoure,
+    getActivities
 }

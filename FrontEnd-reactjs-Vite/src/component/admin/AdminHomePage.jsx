@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 import { GetCourseList } from "../../ultill/courseApi";
 import { GetListUser } from "../../ultill/userApi";
 import moment from "moment";
+import { GetActivitie } from "../../ultill/acctivitieApi";
 
 const { Title, Text } = Typography;
 
@@ -35,8 +36,11 @@ const AdminHomePage = () => {
         const user = await GetListUser();
 
         const userList = user.filter(item => item.role === "user");
-        setRecentUsers(userList);
         const roleTeacher = user.filter(item => item.role === "teacher");
+
+        setRecentUsers(userList);
+
+        console.log(recentUsers);
 
         setCourseEnrollmentData(course);
         const students = course.reduce((total, course) => total + course.students.length, 0);
@@ -59,10 +63,11 @@ const AdminHomePage = () => {
         {
             title: "Người dùng",
             dataIndex: "name",
-            key: "name",
+            key: "_id",
             render: (text, record) => (
                 <Space>
-                    <Avatar src={record.avatar} />
+                    <Avatar src={record?.avatar} icon={!record?.avatar && <UserOutlined />} />
+
                     <div>
                         <Text strong>{text}</Text>
                         <div>
@@ -79,6 +84,21 @@ const AdminHomePage = () => {
             render: (text) => moment(text).format('DD/MM/YYYY HH:mm')
         },
     ];
+
+
+    // Khởi tạo state cho danh sách hoạt động gần đây
+    const [activities, setActivities] = useState([]);
+
+    // Giả lập việc lấy dữ liệu từ API
+    useEffect(() => {
+        const fetchActivities = async () => {
+            const res = await GetActivitie();
+            console.log(res);
+            await setActivities(res);
+        };
+
+        fetchActivities();
+    }, []); // Chỉ gọi khi component mount
 
     return (
         <div className="admin-dashboard-container" style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
@@ -151,15 +171,47 @@ const AdminHomePage = () => {
             {/* Recent Activity */}
             <Row gutter={[24, 24]}>
                 <Col xs={24}>
-                    <Card
-                        title="Hoạt Động Gần Đây"
-                    >
+                    <Card title="Hoạt Động Gần Đây">
                         <Timeline>
-                            <Timeline.Item color="green">Nguyễn Văn A đã đăng ký khóa học "HTML, CSS from Zero to Hero". (21/03/2025)</Timeline.Item>
-                            <Timeline.Item color="green">Trần Thị B đã đăng ký khóa học "JavaScript Fundamentals". (20/03/2025)</Timeline.Item>
-                            <Timeline.Item color="blue">Bạn đã thêm khóa học mới "Advanced React & Redux". (20/03/2025)</Timeline.Item>
-                            <Timeline.Item color="red">Phạm Văn X đã báo cáo lỗi về bài giảng #24 trong "React.js for Beginners". (19/03/2025)</Timeline.Item>
-                            <Timeline.Item color="gray">Bạn đã cập nhật nội dung bài giảng #17 trong "HTML, CSS from Zero to Hero". (18/03/2025)</Timeline.Item>
+                            {activities.map((activity) => (
+                                <Timeline.Item
+                                    key={activity._id}
+                                    color={
+                                        activity.type === 'register_account' ? 'green' :
+                                            activity.type === 'register_course' ? 'blue' :
+                                                activity.type === 'add_course' ? 'orange' : 'orange'
+                                    }
+                                >
+                                    {/* Tùy thuộc vào loại hoạt động, hiển thị thông tin tương ứng */}
+                                    {activity.type === 'register_account' && (
+                                        <Text>
+                                            <Text style={{ color: '#023047', fontWeight: 'bold' }}>{activity.userName} </Text>
+                                            {' '} -{' '}
+                                            <Text style={{ color: 'green' }}> đăng ký tài khoản </Text>
+                                            {' '} -{' '}
+                                            <Text style={{ color: '#8c8c8c' }}> {moment(activity.createdAt).format('DD/MM/YYYY')} </Text>
+                                        </Text>
+                                    )}
+                                    {activity.type === 'register_course' && (
+                                        <Text>
+                                            <Text style={{ color: '#023047', fontWeight: 'bold' }}>{activity.userName} </Text>
+                                            {' '} -{' '}
+                                            <Text style={{ color: 'blue' }}> đăng ký khóa học </Text>
+                                            {' '} -{' '}
+                                            <Text style={{ color: '#8c8c8c' }}> {moment(activity.createdAt).format('DD/MM/YYYY')} </Text>
+                                        </Text>
+                                    )}
+                                    {activity.type === 'add_course' && (
+                                        <Text>
+                                            <Text style={{ color: '#023047', fontWeight: 'bold' }}>{activity.userName} </Text>
+                                            {' '} -{' '}
+                                            <Text style={{ color: 'orange' }}> thêm khóa học mới </Text>
+                                            {' '} -{' '}
+                                            <Text style={{ color: '#8c8c8c' }}> {moment(activity.createdAt).format('DD/MM/YYYY')} </Text>
+                                        </Text>
+                                    )}
+                                </Timeline.Item>
+                            ))}
                         </Timeline>
                     </Card>
                 </Col>

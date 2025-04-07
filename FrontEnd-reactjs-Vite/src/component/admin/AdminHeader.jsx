@@ -154,7 +154,7 @@ const AdminHeader = () => {
                                     <div style={styles.userAvatar}>
                                         <Avatar
                                             size="default"
-                                            src={user?.avatar ?? 'https://i.pinimg.com/474x/f3/b6/2b/f3b62bb38f63d5ac42707c3cbdb73203.jpg'}
+                                            src={user?.avatar}
                                             icon={!user?.avatar && <UserOutlined />}
                                             style={styles.avatar}
                                         />

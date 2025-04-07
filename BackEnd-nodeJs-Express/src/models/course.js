@@ -5,7 +5,7 @@ const courseSchema = new mongoose.Schema({
     description: { type: String },
     price: { type: Number, default: 0 },
     course_img: { type: String, default: '' },
-    teacher_id: { type: mongoose.Schema.Types.ObjectId, ref: 'sser', required: true }, // Liên kết với User
+    teacher_id: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true }, // Liên kết với User
     lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'lesson' }], // Liên kết với Lesson
     students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }], // Học viên đăng ký
 }, { timestamps: true });

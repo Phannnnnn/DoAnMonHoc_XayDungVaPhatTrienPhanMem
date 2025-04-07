@@ -6,6 +6,7 @@ import { CourseUpdate, GetCourse } from '../../ultill/courseApi';
 import { GetInforUser, UpdateUser } from '../../ultill/userApi';
 import { AuthContext } from '../context/auth.context';
 import { GetLessonList } from '../../ultill/lessonApi';
+import { createActivitie } from '../../ultill/acctivitieApi';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -58,6 +59,15 @@ const CourseDetail = () => {
             newListEnroll.push(course_id);
             userInfor.enrolledCourses = newListEnroll;
             const userUpdateRes = await UpdateUser(userInfor);
+
+            //Luu lai hanh dong
+            const acctivitie = await {
+                type: "register_course",
+                userName: auth?.user?.name || "User -name",
+                courseName: courseDetails?.name || "Course-name"
+            }
+            console.log(acctivitie);
+            await createActivitie(acctivitie);
 
             // Cập nhật danh sách học viên của khóa học
             const course = await GetCourse(course_id);

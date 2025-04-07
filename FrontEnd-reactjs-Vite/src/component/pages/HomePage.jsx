@@ -151,7 +151,7 @@ const HomePage = () => {
                                         <span>{course?.lessons?.length || 0} Bài học</span>
                                         <span>{course?.students?.length || 0} Học viên</span>
                                     </div>
-                                    <div className="course-price">${course?.price || "Miễn phí"}</div>
+                                    <div className="course-price">{course.price === 0 ? 'Miễn phí' : `${course.price.toLocaleString()} VNĐ`}</div>
                                 </div>
                             </Card>
                         </Col>
@@ -320,7 +320,7 @@ const HomePage = () => {
         .course-price {
           font-weight: bold;
           font-size: 18px;
-          color: #1890ff;
+          color: orange;
         }
         
         .view-all-courses {

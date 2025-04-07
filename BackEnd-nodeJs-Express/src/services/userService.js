@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const Activitie = require("../models/activitie");
 const bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 const Course = require("../models/course");
@@ -20,6 +21,14 @@ const createUserService = async (name, email, password, role) => {
             password: hashPass,
             role: role ? role : "user"
         })
+
+        if (result) {
+            await Activitie.create({
+                type: "register_account",
+                userName: result?.name || "User-name",
+            })
+        }
+
         return { result, EC: 0 };
     } catch (error) {
         console.log(error);

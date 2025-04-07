@@ -1,6 +1,8 @@
+const moment = require("moment");
 const Course = require("../models/course");
 const Lesson = require("../models/lesson");
 const User = require("../models/user");
+const Activitie = require("../models/activitie");
 
 const createCourseService = async (name, description, price, course_img, teacher_id) => {
     try {
@@ -16,6 +18,15 @@ const createCourseService = async (name, description, price, course_img, teacher
             course_img: course_img,
             teacher_id: teacher_id
         })
+
+        if (result) {
+            const teacher = await User.findOne({ _id: result?.teacher_id }).select("name");
+            await Activitie.create({
+                type: "add_course",
+                userName: teacher?.name || "Teacher-name",
+                courseName: result?.name || "Course-name"
+            })
+        }
 
         teacher.createdCourses.push(result._id);
         await teacher.save();
@@ -114,6 +125,29 @@ const getCourseListDeleteService = async () => {
     }
 }
 
+const getActivitiesService = async () => {
+    try {
+        const courses = await Course.find()
+            .populate('students', 'name email')  // Liên kết với bảng users để lấy thông tin học viên
+            .populate('teacher_id', 'name email').select("name createdAt updatedAt");
+
+        // Lấy thông tin về các hoạt động gần đây
+        const activities = courses.map(course => {
+            // Các hoạt động học viên đăng ký
+            return course.students.map(student => ({
+                message: `${student.name} đã đăng ký khóa học "${course.name}".`,
+                color: 'green',
+                date: moment(course.createdAt).format('DD/MM/YYYY')
+            }));
+        }).flat();
+
+        return activities;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 module.exports = {
     createCourseService,
     updateCourseService,
@@ -124,4 +158,5 @@ module.exports = {
     getCourseListDeleteService,
     restoreCourseService,
     getCourseListByTeacherIdService,
+    getActivitiesService,
 }

@@ -174,7 +174,6 @@ const Header = () => {
                                             size="default"
                                             src={user?.avatar}
                                             icon={!user?.avatar && <UserOutlined />}
-                                            style={styles.avatar}
                                         />
                                     </div>
                                 </Dropdown>
