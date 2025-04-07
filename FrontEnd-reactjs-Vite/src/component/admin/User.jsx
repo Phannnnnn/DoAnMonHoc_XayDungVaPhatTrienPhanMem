@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Table, Button, Space, Card, Input, Select, Tag, Avatar, Typography, Popconfirm, message, Tooltip, Row, Col } from 'antd';
+import { Table, Button, Space, Card, Input, Select, Tag, Avatar, Typography, Popconfirm, message, Tooltip, Row, Col, Modal, Form } from 'antd';
 import {
     SearchOutlined,
     UserOutlined,
@@ -7,10 +7,8 @@ import {
     DeleteOutlined,
     UndoOutlined,
     UserAddOutlined,
-    FilterOutlined,
-    ReloadOutlined
 } from '@ant-design/icons';
-import { GetListUser } from '../../ultill/userApi';
+import { deleteUser, destroyUser, GetListUser, restoreUser, UpdateUser } from '../../ultill/userApi';
 import { AuthContext } from '../context/auth.context';
 import { Link } from 'react-router-dom';
 
@@ -26,13 +24,15 @@ const User = () => {
     const [roleFilter, setRoleFilter] = useState('all');
     const [pagination, setPagination] = useState({
         current: 1,
-        pageSize: 10,
+        pageSize: 15,
     });
-    const [showDeleted, setShowDeleted] = useState(false);
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+    const [editingUser, setEditingUser] = useState(null);
+    const [form] = Form.useForm();
 
     useEffect(() => {
         fetchUsers();
-    }, [showDeleted]);
+    }, []);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -49,13 +49,9 @@ const User = () => {
 
     const applyFilters = (data) => {
         let result = [...data];
-
-        // Áp dụng filter theo role
         if (roleFilter !== 'all') {
             result = result.filter(user => user.role === roleFilter);
         }
-
-        // Áp dụng tìm kiếm theo tên hoặc email
         if (searchText) {
             result = result.filter(
                 user =>
@@ -63,12 +59,6 @@ const User = () => {
                     user.email.toLowerCase().includes(searchText.toLowerCase())
             );
         }
-
-        // Áp dụng filter theo trạng thái xóa
-        if (!showDeleted) {
-            result = result.filter(user => !user.deleted);
-        }
-
         setFilteredUsers(result);
         setPagination(prev => ({
             ...prev,
@@ -92,30 +82,87 @@ const User = () => {
         setPagination(pagination);
     };
 
-    const handleDelete = (userId) => {
-        const res = '';
-
-        message.success('Đã xóa người dùng thành công');
-        const updatedUsers = users.map(user =>
-            user._id === userId ? { ...user, deleted: true, deletedAt: new Date().toISOString() } : user
-        );
-        setUsers(updatedUsers);
-        applyFilters(updatedUsers);
+    const handleDelete = async (userId) => {
+        try {
+            const res = await deleteUser(userId);
+            if (res && res.modifiedCount > 0) {
+                message.success('Đã xóa người dùng thành công');
+            }
+            const updatedUsers = users.map(user =>
+                user._id === userId ? { ...user, deleted: true, deletedAt: new Date().toISOString() } : user
+            );
+            setUsers(updatedUsers);
+            applyFilters(updatedUsers);
+        } catch (error) {
+            message.error('Xóa người dùng không thành công');
+        }
     };
 
-    const handleRestore = (userId) => {
+    const handleRestore = async (userId) => {
         // Gọi API khôi phục người dùng
-        message.success('Đã khôi phục người dùng thành công');
-        const updatedUsers = users.map(user =>
-            user._id === userId ? { ...user, deleted: false, deletedAt: null } : user
-        );
-        setUsers(updatedUsers);
-        applyFilters(updatedUsers);
+        try {
+            const res = await restoreUser(userId);
+            if (res && res.modifiedCount > 0) {
+                message.success('Đã khôi phục người dùng thành công');
+                const updatedUsers = users.map(user =>
+                    user._id === userId ? { ...user, deleted: false, deletedAt: null } : user
+                );
+                setUsers(updatedUsers);
+                applyFilters(updatedUsers);
+            }
+        } catch {
+            message.success('Khôi phục người dùng không thành công');
+        }
     };
 
+    const handleDestroy = async (_id) => {
+        try {
+            const res = await destroyUser(_id);
+            if (res && res?.deletedCount > 0) {
+                message.success('Đã xóa vĩnh viễn người dùng.');
+                const updatedUsers = users.filter(user => user._id !== _id);
+                setUsers(updatedUsers);
+                applyFilters(updatedUsers);
+            }
+        } catch {
+            message.error('Xóa không thành công!');
+        }
+    }
+
+    // Chỉnh sửa hàm handleEdit để mở modal
     const handleEdit = (userId) => {
-        // Chuyển hướng đến trang chỉnh sửa người dùng
-        message.info(`Chỉnh sửa người dùng có ID: ${userId}`);
+        const user = users.find(user => user._id === userId);
+        if (user) {
+            setEditingUser(user);
+            form.setFieldsValue({
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            });
+            setIsEditModalVisible(true);
+        }
+    };
+
+    // Thêm hàm xử lý khi submit form modal
+    const handleEditSubmit = async (values) => {
+        try {
+            values._id = editingUser._id;
+            const res = await UpdateUser(values);
+            if (res && res?.modifiedCount) {
+                // Cập nhật lại state users
+                const updatedUsers = users.map(user =>
+                    user._id === editingUser._id
+                        ? { ...user, ...values }
+                        : user
+                );
+                setUsers(updatedUsers);
+                applyFilters(updatedUsers);
+                message.success('Cập nhật người dùng thành công');
+                setIsEditModalVisible(false);
+            }
+        } catch (error) {
+            message.error('Không thể cập nhật người dùng');
+        }
     };
 
     const roleColors = {
@@ -160,28 +207,10 @@ const User = () => {
             onFilter: (value, record) => record.role === value,
         },
         {
-            title: 'Số khóa học',
-            key: 'courses',
-            render: (_, record) => (
-                <>
-                    {record.role === 'teacher' ? (
-                        <Tooltip title="Số khóa học đã tạo">
-                            <Text>{record.createdCourses.length}</Text>
-                        </Tooltip>
-                    ) : (
-                        <Tooltip title="Số khóa học đã đăng ký">
-                            <Text>{record.enrolledCourses.length}</Text>
-                        </Tooltip>
-                    )}
-                </>
-            ),
-        },
-        {
-            title: 'Ngày tạo',
+            title: 'Ngày tham gia',
             dataIndex: 'createdAt',
             key: 'createdAt',
             render: date => new Date(date).toLocaleDateString('vi-VN'),
-            sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
         },
         {
             title: 'Trạng thái',
@@ -225,23 +254,17 @@ const User = () => {
                     ) : (
                         <>
                             <Tooltip title="Khôi phục">
-                                <Popconfirm
-                                    title="Bạn có muốn khôi phục người dùng này?"
-                                    onConfirm={() => handleRestore(record._id)}
-                                    okText="Khôi phục"
-                                    cancelText="Hủy"
-                                >
-                                    <Button
-                                        type="primary"
-                                        icon={<UndoOutlined />}
-                                        size="small"
-                                    />
-                                </Popconfirm>
+                                <Button
+                                    type="primary"
+                                    onClick={() => handleRestore(record._id)}
+                                    icon={<UndoOutlined />}
+                                    size="small"
+                                />
                             </Tooltip>
                             <Tooltip title="Xóa vĩnh viễn">
                                 <Popconfirm
                                     title="Bạn có muốn xóa vĩnh viễn người dùng này?"
-                                    onConfirm={() => handleRestore(record._id)}
+                                    onConfirm={() => handleDestroy(record._id)}
                                     okText="Xóa vĩnh viễn"
                                     cancelText="Hủy"
                                 >
@@ -253,8 +276,9 @@ const User = () => {
                                 </Popconfirm>
                             </Tooltip>
                         </>
-                    )}
-                </Space>
+                    )
+                    }
+                </Space >
             ),
         },
     ];
@@ -302,22 +326,6 @@ const User = () => {
                             <Option value="user">Học viên</Option>
                         </Select>
                     </Col>
-                    <Col xs={24} sm={12} md={8} lg={6}>
-                        <Button
-                            type={showDeleted ? "primary" : "default"}
-                            icon={<FilterOutlined />}
-                            onClick={() => setShowDeleted(!showDeleted)}
-                        >
-                            {showDeleted ? "Hiển thị tất cả" : "Hiển thị đã xóa"}
-                        </Button>
-                        <Button
-                            icon={<ReloadOutlined />}
-                            onClick={fetchUsers}
-                            style={{ marginLeft: 8 }}
-                        >
-                            Làm mới
-                        </Button>
-                    </Col>
                 </Row>
 
                 <Table
@@ -329,7 +337,61 @@ const User = () => {
                     onChange={handleTableChange}
                 />
             </Space>
-        </Card>
+            <Modal
+                title="Chỉnh sửa thông tin người dùng"
+                open={isEditModalVisible}
+                onCancel={() => setIsEditModalVisible(false)}
+                footer={null}
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleEditSubmit}
+                >
+                    <Form.Item
+                        name="name"
+                        label="Tên người dùng"
+                        rules={[{ required: true, message: 'Vui lòng nhập tên người dùng!' }]}
+                    >
+                        <Input placeholder="Nhập tên người dùng" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="email"
+                        label="Email"
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập email!' },
+                            { type: 'email', message: 'Email không hợp lệ!' }
+                        ]}
+                    >
+                        <Input placeholder="Nhập email" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="role"
+                        label="Vai trò"
+                        rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}
+                    >
+                        <Select placeholder="Chọn vai trò">
+                            <Option value="user">Học viên</Option>
+                            <Option value="teacher">Giảng viên</Option>
+                            <Option value="admin">Quản trị viên</Option>
+                        </Select>
+                    </Form.Item>
+
+                    <Form.Item>
+                        <Space>
+                            <Button type="primary" htmlType="submit">
+                                Cập nhật
+                            </Button>
+                            <Button onClick={() => setIsEditModalVisible(false)}>
+                                Hủy
+                            </Button>
+                        </Space>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        </Card >
     );
 };
 

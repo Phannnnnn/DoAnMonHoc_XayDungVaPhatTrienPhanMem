@@ -11,12 +11,14 @@ route.all('*', auth, verifyRole);
 
 route.post('/register', userController.createUser);
 route.put('/profile-update', userController.updateUser);
+route.patch('/restore-user', userController.restoreUser);
 route.post('/login', userController.userLogin);
 route.get('/user', userController.getListUser);
 route.get('/getaccount', userController.getAccount);
 route.get('/getinfor', userController.getInforUser);
 route.get('/get-courseslist-byuser', userController.getEnroll);
 route.delete('/delete-soft-user', userController.deleteSoftUser);
+route.delete('/destroy-user', userController.destroyUser);
 route.put('/password-chance', userController.passwordChance);
 
 module.exports = route;

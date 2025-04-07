@@ -129,9 +129,29 @@ const updateUserService = async (req) => {
     }
 }
 
+const restoreUserService = async (_id) => {
+    try {
+        const result = await User.restore({ _id: _id });
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 const deleteSoftUserService = async (_id) => {
     try {
         const result = await User.delete({ _id: _id });
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+const destroyUserService = async (_id) => {
+    try {
+        const result = await User.deleteOne({ _id: _id });
         return result;
     } catch (error) {
         console.log(error);
@@ -172,5 +192,7 @@ module.exports = {
     deleteSoftUserService,
     updateUserService,
     passwordChanceService,
-    getEnrollService
+    getEnrollService,
+    restoreUserService,
+    destroyUserService
 }

@@ -37,12 +37,9 @@ const AdminHomePage = () => {
 
         const userList = user.filter(item => item.role === "user");
         const roleTeacher = user.filter(item => item.role === "teacher");
-
         setRecentUsers(userList);
-
-        console.log(recentUsers);
-
         setCourseEnrollmentData(course);
+
         const students = course.reduce((total, course) => total + course.students.length, 0);
         const courses = course.length;
         const lessons = course.reduce((total, course) => total + course.lessons.length, 0);
@@ -93,7 +90,6 @@ const AdminHomePage = () => {
     useEffect(() => {
         const fetchActivities = async () => {
             const res = await GetActivitie();
-            console.log(res);
             await setActivities(res);
         };
 

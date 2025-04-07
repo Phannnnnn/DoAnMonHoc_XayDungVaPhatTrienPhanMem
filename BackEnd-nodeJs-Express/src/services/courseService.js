@@ -94,7 +94,6 @@ const restoreCourseService = async (id) => {
     }
 }
 
-
 const getCourseListService = async () => {
     try {
         const result = await Course.find({})
@@ -117,7 +116,7 @@ const getCourseListByTeacherIdService = async (teacher_id) => {
 
 const getCourseListDeleteService = async () => {
     try {
-        const result = await Course.findDeleted({ deletedAt: { $ne: null } })
+        const result = await Course.findDeleted({ deletedAt: { $ne: null } }).populate('teacher_id', 'name');
         return result;
     } catch (error) {
         console.log(error);

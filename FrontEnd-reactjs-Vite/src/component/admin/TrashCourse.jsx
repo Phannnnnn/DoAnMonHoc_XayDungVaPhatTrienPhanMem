@@ -4,22 +4,11 @@ import { DeleteOutlined, UndoOutlined, SearchOutlined } from '@ant-design/icons'
 import { DestroyCourse, GetCourseListDelete, restoreCourse } from '../../ultill/courseApi';
 import moment from 'moment';
 
-const { Title, Text } = Typography;
-const { Search } = Input;
-
-const confirm = (e) => {
-    console.log(e);
-    message.success('Click on Yes');
-};
+const { Text } = Typography;
 
 const TrashCourse = () => {
-    // State để lưu trữ danh sách khóa học đã xóa
     const [trashedCourses, setTrashedCourses] = useState([]);
-    // State cho loading khi fetch data
     const [loading, setLoading] = useState(true);
-    // State cho search
-    const [searchText, setSearchText] = useState('');
-    // State cho pagination
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 10,
@@ -27,25 +16,27 @@ const TrashCourse = () => {
     });
 
     const fetchCoursesDelete = async () => {
-        const res = await GetCourseListDelete();
-        if (Array.isArray(res)) { // Kiểm tra res có phải là mảng không
-            const formattedData = res.map(course => ({
-                id: course._id,
-                title: course.name,
-                instructor: course.teacher_id || "Chưa có thông tin",
-                deletedAt: course.deletedAt || new Date().toISOString(),
-                expiryDays: course.expiryDays || 30,
-            }));
+        try {
+            const res = await GetCourseListDelete();
+            if (Array.isArray(res)) {
+                const formattedData = res.map(course => ({
+                    id: course._id,
+                    title: course.name,
+                    teacher: course?.teacher_id?.name || "Chưa có thông tin",
+                    deletedAt: course.deletedAt || new Date().toISOString(),
+                }));
 
-            setTrashedCourses(formattedData);
-            setPagination(prev => ({
-                ...prev,
-                total: formattedData.length,
-            }));
-        } else {
-            console.error(res);
+                setTrashedCourses(formattedData);
+                setPagination(prev => ({
+                    ...prev,
+                    total: formattedData.length,
+                }));
+            } else {
+                console.error(res);
+            }
+            setLoading(false);
+        } catch (error) {
         }
-        setLoading(false);
     };
 
     useEffect(() => {
@@ -66,22 +57,8 @@ const TrashCourse = () => {
         }
     };
 
-    const showDeleteConfirm = (record) => {
-        confirm({
-            title: 'Bạn có chắc chắn muốn xóa vĩnh viến khóa học này?',
-            // icon: React.createElement(ExclamationCircleOutlined),
-            content: `Khóa học "${record.name}" sẽ không thể khôi phục!`,
-            okText: 'Xóa',
-            okType: 'danger',
-            cancelText: 'Hủy',
-            onOk() {
-                return handleDeletePermanently(record);
-            },
-        });
-    };
-
     // Hàm xử lý xóa vĩnh viễn
-    const handleDeletePermanently = (record) => {
+    const handleDestroyCourse = (record) => {
         try {
             const res = DestroyCourse(record.id);
             if (res) {
@@ -94,27 +71,6 @@ const TrashCourse = () => {
         }
     };
 
-    // Hàm xử lý search
-    const handleSearch = (value) => {
-        setSearchText(value);
-        setLoading(true);
-
-        setTimeout(() => {
-            const filteredData = trashedCourses.filter(
-                course => course.title.toLowerCase().includes(value.toLowerCase()) ||
-                    course.instructor.toLowerCase().includes(value.toLowerCase())
-            );
-
-            setPagination(prev => ({
-                ...prev,
-                current: 1,
-                total: filteredData.length,
-            }));
-
-            setLoading(false);
-        }, 300);
-    };
-
     // Hàm xử lý thay đổi pagination
     const handleTableChange = (pagination, filters, sorter) => {
         setPagination(pagination);
@@ -123,12 +79,6 @@ const TrashCourse = () => {
     // Cấu hình các cột trong bảng
     const columns = [
         {
-            title: 'ID',
-            dataIndex: 'id',
-            key: 'id',
-            width: 120,
-        },
-        {
             title: 'Tên khóa học',
             dataIndex: 'title',
             key: 'title',
@@ -136,15 +86,14 @@ const TrashCourse = () => {
         },
         {
             title: 'Giảng viên',
-            dataIndex: 'instructor',
-            key: 'instructor',
+            dataIndex: 'teacher',
+            key: 'teacher',
         },
         {
             title: 'Ngày xóa',
             dataIndex: 'deletedAt',
             key: 'deletedAt',
-            sorter: (a, b) => new Date(a.deletedAt) - new Date(b.deletedAt),
-            render: (text) => moment(text).format("DD/MM/YYYY HH:mm:ss"),
+            render: (text) => moment(text).format("DD/MM/YYYY"),
         },
         {
             title: 'Thao tác',
@@ -163,7 +112,7 @@ const TrashCourse = () => {
                         <Popconfirm
                             title="Xóa vĩnh viễn khóa học ?"
                             description="Khóa học sẽ không thể khôi phục!"
-                            onConfirm={() => handleDeletePermanently(record)}
+                            onConfirm={() => handleDestroyCourse(record)}
                             okText="Xóa vĩnh viễn"
                             cancelText="Hủy"
                         >
@@ -175,32 +124,11 @@ const TrashCourse = () => {
         },
     ];
 
-    // Lọc danh sách khóa học dựa trên search text
-    const filteredCourses = searchText
-        ? trashedCourses.filter(
-            course =>
-                course.title.toLowerCase().includes(searchText.toLowerCase()) ||
-                course.instructor.toLowerCase().includes(searchText.toLowerCase())
-        )
-        : trashedCourses;
-
     return (
         <Card className="trash-course-container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <Title level={3}>Khóa học đã xóa</Title>
-                <Search
-                    placeholder="Tìm kiếm khóa học..."
-                    allowClear
-                    enterButton={<Button type="primary" icon={<SearchOutlined />}>Tìm kiếm</Button>}
-                    size="middle"
-                    onSearch={handleSearch}
-                    style={{ width: 300 }}
-                />
-            </div>
-
             <Table
                 columns={columns}
-                dataSource={filteredCourses}
+                dataSource={trashedCourses}
                 rowKey="id"
                 pagination={pagination}
                 loading={loading}
@@ -208,37 +136,6 @@ const TrashCourse = () => {
                 locale={{
                     emptyText: <Empty description="Không có khóa học nào trong thùng rác" />
                 }}
-                footer={() => (
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Text type="secondary">
-                            Các khóa học sẽ bị xóa vĩnh viễn sau thời hạn được quy định
-                        </Text>
-                        <Space>
-                            <Button
-                                danger
-                                icon={<DeleteOutlined />}
-                                disabled={filteredCourses.length === 0}
-                                onClick={() => {
-                                    message.success('Đã xóa vĩnh viễn tất cả khóa học');
-                                    setTrashedCourses([]);
-                                }}
-                            >
-                                Xóa tất cả
-                            </Button>
-                            <Button
-                                type="primary"
-                                icon={<UndoOutlined />}
-                                disabled={filteredCourses.length === 0}
-                                onClick={() => {
-                                    message.success('Đã khôi phục tất cả khóa học');
-                                    setTrashedCourses([]);
-                                }}
-                            >
-                                Khôi phục tất cả
-                            </Button>
-                        </Space>
-                    </div>
-                )}
             />
         </Card>
     );

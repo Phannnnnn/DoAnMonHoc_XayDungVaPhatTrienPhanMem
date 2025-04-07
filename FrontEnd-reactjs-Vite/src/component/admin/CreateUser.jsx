@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Select, Card, Alert, message } from 'antd';
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
 import { CreateNewUser } from '../../ultill/userApi';
+import { useNavigate } from 'react-router-dom';
 
 const { Option } = Select;
 
@@ -10,6 +11,7 @@ const CreateUser = () => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const navigate = useNavigate();
 
     const onFinish = async (values) => {
         setLoading(true);
@@ -19,14 +21,11 @@ const CreateUser = () => {
             // Mô phỏng API call
             const { name, email, password, role } = values;
             const res = await CreateNewUser(name, email, password, role);
-
-            console.log('Dữ liệu người dùng để gửi:', { name, email, password, role });
-            console.log('res >>> :', res);
-
             if (res && res.EC === 0) {
                 form.resetFields();
                 setSuccess(true);
                 message.success('Người dùng đã được tạo thành công!');
+                navigate("/manager/user");
             }
             else { message.error('Có lỗi xảy ra khi tạo người dùng. Vui lòng thử lại.'); }
         } catch (error) {

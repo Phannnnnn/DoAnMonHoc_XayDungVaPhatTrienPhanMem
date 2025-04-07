@@ -1,4 +1,4 @@
-const { createUserService, userLoginService, getListUserService, getInforUserService, deleteSoftUserService, updateUserService, passwordChanceService, getEnrollService } = require("../services/userService");
+const { createUserService, userLoginService, getListUserService, getInforUserService, deleteSoftUserService, updateUserService, passwordChanceService, getEnrollService, restoreUserService, destroyUserService } = require("../services/userService");
 
 const createUser = async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -9,6 +9,12 @@ const createUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const data = await updateUserService(req);
+    res.status(201).json(data);
+}
+
+const restoreUser = async (req, res) => {
+    const { _id } = req.body;
+    const data = await restoreUserService(_id);
     res.status(201).json(data);
 }
 
@@ -46,6 +52,13 @@ const deleteSoftUser = async (req, res) => {
     res.status(200).json(data);
 }
 
+const destroyUser = async (req, res) => {
+    const { _id } = req.body;
+    const data = await destroyUserService(_id);
+    res.status(200).json(data);
+}
+
+
 const passwordChance = async (req, res) => {
     const { email, pass_old, pass_new } = req.body;
     const data = await passwordChanceService(email, pass_old, pass_new);
@@ -61,5 +74,7 @@ module.exports = {
     deleteSoftUser,
     updateUser,
     passwordChance,
-    getEnroll
+    getEnroll,
+    restoreUser,
+    destroyUser
 }

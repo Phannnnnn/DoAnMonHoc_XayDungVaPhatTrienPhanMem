@@ -119,8 +119,6 @@ const Header = () => {
         ] : [])
     ];
 
-    const onSearch = (value, _e, info) => console.log(info?.source, value);
-
     return (
         <>
             <style>

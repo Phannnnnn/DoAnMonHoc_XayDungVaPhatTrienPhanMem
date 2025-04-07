@@ -205,7 +205,6 @@ const CourseEdit = () => {
             }
             else {
                 const res = await LessonCreate(lessonData);
-                console.log(res?.EC);
                 if (res?.EC === 0) {
                     message.success("Tạo mới bài học thành công.");
                 }
@@ -235,7 +234,6 @@ const CourseEdit = () => {
                 course_img: values.courseImage,
                 price: values.courseType === 'free' ? 0 : values.price,
             };
-            console.log(formData);
             const res = await CourseUpdate(id, formData);
             if (res?.modifiedCount > 0) {
                 message.success("Cập nhật khóa học thành công.");

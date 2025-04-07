@@ -1,4 +1,3 @@
-import { data } from "react-router-dom";
 import axios from "./axios.custom";
 
 const UserRegister = (name, email, password) => {
@@ -36,7 +35,6 @@ const GetListUser = () => {
 
 const GetListCourseByUser = (_id) => {
     const URL_API = `/v1/api/courselist/${_id}`;
-    const data = { _id };
     return axios.get(URL_API);
 }
 
@@ -53,6 +51,21 @@ const GetInforUser = (_id) => {
     return axios.get(URL_API, { params: data });
 }
 
+const deleteUser = (_id) => {
+    const URL_API = "/v1/api/delete-soft-user";
+    return axios.delete(URL_API, { data: { _id } });
+}
+
+const destroyUser = (_id) => {
+    const URL_API = "/v1/api/destroy-user";
+    return axios.delete(URL_API, { data: { _id } });
+}
+
+const restoreUser = (_id) => {
+    const URL_API = "/v1/api/restore-user";
+    return axios.patch(URL_API, { _id });
+}
+
 export {
     UserRegister,
     UserLogin,
@@ -62,5 +75,8 @@ export {
     CreateNewUser,
     passwordChance,
     GetListCourseByUser,
-    GetListCouserEnrolled
+    GetListCouserEnrolled,
+    deleteUser,
+    restoreUser,
+    destroyUser
 }

@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     createdCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }], // Khóa học đã tạo (dành cho giảng viên)
 }, { timestamps: true });
 
-userSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+userSchema.plugin(mongoose_delete, { deletedAt: true, overrideMethods: 'all' });
 const User = mongoose.model('user', userSchema);
 
 
