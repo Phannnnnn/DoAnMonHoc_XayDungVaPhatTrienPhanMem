@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
+const Course = require("../models/course");
 const saltRounds = 10;
 
 //Dang ky tai khoan
@@ -91,8 +92,18 @@ const getInforUserService = async (_id) => {
 
 const getEnrollService = async (_id) => {
     try {
-        const infor = await User.find({ _id: _id });
-        return infor;
+        const student = await User.findOne({ _id: _id });
+        if (!student) {
+            return null;
+        }
+
+        if (!Array.isArray(student.enrolledCourses)) {
+            return null;
+        }
+
+        const courses = await Course.find({ _id: { $in: student.enrolledCourses } })
+            .select('_id name price course_img teacher_id');
+        return courses;
     } catch (error) {
         console.log(error);
         return null;

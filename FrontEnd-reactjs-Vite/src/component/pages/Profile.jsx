@@ -17,7 +17,8 @@ import {
     Row,
     Col,
     Divider,
-    Modal
+    Modal,
+    Flex
 } from 'antd';
 import {
     UserOutlined,
@@ -32,7 +33,7 @@ import {
     EyeInvisibleOutlined,
     EyeTwoTone
 } from '@ant-design/icons';
-import { GetInforUser, passwordChance, UpdateUser } from '../../ultill/userApi';
+import { GetInforUser, GetListCourseByUser, GetListCouserEnrolled, passwordChance, UpdateUser } from '../../ultill/userApi';
 import { AuthContext } from '../context/auth.context';
 import { Link } from 'react-router-dom';
 
@@ -43,6 +44,10 @@ const Profile = () => {
     // State cho thông tin người dùng
     const [user, setUser] = useState({});
     const { auth, setAuth } = useContext(AuthContext);
+
+    const [enrolledCourses, setEnrolledCourses] = useState([]);
+    const [createdCourses, setCreatedCourses] = useState([]);
+
     const [uploadType, setUploadType] = useState('upload');
     const [imageUrl, setImageUrl] = useState('');
     // State cho chế độ chỉnh sửa - ban đầu là false (không được chỉnh sửa)
@@ -59,6 +64,20 @@ const Profile = () => {
         // Reset form khi user thay đổi
         form.setFieldsValue(user);
     }, [user, form]);
+
+    const fectchListCourseByUser = async () => {
+        const createdCoursesList = await GetListCourseByUser(auth?.user?.id);
+        const enrolledCoursesList = await GetListCouserEnrolled(auth?.user?.id);
+
+        setEnrolledCourses(enrolledCoursesList || []);
+        setCreatedCourses(createdCoursesList || []);
+
+
+    }
+
+    useEffect(() => {
+        fectchListCourseByUser();
+    }, []);
 
     const handleUploadTypeChange = (e) => {
         setUploadType(e.target.value);
@@ -143,7 +162,6 @@ const Profile = () => {
             pass_old: values.currentPassword,
             pass_new: values.confirmPassword
         }
-        console.log(data);
         const res = await passwordChance(data);
         if (res && res?.Success) {
             message.success(res?.Success ?? "Mật khẩu đã được thay đổi!");
@@ -154,7 +172,6 @@ const Profile = () => {
         }
     };
 
-    // Map role sang tiếng Việt
     const roleLabels = {
         'user': 'Học viên',
         'teacher': 'Giảng viên',
@@ -274,20 +291,42 @@ const Profile = () => {
             </div>
             <List
                 itemLayout="horizontal"
-                dataSource={user.enrolledCourses || []}
-                locale={{ emptyText: 'Bạn chưa đăng ký khóa học nào' }}
-                renderItem={item => (
+                dataSource={enrolledCourses || []}
+                locale={{ emptyText: 'Bạn chưa tạo khóa học nào' }}
+                renderItem={(item) => (
                     <List.Item
                         actions={[
-                            <Button type="primary" size="small">Tiếp tục học</Button>,
-                            <Button type="link">Xem chi tiết</Button>
+                            <Link to={`/course-detail/${item._id}`}>
+                                <Button type="primary" ghost>
+                                    Xem chi tiết khóa học
+                                </Button>
+                            </Link>,
                         ]}
-                        style={{ background: '#f5f5f5', marginBottom: 8, padding: '12px 16px', borderRadius: 8 }}
+                        style={{
+                            background: '#f5f5f5',
+                            marginBottom: 8,
+                            padding: '12px 16px',
+                            borderRadius: 8,
+                        }}
                     >
                         <List.Item.Meta
-                            avatar={<Avatar icon={<ReadOutlined />} style={{ backgroundColor: '#1890ff' }} />}
-                            title={<span style={{ fontSize: 16, fontWeight: 500 }}>{item.title}</span>}
-                            description="Nhấp vào 'Tiếp tục học' để truy cập nội dung khóa học"
+                            avatar={
+                                <Avatar
+                                    shape="square"
+                                    size={64}
+                                    src={item.course_img || <BookOutlined />}
+                                />
+                            }
+                            title={
+                                <span style={{ fontSize: 16, fontWeight: 500 }}>
+                                    {item.name}
+                                </span>
+                            }
+                            description={
+                                <>
+                                    <div>Giá: {item.price === 0 ? 'Miễn phí' : `${item.price.toLocaleString()} VNĐ`}</div>
+                                </>
+                            }
                         />
                     </List.Item>
                 )}
@@ -301,28 +340,56 @@ const Profile = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <Title level={4}>Khóa học đã tạo</Title>
                 <Link to={"/manager/create"}><Button type="primary">Tạo khóa học mới</Button></Link>
-
             </div>
             <List
                 itemLayout="horizontal"
-                dataSource={user.createdCourses || []}
+                dataSource={createdCourses || []}
                 locale={{ emptyText: 'Bạn chưa tạo khóa học nào' }}
-                renderItem={item => (
+                renderItem={(item) => (
                     <List.Item
                         actions={[
-                            <Button type="primary" ghost>Chỉnh sửa</Button>,
-                            <Button>Quản lý học viên</Button>
+                            <Link to={`/course-detail/${item._id}`}>
+                                <Button type="primary" ghost>
+                                    Xem chi tiết khóa học
+                                </Button>
+                            </Link>,
+                            <Link to={`/course-edit/${item._id}`}>
+                                <Button type="primary" ghost>
+                                    Chỉnh sửa
+                                </Button>
+                            </Link>,
                         ]}
-                        style={{ background: '#f5f5f5', marginBottom: 8, padding: '12px 16px', borderRadius: 8 }}
+                        style={{
+                            background: '#f5f5f5',
+                            marginBottom: 8,
+                            padding: '12px 16px',
+                            borderRadius: 8,
+                        }}
                     >
                         <List.Item.Meta
-                            avatar={<Avatar icon={<BookOutlined />} style={{ backgroundColor: '#52c41a' }} />}
-                            title={<span style={{ fontSize: 16, fontWeight: 500 }}>{item.title}</span>}
-                            description="Quản lý nội dung và học viên của khóa học"
+                            avatar={
+                                <Avatar
+                                    shape="square"
+                                    size={64}
+                                    src={item.course_img || <BookOutlined />}
+                                />
+                            }
+                            title={
+                                <span style={{ fontSize: 16, fontWeight: 500 }}>
+                                    {item.name}
+                                </span>
+                            }
+                            description={
+                                <>
+                                    <div>Số học viên: {item.students?.length || 0}</div>
+                                    <div>Giá: {item.price === 0 ? 'Miễn phí' : `${item.price.toLocaleString()} VNĐ`}</div>
+                                </>
+                            }
                         />
                     </List.Item>
                 )}
             />
+
         </>
     );
 
@@ -384,7 +451,7 @@ const Profile = () => {
                         {
                             key: "profile",
                             label: (
-                                <span>
+                                <span style={{ display: 'flex', gap: '4px' }}>
                                     <UserOutlined />
                                     Thông tin cá nhân
                                 </span>
@@ -394,7 +461,7 @@ const Profile = () => {
                         {
                             key: "security",
                             label: (
-                                <span>
+                                <span style={{ display: 'flex', gap: '4px' }}>
                                     <LockOutlined />
                                     Bảo mật
                                 </span>
@@ -404,7 +471,7 @@ const Profile = () => {
                         {
                             key: "enrolled",
                             label: (
-                                <span>
+                                <span style={{ display: 'flex', gap: '4px' }}>
                                     <ReadOutlined />
                                     Khóa học đã đăng ký
                                 </span>
@@ -416,7 +483,7 @@ const Profile = () => {
                                 {
                                     key: "created",
                                     label: (
-                                        <span>
+                                        <span style={{ display: 'flex', gap: '4px' }}>
                                             <BookOutlined />
                                             Khóa học đã tạo
                                         </span>

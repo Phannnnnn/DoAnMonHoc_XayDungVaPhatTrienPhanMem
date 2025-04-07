@@ -15,7 +15,7 @@ route.post('/login', userController.userLogin);
 route.get('/user', userController.getListUser);
 route.get('/getaccount', userController.getAccount);
 route.get('/getinfor', userController.getInforUser);
-route.get('/get-endroll', userController.getEnroll);
+route.get('/get-courseslist-byuser', userController.getEnroll);
 route.delete('/delete-soft-user', userController.deleteSoftUser);
 route.put('/password-chance', userController.passwordChance);
 

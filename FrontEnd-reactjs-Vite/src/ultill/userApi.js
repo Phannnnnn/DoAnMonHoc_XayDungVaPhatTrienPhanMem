@@ -34,6 +34,19 @@ const GetListUser = () => {
     return axios.get(URL_API);
 }
 
+const GetListCourseByUser = (_id) => {
+    const URL_API = `/v1/api/courselist/${_id}`;
+    const data = { _id };
+    return axios.get(URL_API);
+}
+
+const GetListCouserEnrolled = (_id) => {
+    const URL_API = `/v1/api/get-courseslist-byuser`;
+    const data = { _id };
+    return axios.get(URL_API, { params: data });
+}
+
+
 const GetInforUser = (_id) => {
     const URL_API = "/v1/api/getinfor";
     const data = { _id };
@@ -47,5 +60,7 @@ export {
     GetListUser,
     GetInforUser,
     CreateNewUser,
-    passwordChance
+    passwordChance,
+    GetListCourseByUser,
+    GetListCouserEnrolled
 }

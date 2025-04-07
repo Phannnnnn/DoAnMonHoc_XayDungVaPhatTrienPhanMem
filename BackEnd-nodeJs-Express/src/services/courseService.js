@@ -1,8 +1,14 @@
 const Course = require("../models/course");
 const Lesson = require("../models/lesson");
+const User = require("../models/user");
 
 const createCourseService = async (name, description, price, course_img, teacher_id) => {
     try {
+        const teacher = await User.findOne({ _id: teacher_id });
+        if (!teacher) {
+            return ({ message: "Giảng viên không hợp lệ!" });
+        }
+
         const result = await Course.create({
             name: name,
             description: description,
@@ -10,6 +16,10 @@ const createCourseService = async (name, description, price, course_img, teacher
             course_img: course_img,
             teacher_id: teacher_id
         })
+
+        teacher.createdCourses.push(result._id);
+        await teacher.save();
+
         return result;
 
     } catch (error) {
@@ -42,6 +52,9 @@ const destroyCourseService = async (id) => {
     try {
         //Xoa cac bai hoc lien quan
         await Lesson.deleteMany({ course_id: id });
+
+        //Xoa bai hoc user da dang ky
+
         const result = await Course.deleteOne({ _id: id })
         return result;
     } catch (error) {
