@@ -10,7 +10,7 @@ const { Title, Text } = Typography;
 const CreateCourse = () => {
     const [imageUrl, setImageUrl] = useState('');
     const [uploadType, setUploadType] = useState('upload');
-    const [courseType, setCourseType] = useState('paid');
+    const [courseType, setCourseType] = useState('free');
     const [form] = Form.useForm();
     const { auth } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -38,7 +38,6 @@ const CreateCourse = () => {
                 message.error(res?.message || 'Có lỗi xảy ra khi tạo khóa học!');
             }
         } catch (error) {
-            console.error("Lỗi:", error);
             message.error('Có lỗi xảy ra khi tạo khóa học!');
         }
     };
@@ -98,7 +97,7 @@ const CreateCourse = () => {
                     name="create-course"
                     onFinish={onFinish}
                     initialValues={{
-                        courseType: 'paid'
+                        courseType: 'free'
                     }}
                     style={{ padding: '10px' }}
                 >

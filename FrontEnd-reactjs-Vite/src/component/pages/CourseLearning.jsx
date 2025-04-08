@@ -30,7 +30,6 @@ const CourseLearning = () => {
                     setCurrentVideo(res[0]);
                 }
             } catch (error) {
-                console.error("Lỗi khi fetch dữ liệu:", error);
             }
         };
         fetchLessons();

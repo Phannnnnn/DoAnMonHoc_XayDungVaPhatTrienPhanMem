@@ -32,7 +32,6 @@ const TrashCourse = () => {
                     total: formattedData.length,
                 }));
             } else {
-                console.error(res);
             }
             setLoading(false);
         } catch (error) {

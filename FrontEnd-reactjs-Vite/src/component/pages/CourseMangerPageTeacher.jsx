@@ -39,40 +39,56 @@ const CourseManagerPageTeacher = () => {
     }, []);
 
     const fetchListCourse = async () => {
-        const res = await GetCourseListByTeacherId(auth?.user?.id);
-        setCourses(res);
+        try {
+            const res = await GetCourseListByTeacherId(auth?.user?.id);
+            setCourses(res);
+        } catch (error) {
+
+        }
     }
 
 
     const handleDelete = async (course_id) => {
-        const res = await DeleteSoftCourse(course_id);
-        if (res && res?.modifiedCount > 0) {
-            message.success('Khóa học đã được đưa vào thùng rác.');
-            setCourses(prevCourses =>
-                prevCourses.map(course =>
-                    course._id === course_id ? { ...course, deleted: true } : course
-                )
-            );
+        try {
+            const res = await DeleteSoftCourse(course_id);
+            if (res && res?.modifiedCount > 0) {
+                message.success('Khóa học đã được đưa vào thùng rác.');
+                setCourses(prevCourses =>
+                    prevCourses.map(course =>
+                        course._id === course_id ? { ...course, deleted: true } : course
+                    )
+                );
+            }
+        } catch (error) {
+
         }
     };
 
     const handleDestroy = async (course_id) => {
-        const res = await DestroyCourse(course_id);
-        if (res && res?.deletedCount > 0) {
-            message.success('Khóa học đã bị xóa.');
-            setCourses(prevCourses => prevCourses.filter(course => course._id !== course_id));
+        try {
+            const res = await DestroyCourse(course_id);
+            if (res && res?.deletedCount > 0) {
+                message.success('Khóa học đã bị xóa.');
+                setCourses(prevCourses => prevCourses.filter(course => course._id !== course_id));
+            }
+        } catch (error) {
+            message.error('Khóa học chưa được xóa.');
         }
     };
 
     const handleActivate = async (course_id) => {
-        const res = await restoreCourse(course_id);
-        if (res && res?.modifiedCount > 0) {
-            message.success('Đã kích hoạt lại khóa học!');
-            setCourses(prevCourses =>
-                prevCourses.map(course =>
-                    course._id === course_id ? { ...course, deleted: false } : course
-                )
-            );
+        try {
+            const res = await restoreCourse(course_id);
+            if (res && res?.modifiedCount > 0) {
+                message.success('Đã kích hoạt lại khóa học.');
+                setCourses(prevCourses =>
+                    prevCourses.map(course =>
+                        course._id === course_id ? { ...course, deleted: false } : course
+                    )
+                );
+            }
+        } catch (error) {
+            message.success('Kích hoạt lại khóa học không thành công!');
         }
     };
 

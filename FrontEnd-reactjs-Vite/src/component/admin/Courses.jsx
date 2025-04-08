@@ -43,7 +43,6 @@ const Courses = () => {
                 setFilteredCourses([]);
             }
         } catch (error) {
-            console.error("Error fetching courses:", error);
             message.error("Không thể tải danh sách khóa học");
         } finally {
             setLoading(false);
@@ -101,7 +100,6 @@ const Courses = () => {
             }
             return false;
         } catch (error) {
-            console.error("Error deleting course:", error);
             message.error("Không thể xóa khóa học. Vui lòng thử lại sau.");
             return false;
         }

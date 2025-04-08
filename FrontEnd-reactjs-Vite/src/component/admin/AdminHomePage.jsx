@@ -32,24 +32,28 @@ const AdminHomePage = () => {
     const [courseEnrollmentData, setCourseEnrollmentData] = useState([]);
 
     const fectchStatisticsData = async () => {
-        const course = await GetCourseList();
-        const user = await GetListUser();
+        try {
+            const course = await GetCourseList();
+            const user = await GetListUser();
 
-        const userList = user.filter(item => item.role === "user");
-        const roleTeacher = user.filter(item => item.role === "teacher");
-        setRecentUsers(userList);
-        setCourseEnrollmentData(course);
+            const userList = user.filter(item => item.role === "user");
+            const roleTeacher = user.filter(item => item.role === "teacher");
+            setRecentUsers(userList);
+            setCourseEnrollmentData(course);
 
-        const students = course.reduce((total, course) => total + course.students.length, 0);
-        const courses = course.length;
-        const lessons = course.reduce((total, course) => total + course.lessons.length, 0);
+            const students = course.reduce((total, course) => total + course.students.length, 0);
+            const courses = course.length;
+            const lessons = course.reduce((total, course) => total + course.lessons.length, 0);
 
-        setStatisticsData([
-            { title: "Tổng Học Viên", value: students || 0, icon: <TeamOutlined />, color: "#1890ff" },
-            { title: "Tổng Khóa Học", value: courses || 0, icon: <BookOutlined />, color: "#52c41a" },
-            { title: "Bài Giảng", value: lessons || 0, icon: <VideoCameraOutlined />, color: "#faad14" },
-            { title: "Giảng viên", value: roleTeacher?.length || 0, icon: <UserOutlined />, color: "#f15bb5" },
-        ]);
+            setStatisticsData([
+                { title: "Tổng Học Viên", value: students || 0, icon: <TeamOutlined />, color: "#1890ff" },
+                { title: "Tổng Khóa Học", value: courses || 0, icon: <BookOutlined />, color: "#52c41a" },
+                { title: "Bài Giảng", value: lessons || 0, icon: <VideoCameraOutlined />, color: "#faad14" },
+                { title: "Giảng viên", value: roleTeacher?.length || 0, icon: <UserOutlined />, color: "#f15bb5" },
+            ]);
+        } catch (error) {
+
+        }
     }
 
     useEffect(() => {
@@ -89,8 +93,12 @@ const AdminHomePage = () => {
     // Giả lập việc lấy dữ liệu từ API
     useEffect(() => {
         const fetchActivities = async () => {
-            const res = await GetActivitie();
-            await setActivities(res);
+            try {
+                const res = await GetActivitie();
+                await setActivities(res);
+            } catch (error) {
+
+            }
         };
 
         fetchActivities();

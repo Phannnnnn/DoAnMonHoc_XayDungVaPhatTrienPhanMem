@@ -52,11 +52,9 @@ const CoursesPage = () => {
                 if (Array.isArray(data)) {
                     setCoursesData(data);
                 } else {
-                    console.error("API không trả về mảng:", data);
                     setCoursesData([]);
                 }
             } catch (error) {
-                console.error("Lỗi khi lấy danh sách khóa học:", error);
                 setCoursesData([]);
             } finally {
                 setLoading(false);
@@ -67,14 +65,18 @@ const CoursesPage = () => {
     const pageSize = 8;
 
     const onHandleEnroll = async (_id) => {
-        if (auth?.user?.role) {
-            const res = await GetInforUser(auth?.user?.id);
-            const newListEnroll = res?.enrolledCourses ?? [];
-            newListEnroll.includes(_id) ? navigate(`/course-learning/${_id}`) : navigate(`/course-detail/${_id}`);
-        }
-        else {
-            message.info("Vui lòng đăng nhập để sử dụng chức năng này.");
-            navigate("/login");
+        try {
+            if (auth?.user?.role) {
+                const res = await GetInforUser(auth?.user?.id);
+                const newListEnroll = res?.enrolledCourses ?? [];
+                newListEnroll.includes(_id) ? navigate(`/course-learning/${_id}`) : navigate(`/course-detail/${_id}`);
+            }
+            else {
+                message.info("Vui lòng đăng nhập để sử dụng chức năng này.");
+                navigate("/login");
+            }
+        } catch (error) {
+
         }
     }
 

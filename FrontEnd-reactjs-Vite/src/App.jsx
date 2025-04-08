@@ -32,7 +32,6 @@ function App() {
           });
         }
       } catch (error) {
-        console.error("Fetch account error:", error);
       } finally {
         setLoading(false);
       }

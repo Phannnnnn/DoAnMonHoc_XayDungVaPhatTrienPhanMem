@@ -66,13 +66,15 @@ const Profile = () => {
     }, [user, form]);
 
     const fectchListCourseByUser = async () => {
-        const createdCoursesList = await GetListCourseByUser(auth?.user?.id);
-        const enrolledCoursesList = await GetListCouserEnrolled(auth?.user?.id);
+        try {
+            const createdCoursesList = await GetListCourseByUser(auth?.user?.id);
+            const enrolledCoursesList = await GetListCouserEnrolled(auth?.user?.id);
 
-        setEnrolledCourses(enrolledCoursesList || []);
-        setCreatedCourses(createdCoursesList || []);
+            setEnrolledCourses(enrolledCoursesList || []);
+            setCreatedCourses(createdCoursesList || []);
+        } catch (error) {
 
-
+        }
     }
 
     useEffect(() => {
@@ -133,7 +135,6 @@ const Profile = () => {
                     });
             })
             .catch(error => {
-                console.error('Validation failed:', error);
             });
     };
 
@@ -156,19 +157,23 @@ const Profile = () => {
 
     // Xử lý khi xác nhận đổi mật khẩu
     const handlePasswordChange = async () => {
-        const values = await passwordForm.validateFields();
-        const data = {
-            email: auth?.user?.email,
-            pass_old: values.currentPassword,
-            pass_new: values.confirmPassword
-        }
-        const res = await passwordChance(data);
-        if (res && res?.Success) {
-            message.success(res?.Success ?? "Mật khẩu đã được thay đổi!");
-            setIsPasswordModalVisible(false);
-        }
-        else {
-            message.error(res?.Error ?? "Không thể cập nhật mật khẩu!");
+        try {
+            const values = await passwordForm.validateFields();
+            const data = {
+                email: auth?.user?.email,
+                pass_old: values.currentPassword,
+                pass_new: values.confirmPassword
+            }
+            const res = await passwordChance(data);
+            if (res && res?.Success) {
+                message.success(res?.Success ?? "Mật khẩu đã được thay đổi!");
+                setIsPasswordModalVisible(false);
+            }
+            else {
+                message.error(res?.Error ?? "Không thể cập nhật mật khẩu!");
+            }
+        } catch (error) {
+
         }
     };
 

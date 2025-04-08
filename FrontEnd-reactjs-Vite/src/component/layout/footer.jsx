@@ -18,16 +18,16 @@ const Footer = () => {
                             Empowering learners worldwide with high-quality online education.
                         </Text>
                         <Space size="large">
-                            <Link href="https://facebook.com" target="_blank" style={{ color: '#1890ff' }}>
+                            <Link target="_blank" style={{ color: '#1890ff' }}>
                                 <FacebookOutlined style={{ fontSize: '24px' }} />
                             </Link>
-                            <Link href="https://twitter.com" target="_blank" style={{ color: '#1890ff' }}>
+                            <Link target="_blank" style={{ color: '#1890ff' }}>
                                 <TwitterOutlined style={{ fontSize: '24px' }} />
                             </Link>
-                            <Link href="https://instagram.com" target="_blank" style={{ color: '#1890ff' }}>
+                            <Link target="_blank" style={{ color: '#1890ff' }}>
                                 <InstagramOutlined style={{ fontSize: '24px' }} />
                             </Link>
-                            <Link href="https://youtube.com" target="_blank" style={{ color: '#1890ff' }}>
+                            <Link target="_blank" style={{ color: '#1890ff' }}>
                                 <YoutubeOutlined style={{ fontSize: '24px' }} />
                             </Link>
                         </Space>
@@ -38,69 +38,69 @@ const Footer = () => {
                         <Title level={4} style={{ color: '#fff', marginBottom: '16px' }}>Courses</Title>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                             <li style={{ marginBottom: '8px' }}>
-                                <Link style={{ color: '#aaa' }} href="/courses/web-development">Web Development</Link>
+                                <Link style={{ color: '#aaa' }} >Web Development</Link>
                             </li>
                             <li style={{ marginBottom: '8px' }}>
-                                <Link style={{ color: '#aaa' }} href="/courses/mobile-development">Mobile Development</Link>
+                                <Link style={{ color: '#aaa' }} >Mobile Development</Link>
                             </li>
                             <li style={{ marginBottom: '8px' }}>
-                                <Link style={{ color: '#aaa' }} href="/courses/data-science">Data Science</Link>
+                                <Link style={{ color: '#aaa' }} >Data Science</Link>
                             </li>
                             <li style={{ marginBottom: '8px' }}>
-                                <Link style={{ color: '#aaa' }} href="/courses/design">Design</Link>
+                                <Link style={{ color: '#aaa' }} >Design</Link>
                             </li>
                             <li>
-                                <Link style={{ color: '#aaa' }} href="/courses">All Courses</Link>
+                                <Link style={{ color: '#aaa' }} >All Courses</Link>
                             </li>
                         </ul>
-                    </Col>
+                    </Col >
 
                     {/* Company */}
-                    <Col xs={24} sm={8} md={5} lg={5}>
+                    < Col xs={24} sm={8} md={5} lg={5} >
                         <Title level={4} style={{ color: '#fff', marginBottom: '16px' }}>Company</Title>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                             <li style={{ marginBottom: '8px' }}>
-                                <Link style={{ color: '#aaa' }} href="/about">About Us</Link>
+                                <Link style={{ color: '#aaa' }} >About Us</Link>
                             </li>
                             <li style={{ marginBottom: '8px' }}>
-                                <Link style={{ color: '#aaa' }} href="/careers">Careers</Link>
+                                <Link style={{ color: '#aaa' }} >Careers</Link>
                             </li>
                             <li style={{ marginBottom: '8px' }}>
-                                <Link style={{ color: '#aaa' }} href="/blog">Blog</Link>
+                                <Link style={{ color: '#aaa' }} >Blog</Link>
                             </li>
                             <li>
-                                <Link style={{ color: '#aaa' }} href="/contact">Contact Us</Link>
+                                <Link style={{ color: '#aaa' }} >Contact Us</Link>
                             </li>
                         </ul>
-                    </Col>
+                    </Col >
 
                     {/* Legal */}
-                    <Col xs={24} sm={8} md={5} lg={5}>
+                    < Col xs={24} sm={8} md={5} lg={5} >
                         <Title level={4} style={{ color: '#fff', marginBottom: '16px' }}>Legal</Title>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                             <li style={{ marginBottom: '8px' }}>
-                                <Link style={{ color: '#aaa' }} href="/terms">Terms of Service</Link>
+                                <Link style={{ color: '#aaa' }} >Terms of Service</Link>
                             </li>
                             <li style={{ marginBottom: '8px' }}>
-                                <Link style={{ color: '#aaa' }} href="/privacy">Privacy Policy</Link>
+                                <Link style={{ color: '#aaa' }} >Privacy Policy</Link>
                             </li>
                             <li>
-                                <Link style={{ color: '#aaa' }} href="/cookies">Cookie Policy</Link>
+                                <Link style={{ color: '#aaa' }} >Cookie Policy</Link>
                             </li>
                         </ul>
-                    </Col>
-                </Row>
+                    </Col >
+                </Row >
 
                 {/* Copyright */}
-                <Row>
+                < Row >
                     <Col span={24}>
                         <div style={{ borderTop: '1px solid #333', marginTop: '32px', paddingTop: '24px', textAlign: 'center' }}>
                             <Text style={{ color: '#aaa' }}>© 2025 EduOnline. All rights reserved.</Text>
                         </div>
                     </Col>
-                </Row>
-            </div>
-        </AntFooter>
+                </Row >
+            </div >
+        </AntFooter >
     );
 };
 

@@ -32,16 +32,6 @@ const HomePage = () => {
 
     const carouselData = [
         {
-            title: "Thành Quả của Học Viên",
-            description: "Để đạt được kết quả tốt trong mọi việc ta cần xác định mục tiêu rõ ràng cho việc đó. Học lập trình cũng không là ngoại lệ.",
-            imageUrl: "https://files.fullstack.edu.vn/f8-prod/banners/Banner_04_2.png"
-        },
-        {
-            title: "Khóa Học Chất Lượng",
-            description: "Học theo lộ trình rõ ràng, bài bản từ cơ bản đến nâng cao, phù hợp cho cả người mới bắt đầu.",
-            imageUrl: "https://files.fullstack.edu.vn/f8-prod/banners/37/66b5a6b16d31a.png"
-        },
-        {
             title: "Khóa Học Chất Lượng",
             description: "Học theo lộ trình rõ ràng, bài bản từ cơ bản đến nâng cao, phù hợp cho cả người mới bắt đầu.",
             imageUrl: "https://files.fullstack.edu.vn/f8-prod/banners/Banner_01_2.png"
@@ -54,11 +44,14 @@ const HomePage = () => {
     ];
 
     const fectFeaturedCourses = async () => {
-        const courses = await GetCourseList();
-        const topCourse = courses
-            .sort((a, b) => b.students.length - a.students.length) // Sắp xếp giảm dần theo số students
-            .slice(0, 3);
-        setFeaturedCourses(topCourse);
+        try {
+            const courses = await GetCourseList();
+            const topCourse = courses
+                .sort((a, b) => b.students.length - a.students.length) // Sắp xếp giảm dần theo số students
+                .slice(0, 3);
+            setFeaturedCourses(topCourse);
+        } catch (error) {
+        }
     }
 
     useEffect(() => {

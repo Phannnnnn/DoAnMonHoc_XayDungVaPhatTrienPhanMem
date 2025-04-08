@@ -20,19 +20,22 @@ const RegisterPage = () => {
 
     //Ham submit form
     const onFinish = async (values) => {
-        setLoading(true);
-        const { name, email, password } = values;
+        try {
+            setLoading(true);
+            const { name, email, password } = values;
 
-        //Goi api dang ki tai khoan
-        const res = await UserRegister(name, email, password);
+            //Goi api dang ki tai khoan
+            const res = await UserRegister(name, email, password);
 
-        if (res && res.EC === 0) {
-            message.success('Đăng ký thành công.');
-            navigate("/login");
-            setLoading(false);
-        }
-        else {
+            if (res && res.EC === 0) {
+                message.success('Đăng ký thành công.');
+                navigate("/login");
+                setLoading(false);
+            }
+        } catch (error) {
             message.error('Đăng ký không thành công vui lòng kiểm tra lại thông tin!');
+        }
+        finally {
             setLoading(false);
         }
     };

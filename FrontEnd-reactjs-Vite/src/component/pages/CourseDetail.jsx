@@ -27,7 +27,6 @@ const CourseDetail = () => {
                 setCourseDetail(course);
             }
         } catch (error) {
-            console.error("Lỗi khi tải dữ liệu khóa học:", error);
         }
     };
 
@@ -66,7 +65,6 @@ const CourseDetail = () => {
                 userName: auth?.user?.name || "User -name",
                 courseName: courseDetails?.name || "Course-name"
             }
-            console.log(acctivitie);
             await createActivitie(acctivitie);
 
             // Cập nhật danh sách học viên của khóa học
@@ -84,7 +82,6 @@ const CourseDetail = () => {
                 }
             }
         } catch (error) {
-            console.error("Lỗi khi đăng ký khóa học:", error);
             message.error("Có lỗi xảy ra. Vui lòng thử lại.");
         }
     };

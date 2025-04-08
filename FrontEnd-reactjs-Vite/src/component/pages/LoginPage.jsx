@@ -45,7 +45,6 @@ const LoginPage = () => {
                 message.error('Email hoặc mật khẩu không chính xác!');
             }
         } catch (error) {
-            console.error("Lỗi đăng nhập:", error);
             message.error('Có lỗi xảy ra khi đăng nhập!');
         } finally {
             setLoading(false);

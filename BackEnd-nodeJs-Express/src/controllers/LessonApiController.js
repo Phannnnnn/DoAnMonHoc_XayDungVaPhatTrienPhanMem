@@ -28,7 +28,6 @@ const restoreLesson = async (req, res) => {
 
 const destroyLesson = async (req, res) => {
     const { lessonId } = req.query;
-    // console.log(lessonId);
     const data = await destroyLessonService(lessonId);
     res.status(201).json(data);
 }
