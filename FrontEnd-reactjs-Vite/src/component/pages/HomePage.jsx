@@ -109,6 +109,7 @@ const HomePage = () => {
 
                 <Row gutter={[24, 24]} className="courses-row">
                     {featuredCourses.map(course => (
+
                         <Col xs={24} sm={12} md={8} key={course._id}>
                             <Card
                                 hoverable
@@ -122,15 +123,17 @@ const HomePage = () => {
                                             alignItems: 'center'
                                         }}
                                     >
-                                        <img
-                                            alt={course.name}
-                                            src={course.course_img || `${import.meta.env.VITE_BACKEND_URL}/uploads/no-img.png`}
-                                            style={{
-                                                width: '100%',
-                                                height: '100%',
-                                                objectFit: 'cover' // Đảm bảo ảnh fill đầy không bị méo
-                                            }}
-                                        />
+                                        <Link to={`/course-detail/${course._id}`}>
+                                            <img
+                                                alt={course.name}
+                                                src={course.course_img || `${import.meta.env.VITE_BACKEND_URL}/uploads/no-img.png`}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'cover' // Đảm bảo ảnh fill đầy không bị méo
+                                                }}
+                                            />
+                                        </Link>
                                     </div>
                                 }
                                 className="course-card"

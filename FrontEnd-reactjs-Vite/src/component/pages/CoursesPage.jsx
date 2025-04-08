@@ -93,18 +93,17 @@ const CoursesPage = () => {
                 position: "relative"
             }}
         >
-
             <img
                 onClick={() => onHandleEnroll(course._id)}
                 src={course.course_img || `${import.meta.env.VITE_BACKEND_URL}/uploads/no-img.png`}
                 alt={course.name}
                 style={{ width: "100%", height: "140px", objectFit: "cover" }}
             />
-
             <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: "12px", flex: 1 }}>
-                {course.name}
+                <Typography.Text>
+                    <strong>{course.name}</strong>
+                </Typography.Text>
             </Paragraph>
-
             <Space direction="vertical" size="small" style={{ width: "100%" }}>
                 <Tag color={course.price === 0 ? "green" : "orange"}>
                     {course.price === 0 ? "Miễn phí" : new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(course.price)}
@@ -126,8 +125,8 @@ const CoursesPage = () => {
 
     // Filter courses
     const filteredCourses = coursesData.filter(course => {
-        const matchesSearch = course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            course.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = (course.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+            (course.description?.toLowerCase() || "").includes(searchTerm.toLowerCase());
 
         const matchesPrice = priceFilter === "all" ||
             (priceFilter === "free" && course.price === 0) ||
@@ -197,7 +196,13 @@ const CoursesPage = () => {
                         ))}
                     </Row>
                     {filteredCourses.length > pageSize && (
-                        <Pagination current={currentPage} total={filteredCourses.length} pageSize={pageSize} onChange={handlePageChange} showSizeChanger={false} />
+                        <Pagination
+                            current={currentPage}
+                            total={filteredCourses.length}
+                            pageSize={pageSize}
+                            onChange={handlePageChange}
+                            showSizeChanger={false}
+                        />
                     )}
                 </>
             ) : <Empty description="Không tìm thấy khóa học nào" />}

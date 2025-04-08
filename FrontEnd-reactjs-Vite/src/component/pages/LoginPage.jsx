@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Form, Input, Button, Typography, message, Divider, Space, Row, Col } from 'antd';
+import React, { useContext, useState } from 'react';
+import { Form, Input, Button, Typography, message, Divider, Row, Col } from 'antd';
 import {
     EyeInvisibleOutlined,
     EyeTwoTone,
@@ -8,10 +8,10 @@ import {
     UserOutlined
 } from '@ant-design/icons';
 import { UserLogin } from '../../ultill/userApi';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth.context';
 
-const { Title, Text, Link, Paragraph } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
@@ -107,12 +107,6 @@ const LoginPage = () => {
                                     />
                                 </Form.Item>
 
-                                <div className="login-options">
-                                    <Link href="#" className="forgot-password">
-                                        Quên mật khẩu?
-                                    </Link>
-                                </div>
-
                                 <Form.Item>
                                     <Button
                                         type="primary"
@@ -131,19 +125,21 @@ const LoginPage = () => {
                                 <Text type="secondary">Hoặc</Text>
                             </Divider>
 
-                            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+                            {/* <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                                 <Button block size="large" className="social-button google-button">
                                     Đăng nhập với Google
                                 </Button>
                                 <Button block size="large" className="social-button facebook-button">
                                     Đăng nhập với Facebook
                                 </Button>
-                            </Space>
-
-                            <div className="register-link">
-                                <Text>
-                                    Bạn chưa có tài khoản? <Link to={"/register"}>Đăng ký ngay</Link>
-                                </Text>
+                            </Space> */}
+                            <div className='register-link'>
+                                <Typography.Text>
+                                    Bạn chưa có tài khoản?{" "}
+                                    <Link to="/register">
+                                        <strong>Đăng ký ngay</strong>
+                                    </Link>
+                                </Typography.Text>
                             </div>
                         </div>
                     </Col>

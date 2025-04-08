@@ -9,9 +9,9 @@ import {
     CheckCircleOutlined
 } from '@ant-design/icons';
 import { UserRegister } from '../../ultill/userApi.js';
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
-const { Title, Text, Link, Paragraph } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -156,19 +156,22 @@ const RegisterPage = () => {
                                 <Text type="secondary">Hoặc</Text>
                             </Divider>
 
-                            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+                            {/* <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                                 <Button block size="large" className="social-button google-button">
                                     Đăng ký với Google
                                 </Button>
                                 <Button block size="large" className="social-button facebook-button">
                                     Đăng ký với Facebook
                                 </Button>
-                            </Space>
+                            </Space> */}
 
                             <div className="login-link">
-                                <Text>
-                                    Bạn đã có tài khoản? <Link to={"/login"}>Đăng nhập</Link>
-                                </Text>
+                                <Typography.Text>
+                                    Bạn đã có tài khoản?{" "}
+                                    <Link to="/login">
+                                        <strong>Đăng nhập</strong>
+                                    </Link>
+                                </Typography.Text>
                             </div>
                         </div>
                     </Col>

@@ -1,17 +1,13 @@
 import React, { useContext, useState } from 'react';
-import { Menu, Input, Button, Avatar, Dropdown, Typography, Layout, Space, Divider } from 'antd';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import logo from "../../assets/logo/Edulicate1.png";
+import { Menu, Input, Avatar, Dropdown, Typography, Layout, Space, Divider } from 'antd';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-    BookOutlined,
     UserOutlined,
     LogoutOutlined,
-    SettingOutlined,
-    SearchOutlined,
     HomeOutlined,
     ReadOutlined,
-    TeamOutlined,
-    InfoCircleOutlined,
-    QuestionCircleOutlined
+    SettingOutlined,
 } from '@ant-design/icons';
 import { AuthContext } from '../context/auth.context';
 
@@ -73,9 +69,19 @@ const AdminHeader = () => {
     const menuItems = [
         {
             label: (
+                <Link to="/">
+                    <Space key="home">
+                        <HomeOutlined /> Trang chủ
+                    </Space>
+                </Link>
+            ),
+            key: '/',
+        },
+        {
+            label: (
                 <Link to="/manager">
                     <Space key="dasboard">
-                        <HomeOutlined /> Trang quản trị
+                        <SettingOutlined /> Trang quản trị
                     </Space>
                 </Link>
             ),
@@ -122,10 +128,36 @@ const AdminHeader = () => {
             <AntHeader style={styles.header}>
                 <div style={styles.container}>
                     {/* Logo */}
-                    <div style={styles.logo}>
-                        <Link to="/" style={styles.logoLink}>
-                            <BookOutlined style={styles.logoIcon} />
-                            <Title level={3} style={styles.logoText}>EduOnline</Title>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '8px 0'
+                    }}>
+                        <Link to="/" style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            textDecoration: 'none',
+                            color: 'inherit',
+                            whiteSpace: 'nowrap' // Ngăn chữ xuống dòng
+                        }}>
+                            <img
+                                src={logo}
+                                alt="Logo EduOnline"
+                                style={{
+                                    height: '38px',
+                                    objectFit: 'contain'
+                                }}
+                            />
+                            <Title level={3} style={{
+                                margin: 0,
+                                fontWeight: 600,
+                                color: '#4096ff',
+                                whiteSpace: 'nowrap', // Ngăn chữ xuống dòng
+                                fontSize: '18px' // Giảm kích thước chữ nếu cần thiết
+                            }}>
+                                EduOnline
+                            </Title>
                         </Link>
                     </div>
 

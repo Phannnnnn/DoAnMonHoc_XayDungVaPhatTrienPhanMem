@@ -15,7 +15,7 @@ const createLessonService = async (title, content, video_id, course_id, order) =
             video_id,
             course_id,
             order,
-            esson_img: `https://i.ytimg.com/vi/${video_id}/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCvhOydCVOREo2vIDNsS1lXKWwQgA`
+            lesson_img: `https://i.ytimg.com/vi/${video_id}/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCvhOydCVOREo2vIDNsS1lXKWwQgA`
         });
 
         await newLesson.save();
@@ -30,7 +30,7 @@ const createLessonService = async (title, content, video_id, course_id, order) =
 
 const updateLessonService = async (lessonId, lesson) => {
     try {
-        lesson.lesson_img = `https://i.ytimg.com/vi/${lessonId}/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCvhOydCVOREo2vIDNsS1lXKWwQgA`;
+        lesson.lesson_img = `https://i.ytimg.com/vi/${lesson.video_id}/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCvhOydCVOREo2vIDNsS1lXKWwQgA`
         const result = await Lesson.updateOne({ _id: lessonId }, lesson);
         return result;
     } catch (error) {

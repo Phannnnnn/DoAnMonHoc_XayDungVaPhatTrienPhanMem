@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Menu, Input, Button, Avatar, Dropdown, Typography, Layout, Space, Divider } from 'antd';
+import logo from "../../assets/logo/Edulicate1.png";
+import { Menu, Button, Avatar, Dropdown, Typography, Layout, Space, Divider } from 'antd';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-    BookOutlined,
     UserOutlined,
     LogoutOutlined,
     SettingOutlined,
@@ -12,8 +12,7 @@ import {
 import { AuthContext } from '../context/auth.context';
 
 const { Header: AntHeader } = Layout;
-const { Text, Title } = Typography;
-const { Search } = Input;
+const { Title } = Typography;
 
 const Header = () => {
     const location = useLocation();
@@ -138,13 +137,38 @@ const Header = () => {
             <AntHeader style={styles.header}>
                 <div style={styles.container}>
                     {/* Logo */}
-                    <div style={styles.logo}>
-                        <Link to="/" style={styles.logoLink}>
-                            <BookOutlined style={styles.logoIcon} />
-                            <Title level={3} style={styles.logoText}>EduOnline</Title>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '8px 0'
+                    }}>
+                        <Link to="/" style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            textDecoration: 'none',
+                            color: 'inherit',
+                            whiteSpace: 'nowrap' // Ngăn chữ xuống dòng
+                        }}>
+                            <img
+                                src={logo}
+                                alt="Logo EduOnline"
+                                style={{
+                                    height: '38px',
+                                    objectFit: 'contain'
+                                }}
+                            />
+                            <Title level={3} style={{
+                                margin: 0,
+                                fontWeight: 600,
+                                color: '#4096ff',
+                                whiteSpace: 'nowrap', // Ngăn chữ xuống dòng
+                                fontSize: '18px' // Giảm kích thước chữ nếu cần thiết
+                            }}>
+                                EduOnline
+                            </Title>
                         </Link>
                     </div>
-
                     {/* Navigation Menu - Đặt ở giữa */}
                     <div style={styles.menuContainer}>
                         <Menu
