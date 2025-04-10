@@ -93,7 +93,7 @@ const Header = () => {
             ),
             key: '/course',
         },
-        ...(auth?.user?.role === "teacher" || "admin" ? [
+        ...(auth?.user?.role === "teacher" || auth?.user?.role === "admin" ? [
             {
                 label: (
                     <Link to="/course-manager">

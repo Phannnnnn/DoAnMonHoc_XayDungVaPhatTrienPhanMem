@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Row, Col, Typography, Button, Card, Divider, message, Modal } from 'antd';
+import { Row, Col, Typography, Button, Card, Divider, message, Modal, Space } from 'antd';
 import { AimOutlined, BookOutlined, PlayCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { CourseUpdate, GetCourse } from '../../ultill/courseApi';
@@ -174,14 +174,16 @@ const CourseDetail = () => {
             open={isPaymentModalVisible}
             onCancel={() => setIsPaymentModalVisible(false)}
             footer={[
-                <Button key="back" onClick={() => setIsPaymentModalVisible(false)}>
-                    Hủy
-                </Button>,
-                <Link key="submit" to={qrUrl}>
-                    <Button type="primary">
-                        Xác nhận thanh toán
+                <Space key="footer-buttons" size={8}>
+                    <Button key="back" onClick={() => setIsPaymentModalVisible(false)}>
+                        Hủy
                     </Button>
-                </Link>,
+                    <Link key="submit" to={qrUrl}>
+                        <Button type="primary">
+                            Xác nhận thanh toán
+                        </Button>
+                    </Link>
+                </Space>
             ]}
             width={600}
         >
