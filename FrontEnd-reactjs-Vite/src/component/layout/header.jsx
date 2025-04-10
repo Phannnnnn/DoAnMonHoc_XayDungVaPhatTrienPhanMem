@@ -8,6 +8,7 @@ import {
     SettingOutlined,
     HomeOutlined,
     ReadOutlined,
+    DashboardOutlined,
 } from '@ant-design/icons';
 import { AuthContext } from '../context/auth.context';
 
@@ -92,19 +93,7 @@ const Header = () => {
             ),
             key: '/course',
         },
-        ...(auth?.user?.role === "admin" ? [
-            {
-                label: (
-                    <Link to="/manager">
-                        <Space key="manager">
-                            <SettingOutlined /> Trang quản trị
-                        </Space>
-                    </Link>
-                ),
-                key: '/manager',
-            },
-        ] : []),
-        ...(auth?.user?.role === "teacher" ? [
+        ...(auth?.user?.role === "teacher" || "admin" ? [
             {
                 label: (
                     <Link to="/course-manager">
@@ -115,7 +104,18 @@ const Header = () => {
                 ),
                 key: '/course-manager',
             },
-        ] : [])
+        ] : []), ...(auth?.user?.role === "admin" ? [
+            {
+                label: (
+                    <Link to="/manager">
+                        <Space key="manager">
+                            <DashboardOutlined /> Trang quản trị
+                        </Space>
+                    </Link>
+                ),
+                key: '/manager',
+            },
+        ] : []),
     ];
 
     return (

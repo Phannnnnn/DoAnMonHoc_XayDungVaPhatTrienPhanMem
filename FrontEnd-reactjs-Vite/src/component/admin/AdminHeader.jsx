@@ -8,6 +8,7 @@ import {
     HomeOutlined,
     ReadOutlined,
     SettingOutlined,
+    DashboardOutlined,
 } from '@ant-design/icons';
 import { AuthContext } from '../context/auth.context';
 
@@ -81,7 +82,7 @@ const AdminHeader = () => {
             label: (
                 <Link to="/manager">
                     <Space key="dasboard">
-                        <SettingOutlined /> Trang quản trị
+                        <DashboardOutlined /> Trang quản trị
                     </Space>
                 </Link>
             ),

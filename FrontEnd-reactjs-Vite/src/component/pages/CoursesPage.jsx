@@ -108,7 +108,6 @@ const CoursesPage = () => {
                 <Tag color={course.price === 0 ? "green" : "orange"}>
                     {course.price === 0 ? "Miễn phí" : new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(course.price)}
                 </Tag>
-
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <Text>
                         <UserOutlined style={{ marginRight: "4px" }} />

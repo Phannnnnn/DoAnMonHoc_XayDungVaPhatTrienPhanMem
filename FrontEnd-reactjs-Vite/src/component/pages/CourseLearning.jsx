@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Typography, Button, Card, Alert, List } from 'antd';
+import { Layout, Typography, Button, Card, Alert, List, Tag } from 'antd';
 import { CalendarOutlined, PlayCircleOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import { GetLessonList } from '../../ultill/lessonApi';
@@ -21,20 +21,79 @@ const CourseLearning = () => {
         const fetchLessons = async () => {
             try {
                 const res = await GetLessonList(id);
+                console.log(res);
                 if (!Array.isArray(res)) {
                     throw new Error("Dữ liệu trả về không phải là mảng!");
                 }
                 const sortedLessons = res.sort((a, b) => a.order - b.order);
                 setLessons(sortedLessons);
-                if (res.length > 0) {
-                    setCurrentVideo(res[0]);
+
+                // Tìm bài học đầu tiên chưa bị xóa mềm để hiển thị
+                const firstActiveLesson = sortedLessons.find(lesson => !lesson.deleted);
+                if (firstActiveLesson) {
+                    setCurrentVideo(firstActiveLesson);
+                } else if (sortedLessons.length > 0) {
+                    // Nếu không có bài học nào active, hiển thị bài đầu tiên (có thể đã bị xóa mềm)
+                    setCurrentVideo(sortedLessons[0]);
                 }
             } catch (error) {
+                // Xử lý lỗi ở đây nếu cần
             }
         };
         fetchLessons();
     }, [id]);
 
+    // Hàm để chuyển đến bài học trước đó không bị xóa mềm
+    const goToPreviousLesson = () => {
+        const currentIndex = lessons.findIndex(lesson => lesson._id === currentVideo._id);
+        if (currentIndex > 0) {
+            // Tìm bài học trước đó chưa bị xóa mềm
+            for (let i = currentIndex - 1; i >= 0; i--) {
+                if (!lessons[i].deleted) {
+                    setVideoError(false);
+                    setCurrentVideo(lessons[i]);
+                    return;
+                }
+            }
+        }
+    };
+
+    // Hàm để chuyển đến bài học tiếp theo không bị xóa mềm
+    const goToNextLesson = () => {
+        const currentIndex = lessons.findIndex(lesson => lesson._id === currentVideo._id);
+        if (currentIndex < lessons.length - 1) {
+            // Tìm bài học tiếp theo chưa bị xóa mềm
+            for (let i = currentIndex + 1; i < lessons.length; i++) {
+                if (!lessons[i].deleted) {
+                    setVideoError(false);
+                    setCurrentVideo(lessons[i]);
+                    return;
+                }
+            }
+        }
+    };
+
+    // Kiểm tra xem có bài học trước đó không bị xóa mềm không
+    const hasPreviousLesson = () => {
+        const currentIndex = lessons.findIndex(lesson => lesson._id === currentVideo._id);
+        for (let i = currentIndex - 1; i >= 0; i--) {
+            if (!lessons[i].deleted) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    // Kiểm tra xem có bài học tiếp theo không bị xóa mềm không
+    const hasNextLesson = () => {
+        const currentIndex = lessons.findIndex(lesson => lesson._id === currentVideo._id);
+        for (let i = currentIndex + 1; i < lessons.length; i++) {
+            if (!lessons[i].deleted) {
+                return true;
+            }
+        }
+        return false;
+    };
 
     return (
         <div style={{ display: 'flex', maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
@@ -48,6 +107,13 @@ const CourseLearning = () => {
                             type="error"
                             showIcon
                         />
+                    ) : currentVideo.deleted ? (
+                        <Alert
+                            message="Bài học không khả dụng"
+                            description="Bài học này hiện không khả dụng. Vui lòng chọn bài học khác."
+                            type="warning"
+                            showIcon
+                        />
                     ) : (
                         <div
                             style={{
@@ -59,7 +125,7 @@ const CourseLearning = () => {
                         >
                             <iframe
                                 src={currentVideo?.video_id ? `https://www.youtube.com/embed/${currentVideo.video_id}` : ""}
-                                title={currentVideo?.name || "Video"}
+                                title={currentVideo?.title || "Video"}
                                 style={{
                                     position: 'absolute',
                                     top: 0,
@@ -79,6 +145,11 @@ const CourseLearning = () => {
                     <Content style={{ marginTop: '20px', textAlign: 'center' }}>
                         <Title level={2} style={{ marginBottom: '10px' }}>
                             {currentVideo.title}
+                            {currentVideo.deleted && (
+                                <Tag color="red" style={{ marginLeft: '10px' }}>
+                                    Đã bị vô hiệu hóa
+                                </Tag>
+                            )}
                         </Title>
 
                         <div style={{
@@ -114,33 +185,20 @@ const CourseLearning = () => {
                     }}
                 >
                     <Button
-                        disabled={lessons.findIndex(lesson => lesson._id === currentVideo._id) === 0} // Vô hiệu hóa nếu là bài đầu
-                        onClick={() => {
-                            const currentIndex = lessons.findIndex(lesson => lesson._id === currentVideo._id);
-                            if (currentIndex > 0) {
-                                setVideoError(false);
-                                setCurrentVideo(lessons[currentIndex - 1]);
-                            }
-                        }}
+                        disabled={!hasPreviousLesson()} // Vô hiệu hóa nếu không có bài học trước đó không bị xóa mềm
+                        onClick={goToPreviousLesson}
                     >
                         Bài trước
                     </Button>
 
                     <Button
                         type="primary"
-                        disabled={lessons.findIndex(lesson => lesson._id === currentVideo._id) === lessons.length - 1} // Vô hiệu hóa nếu là bài cuối
-                        onClick={() => {
-                            const currentIndex = lessons.findIndex(lesson => lesson._id === currentVideo._id);
-                            if (currentIndex < lessons.length - 1) {
-                                setVideoError(false);
-                                setCurrentVideo(lessons[currentIndex + 1]);
-                            }
-                        }}
+                        disabled={!hasNextLesson()} // Vô hiệu hóa nếu không có bài học tiếp theo không bị xóa mềm
+                        onClick={goToNextLesson}
                     >
                         Bài tiếp theo
                     </Button>
                 </div>
-
             </div>
 
             {/* Cột phải: Danh sách các bài học */}
@@ -152,25 +210,60 @@ const CourseLearning = () => {
                         renderItem={(item) => (
                             <List.Item
                                 style={{
-                                    cursor: 'pointer',
-                                    backgroundColor: currentVideo.video_id === item.video_id ? '#e6f7ff' : 'transparent',
+                                    cursor: item.deleted ? 'not-allowed' : 'pointer',
+                                    backgroundColor: currentVideo._id === item._id ? '#e6f7ff' : 'transparent',
                                     borderRadius: '5px',
-                                    padding: '10px'
+                                    padding: '10px',
+                                    opacity: item.deleted ? 0.5 : 1
                                 }}
                                 onClick={() => {
-                                    setVideoError(false);
-                                    setCurrentVideo(item);
+                                    if (!item.deleted) {
+                                        setVideoError(false);
+                                        setCurrentVideo(item);
+                                    }
                                 }}
                             >
                                 <List.Item.Meta
                                     avatar={
-                                        <img
-                                            src={item.lesson_img || `https://i.ytimg.com/vi/${item.video_id}/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCvhOydCVOREo2vIDNsS1lXKWwQgA`}
-                                            alt="Thumbnail"
-                                            style={{ width: '100px', height: '60px', borderRadius: '5px', objectFit: 'cover' }}
-                                        />
+                                        <div style={{ position: 'relative' }}>
+                                            <img
+                                                src={item.lesson_img || `https://i.ytimg.com/vi/${item.video_id}/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCvhOydCVOREo2vIDNsS1lXKWwQgA`}
+                                                alt="Thumbnail"
+                                                style={{
+                                                    width: '100px',
+                                                    height: '60px',
+                                                    borderRadius: '5px',
+                                                    objectFit: 'cover',
+                                                    filter: item.deleted ? 'grayscale(100%)' : 'none'
+                                                }}
+                                            />
+                                            {item.deleted && (
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    top: '50%',
+                                                    left: '50%',
+                                                    transform: 'translate(-50%, -50%)',
+                                                    backgroundColor: 'rgba(0,0,0,0.7)',
+                                                    color: 'white',
+                                                    padding: '2px 6px',
+                                                    borderRadius: '3px',
+                                                    fontSize: '10px'
+                                                }}>
+                                                    Vô hiệu hóa
+                                                </div>
+                                            )}
+                                        </div>
                                     }
-                                    title={item.title}
+                                    title={
+                                        <>
+                                            {item.title}
+                                            {item.deleted && (
+                                                <Tag color="red" style={{ marginLeft: '8px' }}>
+                                                    Bài học bị ẩn
+                                                </Tag>
+                                            )}
+                                        </>
+                                    }
                                     description={`Cập nhật ${new Date(item.updatedAt).toLocaleString('vi-VN', {
                                         day: '2-digit',
                                         month: '2-digit',
@@ -183,7 +276,6 @@ const CourseLearning = () => {
                             </List.Item>
                         )}
                     />
-
                 </Card>
             </div>
         </div>
