@@ -81,6 +81,7 @@ const CourseDetail = () => {
                 throw error;
             }
         } else {
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
     }
     useEffect(() => {
