@@ -8,10 +8,7 @@ const port = process.env.PORT || 8888;
 var cors = require('cors')
 
 //Sửa lỗi CORS khi gọi API từ FrontEnd
-app.use(cors({
-    origin: ['https://do-an-mon-hoc-xay-dung-va-phat-trien-phan-mem.vercel.app', 'http://localhost:5173'], // Thêm cả localhost cho môi trường phát triển
-    credentials: true
-}));
+app.use(cors());
 
 // Xử lý form data (application/x-www-form-urlencoded)
 app.use(express.urlencoded({ extended: true }));
