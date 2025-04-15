@@ -32,6 +32,10 @@ const RegisterPage = () => {
                 navigate("/login");
                 setLoading(false);
             }
+            else {
+                message.info('Đăng ký không thành công vui lòng kiểm tra lại thông tin.');
+                setLoading(false);
+            }
         } catch (error) {
             message.error('Đăng ký không thành công vui lòng kiểm tra lại thông tin!');
         }

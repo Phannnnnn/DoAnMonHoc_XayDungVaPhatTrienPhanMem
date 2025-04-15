@@ -1,6 +1,6 @@
 const { ProductCode, VNPay, VnpLocale, dateFormat, ignoreLogger } = require('vnpay');
 
-const createPaymentService = async ({ vnp_Amount, orderInfo, vnp_ReturnUrl }) => {
+const createPaymentService = async ({ vnp_Amount, orderInfo, vnp_ReturnUrl, vnp_IpAddr }) => {
     try {
         const vnpay = new VNPay({
             tmnCode: '9XCTQPJ2',
@@ -25,11 +25,11 @@ const createPaymentService = async ({ vnp_Amount, orderInfo, vnp_ReturnUrl }) =>
 
         const vnpayUrl = await vnpay.buildPaymentUrl({
             vnp_Amount: vnp_Amount,
-            vnp_IpAddr: '127.0.0.1',
+            vnp_IpAddr: vnp_IpAddr || '127.0.0.1',
             vnp_TxnRef: Date.now().toString(),
             vnp_OrderInfo: orderInfo || 'Thanh toan VNPAY',
             vnp_OrderType: ProductCode.Other,
-            vnp_ReturnUrl: vnp_ReturnUrl || 'http://localhost:8080/v1/api/vnpay-return',
+            vnp_ReturnUrl: vnp_ReturnUrl || 'https://doanmonhoc-xaydungvaphattrienphanmem.onrender.com/v1/api/vnpay-return',
             vnp_Locale: VnpLocale.VN,
             vnp_CreateDate: dateFormat(now),
             vnp_ExpireDate: dateFormat(tomorrow),

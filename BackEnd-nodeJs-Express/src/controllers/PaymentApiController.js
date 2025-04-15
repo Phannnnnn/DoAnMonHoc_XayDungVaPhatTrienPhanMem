@@ -3,14 +3,26 @@ const { createPaymentService, checkPaymentService } = require("../services/payme
 
 const paymentCreate = async (req, res) => {
     let { vnp_Amount, orderInfo, vnp_ReturnUrl } = req.query;
-    vnp_Amount = Number(vnp_Amount); // ✅ ép kiểu tại đây
-    const { success, vnpUrl } = await createPaymentService({ vnp_Amount, orderInfo, vnp_ReturnUrl });
+    vnp_Amount = Number(vnp_Amount);
+
+    const vnp_IpAddr = req.ip;
+    console.log(vnp_IpAddr);
+
+    const { success, vnpUrl } = await createPaymentService({ vnp_Amount, orderInfo, vnp_ReturnUrl, vnp_IpAddr });
     const qrImage = await generateQrFromUrl(vnpUrl);
     return res.status(201).json({
         success: true,
         url: vnpUrl,
         qr: qrImage, // Đây là base64
     });
+}
+
+function getClientIp(req) {
+    const forwardedFor = req.headers['x-forwarded-for'];
+    if (forwardedFor) {
+        return forwardedFor.split(',')[0].trim();
+    }
+    return req.socket.remoteAddress;
 }
 
 const generateQrFromUrl = async (url) => {

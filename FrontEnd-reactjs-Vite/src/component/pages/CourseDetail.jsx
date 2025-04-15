@@ -72,6 +72,7 @@ const CourseDetail = () => {
                     if (userUpdateRes?.modifiedCount > 0 && courseUpdateRes.modifiedCount > 0) {
                         message.success("Đăng ký thành công.");
                         navigate(`/course-learning/${id}`);
+                        return;
                     } else {
                         message.error("Đăng ký không thành công. Vui lòng thử lại.");
                     }
@@ -154,6 +155,7 @@ const CourseDetail = () => {
                 const vnp_Amount = courseDetails.price;
                 const orderInfo = `Thanh toan khoa hoc ${courseDetails.name}`;
                 const vnp_ReturnUrl = window.location.href;
+                console.log(vnp_ReturnUrl);
                 const res = await GetQrUrl(vnp_Amount, orderInfo, vnp_ReturnUrl);
                 setQrUrl(res?.url);
                 setQrImg(res?.qr);
