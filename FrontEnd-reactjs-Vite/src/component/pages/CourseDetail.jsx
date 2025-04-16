@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Row, Col, Typography, Button, Card, Divider, message, Modal, Space, QRCode, Input, Tag, Spin } from 'antd';
-import { AimOutlined, BookOutlined, PlayCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { AimOutlined, BookOutlined, LoadingOutlined, PlayCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { CourseUpdate, GetCourse } from '../../ultill/courseApi';
 import { GetInforUser, UpdateUser } from '../../ultill/userApi';
@@ -18,6 +18,7 @@ const CourseDetail = () => {
     const navigate = useNavigate();
     const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
     const [isPayment, setIsPayment] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [qrUrl, setQrUrl] = useState(null);
     const location = useLocation();
 
@@ -125,6 +126,7 @@ const CourseDetail = () => {
 
     const onHandlePayment = async () => {
         try {
+            setLoading(true);
             const orderData = {
                 amount: courseDetails.price,
                 user_id: auth?.user?.id,
@@ -144,9 +146,11 @@ const CourseDetail = () => {
                     setQrUrl(qrRes?.vnpUrl);
                     setIsPayment(true);
                 }
+                setLoading(false);
             }
         } catch (error) {
             message.error("Lỗi hệ thống vui lòng thử lại sau.");
+            setLoading(false);
         }
     }
 
@@ -163,7 +167,7 @@ const CourseDetail = () => {
             onCancel={() => onHandleCancelPayment()}
             footer={[
                 <Space key="footer-buttons" size={8}>
-                    <Button key="back" onClick={() => onHandleCancelPayment()}>
+                    <Button key="back" onClick={() => onHandleCancelPayment()} disabled={loading}>
                         Hủy
                     </Button>
                     {isPayment ?
@@ -179,8 +183,10 @@ const CourseDetail = () => {
                             <Button
                                 type="primary"
                                 onClick={() => onHandlePayment()}
+                                loading={loading}
+                                disabled={loading}
                             >
-                                Tiếp tục thanh toán
+                                {loading ? 'Đang xử lý...' : 'Tiếp tục thanh toán'}
                             </Button>
                         </>
                     }
