@@ -7,7 +7,7 @@ import {
     Col,
     Card,
     Space,
-    Divider
+    Spin,
 } from "antd";
 import {
     LeftOutlined,
@@ -16,7 +16,6 @@ import {
     TrophyOutlined,
     TeamOutlined,
     ArrowRightOutlined,
-    ClearOutlined,
     EllipsisOutlined
 } from '@ant-design/icons';
 import { Link } from "react-router-dom";
@@ -27,7 +26,7 @@ const { Meta } = Card;
 
 
 const HomePage = () => {
-
+    const [loading, setLoading] = useState(false);
     const [featuredCourses, setFeaturedCourses] = useState([]);
 
     const carouselData = [
@@ -45,18 +44,37 @@ const HomePage = () => {
 
     const fectFeaturedCourses = async () => {
         try {
+            setLoading(true);
             const courses = await GetCourseList();
             const topCourse = courses
                 .sort((a, b) => b.students.length - a.students.length) // Sắp xếp giảm dần theo số students
                 .slice(0, 3);
             setFeaturedCourses(topCourse);
+            setLoading(false);
         } catch (error) {
+            setLoading(false);
         }
     }
 
     useEffect(() => {
         fectFeaturedCourses();
     }, [])
+
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <Spin size="large" tip="">
+                    <div style={{ minHeight: 200 }}></div>
+                </Spin>
+            </div>
+        );
+    }
 
     // Custom carousel arrows
     const NextArrow = (props) => (
@@ -73,7 +91,6 @@ const HomePage = () => {
 
     return (
         <div className="homepage-container">
-            {/* Hero Carousel Section */}
             <Carousel
                 arrows
                 prevArrow={<PrevArrow />}
@@ -98,7 +115,6 @@ const HomePage = () => {
                 ))}
             </Carousel>
 
-            {/* Featured Courses Section */}
             <div className="section featured-courses">
                 <div className="section-header">
                     <Title level={2} className="section-title">Khóa Học Nổi Bật</Title>

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Table, Button, Space, Card, Input, Select, Tag, Avatar, Typography, Popconfirm, message, Tooltip, Row, Col, Modal, Form } from 'antd';
+import { Table, Button, Space, Card, Input, Select, Tag, Avatar, Typography, Popconfirm, message, Tooltip, Row, Col, Modal, Form, Spin } from 'antd';
 import {
     SearchOutlined,
     UserOutlined,
@@ -35,8 +35,8 @@ const User = () => {
     }, []);
 
     const fetchUsers = async () => {
-        setLoading(true);
         try {
+            setLoading(true);
             const res = await GetListUser();
             setUsers(res);
             applyFilters(res);
@@ -69,6 +69,22 @@ const User = () => {
     useEffect(() => {
         applyFilters(users);
     }, [searchText, roleFilter]);
+
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <Spin size="large" tip="">
+                    <div style={{ minHeight: 200 }}></div>
+                </Spin>
+            </div>
+        );
+    }
 
     const handleSearch = (value) => {
         setSearchText(value);

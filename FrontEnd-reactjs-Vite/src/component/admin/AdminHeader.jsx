@@ -7,20 +7,17 @@ import {
     LogoutOutlined,
     HomeOutlined,
     ReadOutlined,
-    SettingOutlined,
     DashboardOutlined,
 } from '@ant-design/icons';
 import { AuthContext } from '../context/auth.context';
 
 const { Header: AntHeader } = Layout;
-const { Text, Title } = Typography;
-const { Search } = Input;
+const { Title } = Typography;
 
 const AdminHeader = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { auth, setAuth } = useContext(AuthContext);
-    const [open, setOpen] = useState(false);
 
     const [user, setUser] = useState({
         name: auth?.user?.name ?? "",

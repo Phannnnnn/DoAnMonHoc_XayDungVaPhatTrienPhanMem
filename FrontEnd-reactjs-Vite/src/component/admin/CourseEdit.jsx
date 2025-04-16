@@ -92,6 +92,7 @@ const CourseEdit = () => {
                 });
                 setImageUrl(response.course_img);
                 setLessons(courseLessonList || []);
+                setLoading(false);
             } catch (error) {
                 message.error('Không thể tải thông tin khóa học.');
             } finally {
@@ -101,6 +102,22 @@ const CourseEdit = () => {
 
         fetchCourseData();
     }, [id, form]);
+
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <Spin size="large" tip="">
+                    <div style={{ minHeight: 200 }}></div>
+                </Spin>
+            </div>
+        );
+    }
 
     // Upload ảnh từ máy tính
     const handleImageUpload = async (info) => {

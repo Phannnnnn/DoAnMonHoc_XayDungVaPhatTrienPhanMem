@@ -10,6 +10,7 @@ import {
     Space,
     Avatar,
     Divider,
+    Spin,
 } from "antd";
 import {
     BookOutlined,
@@ -30,35 +31,41 @@ const AdminHomePage = () => {
     const [statisticsData, setStatisticsData] = useState([]);
     const [recentUsers, setRecentUsers] = useState([]);
     const [courseEnrollmentData, setCourseEnrollmentData] = useState([]);
-
-    const fectchStatisticsData = async () => {
-        try {
-            const course = await GetCourseList();
-            const user = await GetListUser();
-
-            const userList = user.filter(item => item.role === "user");
-            const roleTeacher = user.filter(item => item.role === "teacher");
-            setRecentUsers(userList);
-            setCourseEnrollmentData(course);
-
-            const students = course.reduce((total, course) => total + course.students.length, 0);
-            const courses = course.length;
-            const lessons = course.reduce((total, course) => total + course.lessons.length, 0);
-
-            setStatisticsData([
-                { title: "Tổng Học Viên", value: students || 0, icon: <TeamOutlined />, color: "#1890ff" },
-                { title: "Tổng Khóa Học", value: courses || 0, icon: <BookOutlined />, color: "#52c41a" },
-                { title: "Bài Giảng", value: lessons || 0, icon: <VideoCameraOutlined />, color: "#faad14" },
-                { title: "Giảng viên", value: roleTeacher?.length || 0, icon: <UserOutlined />, color: "#f15bb5" },
-            ]);
-        } catch (error) {
-
-        }
-    }
+    const [loading, setLoading] = useState(false);
+    const [activities, setActivities] = useState([]);
 
     useEffect(() => {
+        const fectchStatisticsData = async () => {
+            try {
+                setLoading(true);
+                const course = await GetCourseList();
+                const user = await GetListUser();
+                const res = await GetActivitie();
+                await setActivities(res);
+
+                const userList = user.filter(item => item.role === "user");
+                const roleTeacher = user.filter(item => item.role === "teacher");
+                setRecentUsers(userList);
+                setCourseEnrollmentData(course);
+
+                const students = course.reduce((total, course) => total + course.students.length, 0);
+                const courses = course.length;
+                const lessons = course.reduce((total, course) => total + course.lessons.length, 0);
+
+                setStatisticsData([
+                    { title: "Tổng Học Viên", value: students || 0, icon: <TeamOutlined />, color: "#1890ff" },
+                    { title: "Tổng Khóa Học", value: courses || 0, icon: <BookOutlined />, color: "#52c41a" },
+                    { title: "Bài Giảng", value: lessons || 0, icon: <VideoCameraOutlined />, color: "#faad14" },
+                    { title: "Giảng viên", value: roleTeacher?.length || 0, icon: <UserOutlined />, color: "#f15bb5" },
+                ]);
+                setLoading(false);
+            } catch (error) {
+                setLoading(false);
+            }
+        }
+
         fectchStatisticsData();
-    }, [])
+    }, []);
 
     const userColumns = [
         {
@@ -86,23 +93,21 @@ const AdminHomePage = () => {
         },
     ];
 
-
-    // Khởi tạo state cho danh sách hoạt động gần đây
-    const [activities, setActivities] = useState([]);
-
-    // Giả lập việc lấy dữ liệu từ API
-    useEffect(() => {
-        const fetchActivities = async () => {
-            try {
-                const res = await GetActivitie();
-                await setActivities(res);
-            } catch (error) {
-
-            }
-        };
-
-        fetchActivities();
-    }, []); // Chỉ gọi khi component mount
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <Spin size="large" tip="">
+                    <div style={{ minHeight: 200 }}></div>
+                </Spin>
+            </div>
+        );
+    }
 
     return (
         <div className="admin-dashboard-container" style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>

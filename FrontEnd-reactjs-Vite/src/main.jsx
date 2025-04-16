@@ -24,7 +24,6 @@ import CourseMangerPageTeacher from './component/pages/CourseMangerPageTeacher.j
 import CourseDetail from './component/pages/CourseDetail.jsx';
 import CourseLearning from './component/pages/CourseLearning.jsx';
 import { message } from 'antd';
-import ScrollToTop from './component/ScrollToTop.jsx';
 import PaymentSuccessPage from './component/pages/Payment-success.jsx';
 import PaymentFailedPage from './component/pages/Payment-failed.jsx';
 

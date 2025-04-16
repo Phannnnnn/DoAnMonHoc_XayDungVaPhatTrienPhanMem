@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, message, Typography, Input, Empty, Card, Tooltip, Popconfirm } from 'antd';
-import { DeleteOutlined, UndoOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table, Button, Space, message, Typography, Empty, Card, Tooltip, Popconfirm, Spin } from 'antd';
+import { DeleteOutlined, UndoOutlined } from '@ant-design/icons';
 import { DestroyCourse, GetCourseListDelete, restoreCourse } from '../../ultill/courseApi';
 import moment from 'moment';
 
@@ -17,6 +17,7 @@ const TrashCourse = () => {
 
     const fetchCoursesDelete = async () => {
         try {
+            setLoading(true);
             const res = await GetCourseListDelete();
             if (Array.isArray(res)) {
                 const formattedData = res.map(course => ({
@@ -41,6 +42,22 @@ const TrashCourse = () => {
     useEffect(() => {
         fetchCoursesDelete();
     }, []);
+
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <Spin size="large" tip="">
+                    <div style={{ minHeight: 200 }}></div>
+                </Spin>
+            </div>
+        );
+    }
 
     // Hàm xử lý khôi phục khóa học
     const handleRestore = (record) => {

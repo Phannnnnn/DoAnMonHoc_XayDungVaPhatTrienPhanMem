@@ -43,12 +43,15 @@ function App() {
     <div>
       {loading === true ? (
         <div style={{
-          position: "fixed",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)"
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          backgroundColor: '#f5f5f5'
         }}>
-          <Spin />
+          <Spin size="large" tip="">
+            <div style={{ minHeight: 200 }}></div>
+          </Spin>
         </div>
       ) : (
         <>

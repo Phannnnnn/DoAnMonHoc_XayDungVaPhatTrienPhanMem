@@ -9,7 +9,8 @@ import {
     Popconfirm,
     Typography,
     Statistic,
-    message
+    message,
+    Spin
 } from 'antd';
 import {
     DeleteOutlined,
@@ -29,7 +30,7 @@ const { Title, Text } = Typography;
 const CourseManagerPageTeacher = () => {
     const [courses, setCourses] = useState([]);
     const [currentCourse, setCurrentCourse] = useState(null);
-
+    const [loading, setLoading] = useState(false);
     const { auth, setAuth } = useContext(AuthContext);
 
 
@@ -40,13 +41,30 @@ const CourseManagerPageTeacher = () => {
 
     const fetchListCourse = async () => {
         try {
+            setLoading(true);
             const res = await GetCourseListByTeacherId(auth?.user?.id);
             setCourses(res);
+            setLoading(false);
         } catch (error) {
-
+            setLoading(false);
         }
     }
 
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <Spin size="large" tip="">
+                    <div style={{ minHeight: 200 }}></div>
+                </Spin>
+            </div>
+        );
+    }
 
     const handleDelete = async (course_id) => {
         try {
@@ -243,7 +261,7 @@ const CourseManagerPageTeacher = () => {
                     columns={columns}
                     dataSource={courses}
                     rowKey="_id"
-                    pagination={{ pageSize: 5 }}
+                    pagination={{ pageSize: 10 }}
                 />
             </div>
         </div>

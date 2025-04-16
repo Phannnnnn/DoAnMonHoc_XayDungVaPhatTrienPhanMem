@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Layout, Typography, Button, Card, Alert, List, Tag } from 'antd';
-import { CalendarOutlined, PlayCircleOutlined, FileTextOutlined } from '@ant-design/icons';
+import { Layout, Typography, Button, Card, Alert, List, Tag, Spin } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { GetLessonList } from '../../ultill/lessonApi';
 import { AuthContext } from '../context/auth.context';
@@ -16,6 +16,7 @@ const CourseLearning = () => {
     const [lessons, setLessons] = useState([]);
     const { auth } = useContext(AuthContext);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const handleVideoError = () => {
         setVideoError(true);
@@ -24,6 +25,7 @@ const CourseLearning = () => {
     useEffect(() => {
         const fetchLessons = async () => {
             try {
+                setLoading(true);
                 const userInfor = await GetInforUser(auth?.user?.id);
                 if (!userInfor?.enrolledCourses?.includes(id)) {
                     navigate(`/course-detail/${id}`);
@@ -40,15 +42,30 @@ const CourseLearning = () => {
                 if (firstActiveLesson) {
                     setCurrentVideo(firstActiveLesson);
                 } else if (sortedLessons.length > 0) {
-                    // Nếu không có bài học nào active, hiển thị bài đầu tiên (có thể đã bị xóa mềm)
-                    setCurrentVideo(sortedLessons[0]);
                 }
+                setLoading(false);
             } catch (error) {
-                // Xử lý lỗi ở đây nếu cần
+                setLoading(false);
             }
         };
         fetchLessons();
     }, [id]);
+
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <Spin size="large" tip="">
+                    <div style={{ minHeight: 200 }}></div>
+                </Spin>
+            </div>
+        );
+    }
 
     // Hàm để chuyển đến bài học trước đó không bị xóa mềm
     const goToPreviousLesson = () => {

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
     Empty, Typography, Button, Dropdown, Divider, Card, Row, Col,
-    Tag, Tooltip, Space, Skeleton, Input, Select, message, Modal
+    Tag, Tooltip, Space, Skeleton, Input, Select, message, Modal,
+    Spin, Pagination
 } from 'antd';
 import {
     MoreOutlined, EditOutlined, DeleteOutlined, PlusOutlined,
@@ -23,6 +24,12 @@ const Courses = () => {
     const [loading, setLoading] = useState(true);
     const [searchText, setSearchText] = useState('');
     const [filter, setFilter] = useState('all');
+    // Thêm state pagination
+    const [pagination, setPagination] = useState({
+        current: 1,
+        pageSize: 15,
+        total: 0
+    });
 
     // Format giá tiền
     const formatPrice = (price) => {
@@ -38,10 +45,19 @@ const Courses = () => {
             if (res && Array.isArray(res)) {
                 setCourses(res);
                 setFilteredCourses(res);
+                setPagination(prev => ({
+                    ...prev,
+                    total: res.length,
+                }));
             } else {
                 setCourses([]);
                 setFilteredCourses([]);
+                setPagination(prev => ({
+                    ...prev,
+                    total: 0,
+                }));
             }
+            setLoading(false);
         } catch (error) {
             message.error("Không thể tải danh sách khóa học");
         } finally {
@@ -71,8 +87,47 @@ const Courses = () => {
                 course.name.toLowerCase().includes(searchText.toLowerCase())
             );
         }
+
         setFilteredCourses(result);
+        setPagination(prev => ({
+            ...prev,
+            total: result.length,
+            current: 1 // Reset về trang đầu khi filter thay đổi
+        }));
     }, [searchText, filter, courses]);
+
+    // Xử lý thay đổi trang
+    const handleChangePage = (page, pageSize) => {
+        setPagination(prev => ({
+            ...prev,
+            current: page,
+            pageSize: pageSize
+        }));
+    };
+
+    // Lấy phần tử hiển thị theo trang hiện tại
+    const getCurrentPageData = () => {
+        const { current, pageSize } = pagination;
+        const startIndex = (current - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        return filteredCourses.slice(startIndex, endIndex);
+    };
+
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <Spin size="large" tip="">
+                    <div style={{ minHeight: 200 }}></div>
+                </Spin>
+            </div>
+        );
+    }
 
     // Xác nhận xóa khóa học
     const showDeleteConfirm = (course) => {
@@ -128,7 +183,7 @@ const Courses = () => {
     ];
 
     // Tạo khóa học mẫu để hiển thị skeleton loading
-    const skeletonItems = Array.from({ length: 6 }, (_, index) => (
+    const skeletonItems = Array.from({ length: pagination.pageSize }, (_, index) => (
         <Col xs={24} sm={12} md={8} lg={6} key={`skeleton-${index}`}>
             <Card
                 hoverable
@@ -139,6 +194,8 @@ const Courses = () => {
             </Card>
         </Col>
     ));
+
+    const currentPageData = getCurrentPageData();
 
     return (
         <div className="courses-page">
@@ -231,83 +288,101 @@ const Courses = () => {
                         </Empty>
                     </Card>
                 ) : (
-                    <Row gutter={[24, 24]}>
-                        {filteredCourses.map((course) => (
-                            <Col xs={24} sm={12} md={8} lg={6} key={course._id}>
-                                <Card
-                                    hoverable
-                                    className="course-card"
-                                    cover={
-                                        <div className="course-image-container">
-                                            <img
-                                                alt={course.name}
-                                                src={course.course_img || `${import.meta.env.VITE_BACKEND_URL}/uploads/no-img.png`}
-                                                className="course-image"
-                                            />
-                                            {course.price === 0 && (
-                                                <Tag color="green" className="price-tag">Miễn phí</Tag>
-                                            )}
-                                            <div className="course-actions">
-                                                <Dropdown
-                                                    menu={{ items: getItems(course) }}
-                                                    placement="bottomRight"
-                                                    trigger={['click']}
-                                                    arrow
-                                                >
-                                                    <Button type="primary" shape="circle" icon={<MoreOutlined />} />
-                                                </Dropdown>
+                    <>
+                        <Row gutter={[24, 24]}>
+                            {currentPageData.map((course) => (
+                                <Col xs={24} sm={12} md={8} lg={6} key={course._id}>
+                                    <Card
+                                        hoverable
+                                        className="course-card"
+                                        cover={
+                                            <div className="course-image-container">
+                                                <img
+                                                    alt={course.name}
+                                                    src={course.course_img || `${import.meta.env.VITE_BACKEND_URL}/uploads/no-img.png`}
+                                                    className="course-image"
+                                                />
+                                                {course.price === 0 && (
+                                                    <Tag color="green" className="price-tag">Miễn phí</Tag>
+                                                )}
+                                                <div className="course-actions">
+                                                    <Dropdown
+                                                        menu={{ items: getItems(course) }}
+                                                        placement="bottomRight"
+                                                        trigger={['click']}
+                                                        arrow
+                                                    >
+                                                        <Button type="primary" shape="circle" icon={<MoreOutlined />} />
+                                                    </Dropdown>
+                                                </div>
+                                            </div>
+                                        }
+                                        actions={[
+                                            <Tooltip title="Chỉnh sửa">
+                                                <Link to={`/manager/edit/${course._id}`}>
+                                                    <EditOutlined key="edit" />
+                                                </Link>
+                                            </Tooltip>,
+                                            <Tooltip title="Xem chi tiết">
+                                                <Link to={`/course-detail/${course._id}`} target="_blank">
+                                                    <EyeOutlined key="view" />
+                                                </Link>
+                                            </Tooltip>,
+                                            <Tooltip title="Xóa">
+                                                <DeleteOutlined key="delete" onClick={() => showDeleteConfirm(course)} />
+                                            </Tooltip>,
+                                        ]}
+                                    >
+                                        <div className="course-content">
+                                            <Title level={4} ellipsis={{ rows: 2 }} style={{ height: 48, marginBottom: 12 }}>
+                                                {course.name || "Không có tiêu đề"}
+                                            </Title>
+
+                                            <div className="course-meta">
+                                                <Space split={<Divider type="vertical" />}>
+                                                    {course.students && (
+                                                        <Text type="secondary">
+                                                            <UserOutlined /> {course.students.length || 0}
+                                                        </Text>
+                                                    )}
+                                                    {course.category && (
+                                                        <Text type="secondary">
+                                                            <BookOutlined /> {course.category}
+                                                        </Text>
+                                                    )}
+                                                </Space>
+                                            </div>
+
+                                            <div className="course-price">
+                                                <Text strong style={{ fontSize: 18, color: course.price > 0 ? '#f86d2d' : '#52c41a' }}>
+                                                    <DollarOutlined /> {formatPrice(course.price)}
+                                                </Text>
                                             </div>
                                         </div>
-                                    }
-                                    actions={[
-                                        <Tooltip title="Chỉnh sửa">
-                                            <Link to={`/manager/edit/${course._id}`}>
-                                                <EditOutlined key="edit" />
-                                            </Link>
-                                        </Tooltip>,
-                                        <Tooltip title="Xem chi tiết">
-                                            <Link to={`/course-detail/${course._id}`} target="_blank">
-                                                <EyeOutlined key="view" />
-                                            </Link>
-                                        </Tooltip>,
-                                        <Tooltip title="Xóa">
-                                            <DeleteOutlined key="delete" onClick={() => showDeleteConfirm(course)} />
-                                        </Tooltip>,
-                                    ]}
-                                >
-                                    <div className="course-content">
-                                        <Title level={4} ellipsis={{ rows: 2 }} style={{ height: 48, marginBottom: 12 }}>
-                                            {course.name || "Không có tiêu đề"}
-                                        </Title>
+                                    </Card>
+                                </Col>
+                            ))}
+                        </Row>
 
-                                        <div className="course-meta">
-                                            <Space split={<Divider type="vertical" />}>
-                                                {course.students && (
-                                                    <Text type="secondary">
-                                                        <UserOutlined /> {course.students.length || 0}
-                                                    </Text>
-                                                )}
-                                                {course.category && (
-                                                    <Text type="secondary">
-                                                        <BookOutlined /> {course.category}
-                                                    </Text>
-                                                )}
-                                            </Space>
-                                        </div>
-
-                                        <div className="course-price">
-                                            <Text strong style={{ fontSize: 18, color: course.price > 0 ? '#f86d2d' : '#52c41a' }}>
-                                                <DollarOutlined /> {formatPrice(course.price)}
-                                            </Text>
-                                        </div>
-                                    </div>
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
+                        <div style={{
+                            marginTop: 24,
+                            textAlign: 'center',
+                            display: 'flex',
+                            justifyContent: 'end'
+                        }}>
+                            < Pagination
+                                current={pagination.current}
+                                pageSize={pagination.pageSize}
+                                total={pagination.total}
+                                onChange={handleChangePage}
+                                showSizeChanger
+                                pageSizeOptions={['10', '15', '20', '30']}
+                            />
+                        </div>
+                    </>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

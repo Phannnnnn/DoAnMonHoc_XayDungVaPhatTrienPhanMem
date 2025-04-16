@@ -8,24 +8,19 @@ import {
     Input,
     Select,
     Divider,
-    Button,
     Pagination,
     Empty,
     Skeleton,
     Space,
-    message
+    Spin
 } from "antd";
 import {
     UserOutlined,
-    ClockCircleOutlined,
     ReadOutlined,
     SearchOutlined,
-    FilterOutlined,
-    StarFilled,
-    AntDesignOutlined
 } from "@ant-design/icons";
 import { GetCourseList } from "../../ultill/courseApi";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/auth.context";
 import { GetInforUser } from "../../ultill/userApi";
 
@@ -64,6 +59,22 @@ const CoursesPage = () => {
     }, []);
     const pageSize = 8;
 
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <Spin size="large" tip="">
+                    <div style={{ minHeight: 200 }}></div>
+                </Spin>
+            </div>
+        );
+    }
+
     const onHandleEnroll = async (_id) => {
         try {
             if (auth?.user?.role) {
@@ -75,7 +86,6 @@ const CoursesPage = () => {
                 navigate(`/course-detail/${_id}`)
             }
         } catch (error) {
-
         }
     }
 
