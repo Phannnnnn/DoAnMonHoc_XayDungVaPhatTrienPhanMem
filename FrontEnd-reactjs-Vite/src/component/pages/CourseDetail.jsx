@@ -19,6 +19,7 @@ const CourseDetail = () => {
     const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
     const [isPayment, setIsPayment] = useState(false);
     const [qrUrl, setQrUrl] = useState(null);
+    const location = useLocation();
 
     const fetchCourse = async () => {
         try {
@@ -84,9 +85,9 @@ const CourseDetail = () => {
 
     const onHandleEnroll = async (course_id) => {
         // Kiểm tra xem người dùng đã đăng nhập chưa
-        if (!auth?.user) {
+        if (!auth?.user?.role) {
             message.info("Vui lòng đăng nhập để sử dụng chức năng này.");
-            navigate("/login");
+            navigate("/login", { state: { from: location.pathname }, replace: true });
             return;
         }
 

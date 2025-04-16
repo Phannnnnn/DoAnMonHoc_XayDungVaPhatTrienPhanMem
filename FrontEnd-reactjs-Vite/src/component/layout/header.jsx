@@ -26,7 +26,6 @@ const Header = () => {
         setOpen(false);
     };
 
-
     useEffect(() => {
         setUser({
             name: auth?.user?.name ?? "",
@@ -201,12 +200,8 @@ const Header = () => {
                                 </Dropdown>
                             ) : (
                                 <Space size="middle">
-                                    <Link to="/login">
-                                        <Button type="default">Đăng nhập</Button>
-                                    </Link>
-                                    <Link to="/register">
-                                        <Button type="primary">Đăng ký</Button>
-                                    </Link>
+                                    <Button onClick={() => { navigate("/login", { state: { from: location.pathname }, replace: true }); }} type="default">Đăng nhập</Button>
+                                    <Button type="primary" onClick={() => { navigate("/register", { state: { from: location.pathname }, replace: true }); }}>Đăng ký</Button>
                                 </Space>
                             )}
                         </div>

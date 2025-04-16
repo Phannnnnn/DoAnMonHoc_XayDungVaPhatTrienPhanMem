@@ -72,8 +72,7 @@ const CoursesPage = () => {
                 newListEnroll.includes(_id) ? navigate(`/course-learning/${_id}`) : navigate(`/course-detail/${_id}`);
             }
             else {
-                message.info("Vui lòng đăng nhập để sử dụng chức năng này.");
-                navigate("/login");
+                navigate(`/course-detail/${_id}`)
             }
         } catch (error) {
 

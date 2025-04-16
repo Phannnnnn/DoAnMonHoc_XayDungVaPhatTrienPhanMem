@@ -8,7 +8,7 @@ import {
     UserOutlined
 } from '@ant-design/icons';
 import { UserLogin } from '../../ultill/userApi';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth.context';
 
 const { Title, Text, Paragraph } = Typography;
@@ -17,14 +17,16 @@ const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { setAuth, auth } = useContext(AuthContext);
+    const location = useLocation();
+    const redirectTo = location.state?.from || '/';
+
+    console.log(redirectTo);
 
     const onFinish = async (values) => {
         try {
             setLoading(true);
             const { email, password } = values;
-
             const res = await UserLogin(email, password);
-
             if (res && res.EC === 0) {
                 localStorage.setItem('token', res.accessToken);
 
@@ -40,7 +42,7 @@ const LoginPage = () => {
                 };
                 setAuth(authData);
                 message.success('Đăng nhập thành công!');
-                navigate("/");
+                navigate(redirectTo);
             } else {
                 message.error('Email hoặc mật khẩu không chính xác!');
             }
@@ -135,10 +137,8 @@ const LoginPage = () => {
                             </Space> */}
                             <div className='register-link'>
                                 <Typography.Text>
-                                    Bạn chưa có tài khoản?{" "}
-                                    <Link to="/register">
-                                        <strong>Đăng ký ngay</strong>
-                                    </Link>
+                                    Bạn chưa có tài khoản?
+                                    <Button color="primary" variant="link" onClick={() => { navigate("/register", { state: { from: redirectTo }, replace: true }); }}>Đăng ký ngay</Button>
                                 </Typography.Text>
                             </div>
                         </div>

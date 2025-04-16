@@ -9,7 +9,7 @@ import {
     CheckCircleOutlined
 } from '@ant-design/icons';
 import { UserRegister } from '../../ultill/userApi.js';
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -17,19 +17,17 @@ const RegisterPage = () => {
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
+    const location = useLocation();
+    const redirectTo = location.state?.from || '/';
 
-    //Ham submit form
     const onFinish = async (values) => {
         try {
             setLoading(true);
             const { name, email, password } = values;
-
-            //Goi api dang ki tai khoan
             const res = await UserRegister(name, email, password);
-
             if (res && res.EC === 0) {
                 message.success('Đăng ký thành công.');
-                navigate("/login");
+                navigate("/login", { state: { from: redirectTo }, replace: true });
                 setLoading(false);
             }
             else {
@@ -171,10 +169,8 @@ const RegisterPage = () => {
 
                             <div className="login-link">
                                 <Typography.Text>
-                                    Bạn đã có tài khoản?{" "}
-                                    <Link to="/login">
-                                        <strong>Đăng nhập</strong>
-                                    </Link>
+                                    Bạn đã có tài khoản?
+                                    <Button color="primary" variant="link" onClick={() => { navigate("/login", { state: { from: redirectTo }, replace: true }); }}>Đăng nhập ngay</Button>
                                 </Typography.Text>
                             </div>
                         </div>
