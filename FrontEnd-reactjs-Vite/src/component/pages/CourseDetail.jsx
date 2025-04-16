@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Row, Col, Typography, Button, Card, Divider, message, Modal, Space, QRCode, Input, Tag } from 'antd';
+import { Row, Col, Typography, Button, Card, Divider, message, Modal, Space, QRCode, Input, Tag, Spin } from 'antd';
 import { AimOutlined, BookOutlined, PlayCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { CourseUpdate, GetCourse } from '../../ultill/courseApi';
@@ -21,27 +21,38 @@ const CourseDetail = () => {
     const [qrUrl, setQrUrl] = useState(null);
     const location = useLocation();
 
-    const fetchCourse = async () => {
-        try {
-            const course = await GetCourse(id);
-            if (course) {
-                const lessons = await GetLessonList(id);
-                const teacher = await GetInforUser(course.teacher_id);
-                course.teacher_id = teacher.name;
-                course.lessons = lessons.length > 0 ? lessons : [];
-                setCourseDetail(course);
-            }
-        } catch (error) {
-            console.error("Lỗi khi tải thông tin khóa học:", error);
-        }
-    };
-
     useEffect(() => {
+        const fetchCourse = async () => {
+            try {
+                const course = await GetCourse(id);
+                if (course) {
+                    const lessons = await GetLessonList(id);
+                    const teacher = await GetInforUser(course.teacher_id);
+                    course.teacher_id = teacher.name;
+                    course.lessons = lessons.length > 0 ? lessons : [];
+                    setCourseDetail(course);
+                }
+            } catch (error) {
+                console.error("Lỗi khi tải thông tin khóa học:", error);
+            }
+        };
         fetchCourse();
     }, []);
 
     if (!courseDetails) {
-        return <Text>Đang tải...</Text>;
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <Spin size="large" tip="">
+                    <div style={{ minHeight: 200 }}></div>
+                </Spin>
+            </div>
+        );
     }
 
     const enrollCourse = async (course_id) => {
