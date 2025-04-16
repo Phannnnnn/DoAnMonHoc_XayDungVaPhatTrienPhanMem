@@ -187,7 +187,7 @@ const AdminHomePage = () => {
                                     key={activity._id}
                                     color={
                                         activity.type === 'register_account' ? 'green' :
-                                            activity.type === 'register_course' ? 'blue' :
+                                            activity.type === 'register_course' ? '#3a86ff' :
                                                 activity.type === 'add_course' ? 'orange' : 'orange'
                                     }
                                 >
@@ -196,16 +196,18 @@ const AdminHomePage = () => {
                                         <Text>
                                             <Text style={{ color: '#023047', fontWeight: 'bold' }}>{activity.userName} </Text>
                                             {' '} -{' '}
-                                            <Text style={{ color: 'green' }}> đăng ký tài khoản </Text>
+                                            <Text style={{ color: 'green' }}>đăng ký tài khoản</Text>
                                             {' '} -{' '}
                                             <Text style={{ color: '#8c8c8c' }}> {moment(activity.createdAt).format('DD/MM/YYYY')} </Text>
                                         </Text>
                                     )}
                                     {activity.type === 'register_course' && (
                                         <Text>
-                                            <Text style={{ color: '#023047', fontWeight: 'bold' }}>{activity.userName} </Text>
+                                            <Text style={{ color: '#023047', fontWeight: 'bold' }}>{activity.userName}</Text>
                                             {' '} -{' '}
-                                            <Text style={{ color: 'blue' }}> đăng ký khóa học </Text>
+                                            <Text style={{ color: '#3a86ff' }}>đăng ký khóa học</Text>
+                                            {' '} -{' '}
+                                            <Text style={{ color: '#d62828' }}>{activity.courseName}</Text>
                                             {' '} -{' '}
                                             <Text style={{ color: '#8c8c8c' }}> {moment(activity.createdAt).format('DD/MM/YYYY')} </Text>
                                         </Text>
@@ -214,7 +216,9 @@ const AdminHomePage = () => {
                                         <Text>
                                             <Text style={{ color: '#023047', fontWeight: 'bold' }}>{activity.userName} </Text>
                                             {' '} -{' '}
-                                            <Text style={{ color: 'orange' }}> thêm khóa học mới </Text>
+                                            <Text style={{ color: 'orange' }}>thêm khóa học mới</Text>
+                                            {' '} -{' '}
+                                            <Text style={{ color: '#d62828' }}>{activity.courseName}</Text>
                                             {' '} -{' '}
                                             <Text style={{ color: '#8c8c8c' }}> {moment(activity.createdAt).format('DD/MM/YYYY')} </Text>
                                         </Text>
