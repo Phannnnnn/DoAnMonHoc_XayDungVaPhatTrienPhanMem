@@ -25,6 +25,8 @@ import CourseDetail from './component/pages/CourseDetail.jsx';
 import CourseLearning from './component/pages/CourseLearning.jsx';
 import { message } from 'antd';
 import ScrollToTop from './component/ScrollToTop.jsx';
+import PaymentSuccessPage from './component/pages/Payment-success.jsx';
+import PaymentFailedPage from './component/pages/Payment-failed.jsx';
 
 // Cấu hình global cho tất cả các thông báo trên trang web
 message.config({
@@ -81,6 +83,14 @@ const router = createBrowserRouter(
           element: <PrivateRoute element={<CourseEdit />} role={["admin", "teacher"]} />
         },
       ]
+    },
+    {
+      path: "/payment-success/:id",
+      element: <PaymentSuccessPage />
+    },
+    {
+      path: "/payment-failed/:id",
+      element: <PaymentFailedPage />
     },
     {
       path: "/manager",

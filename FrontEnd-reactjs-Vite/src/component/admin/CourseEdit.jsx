@@ -37,7 +37,7 @@ import {
 import { AuthContext } from "../context/auth.context";
 
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { TextArea } = Input;
 
 const CourseEdit = () => {

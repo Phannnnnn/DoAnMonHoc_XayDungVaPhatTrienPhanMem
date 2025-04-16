@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Layout, Typography, Button, Card, Alert, List, Tag } from 'antd';
 import { CalendarOutlined, PlayCircleOutlined, FileTextOutlined } from '@ant-design/icons';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { GetLessonList } from '../../ultill/lessonApi';
+import { AuthContext } from '../context/auth.context';
+import { GetInforUser } from '../../ultill/userApi';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -12,6 +14,8 @@ const CourseLearning = () => {
     const [videoError, setVideoError] = useState(false);
     const [currentVideo, setCurrentVideo] = useState({});
     const [lessons, setLessons] = useState([]);
+    const { auth } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const handleVideoError = () => {
         setVideoError(true);
@@ -20,8 +24,11 @@ const CourseLearning = () => {
     useEffect(() => {
         const fetchLessons = async () => {
             try {
+                const userInfor = await GetInforUser(auth?.user?.id);
+                if (!userInfor?.enrolledCourses?.includes(id)) {
+                    navigate(`/course-detail/${id}`);
+                }
                 const res = await GetLessonList(id);
-                console.log(res);
                 if (!Array.isArray(res)) {
                     throw new Error("Dữ liệu trả về không phải là mảng!");
                 }

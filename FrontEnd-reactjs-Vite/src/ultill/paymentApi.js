@@ -1,10 +1,9 @@
-import { data } from "react-router-dom";
 import axios from "./axios.custom";
 
-const GetQrUrl = async (vnp_Amount, orderInfo, vnp_ReturnUrl) => {
+const GetQrUrl = async (paymentData) => {
     const URL_API = "/v1/api/get-payment";
     return axios.get(URL_API, {
-        params: { vnp_Amount, orderInfo, vnp_ReturnUrl }
+        params: paymentData
     });
 };
 export {

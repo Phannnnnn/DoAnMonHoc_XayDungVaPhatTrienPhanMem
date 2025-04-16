@@ -1,20 +1,13 @@
-const QRCode = require('qrcode');
-const { createPaymentService, checkPaymentService } = require("../services/paymentService")
+const { createPaymentService } = require("../services/paymentService")
+const Order = require("../models/order");
+
 
 const paymentCreate = async (req, res) => {
-    let { vnp_Amount, orderInfo, vnp_ReturnUrl } = req.query;
-    vnp_Amount = Number(vnp_Amount);
+    const paymentData = req.query;
+    paymentData.vnp_IpAddr = getClientIp(req)
 
-    const vnp_IpAddr = req.ip;
-    console.log(vnp_IpAddr);
-
-    const { success, vnpUrl } = await createPaymentService({ vnp_Amount, orderInfo, vnp_ReturnUrl, vnp_IpAddr });
-    const qrImage = await generateQrFromUrl(vnpUrl);
-    return res.status(201).json({
-        success: true,
-        url: vnpUrl,
-        qr: qrImage, // Đây là base64
-    });
+    const vnpUrl = await createPaymentService(paymentData);
+    return res.status(201).json(vnpUrl);
 }
 
 function getClientIp(req) {
@@ -25,29 +18,32 @@ function getClientIp(req) {
     return req.socket.remoteAddress;
 }
 
-const generateQrFromUrl = async (url) => {
-    try {
-        const qrImage = await QRCode.toDataURL(url);
-        return qrImage;
-    } catch (error) {
-        console.error('Lỗi tạo QR:', error);
-        return null;
-    }
-};
-
 const checkPayment = async (req, res) => {
     try {
-        const { vnp_ResponseCode, vnp_OrderInfo } = req.query;
-        if (vnp_ResponseCode === '00') {
-            return res.status(200).json({ message: "Thanh toán thành công" });
+        const vnpayData = req.query;
+        const order = await Order.findById(vnpayData.vnp_OrderInfo);
+
+        if (!order) {
+            return res.redirect(`${process.env.NODE_FRONTEND_URL}/payment-failed/${vnpayData.vnp_OrderInfo}`);
         }
-        return res.status(200).json({ message: "Thanh toán không thành công" });
+
+        order.cardType = vnpayData.vnp_CardType;
+        order.bankTranNo = vnpayData?.vnp_BankTranNo || 'VNPAY-4869';
+
+        if (vnpayData.vnp_ResponseCode === '00') {
+            order.status = "Hoàn thành";
+            await order.save();
+            return res.redirect(`${process.env.NODE_FRONTEND_URL}/payment-success/${vnpayData.vnp_OrderInfo}`);
+        } else {
+            order.status = "Thất bại";
+            await order.save();
+            return res.redirect(`${process.env.NODE_FRONTEND_URL}/payment-failed/${vnpayData.vnp_OrderInfo}`);
+        }
     } catch (error) {
         console.error('Lỗi xử lý returnUrl:', error);
-        return res.status(500).json({ success: false, message: 'Lỗi hệ thống' });
+        return res.redirect(`${process.env.NODE_FRONTEND_URL}/payment-failed/${vnpayData.vnp_OrderInfo}`);
     }
-}
-
+};
 module.exports = {
     paymentCreate,
     checkPayment

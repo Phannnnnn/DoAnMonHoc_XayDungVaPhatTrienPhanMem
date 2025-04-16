@@ -35,7 +35,6 @@ const AuthWrapper = (props) => {
 
     // Hàm cập nhật auth
     const updateAuth = (newAuth) => {
-        console.log('Updating auth with:', newAuth);
         setAuth(newAuth);
     };
 

@@ -98,7 +98,6 @@ const Profile = () => {
             if (info.file.status === 'done') {
                 message.success(`${info.file.name} upload thành công`);
                 const fullImageUrl = `${import.meta.env.VITE_BACKEND_URL}${info.file.response.filePath}`;
-                console.log("imgURL >>> :", info);
                 setImageUrl(fullImageUrl);
                 form.setFieldsValue({ avatar: fullImageUrl });
             } else if (info.file.status === 'error') {
