@@ -496,10 +496,7 @@ const CourseEdit = () => {
                             width={700}
                             footer={null}
                         >
-                            {showAddLessonForm ? renderAddLessonForm() : (
-                                <Form form={lessonForm} style={{ display: 'none' }}></Form>
-                            )}
-                            {!showAddLessonForm && renderLessonsList()}
+                            {showAddLessonForm ? renderAddLessonForm() : renderLessonsList()}
                         </Modal>
                     </div>
                 }

@@ -20,8 +20,6 @@ const LoginPage = () => {
     const location = useLocation();
     const redirectTo = location.state?.from || '/';
 
-    console.log(redirectTo);
-
     const onFinish = async (values) => {
         try {
             setLoading(true);

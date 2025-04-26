@@ -324,7 +324,7 @@ const Courses = () => {
                                                 </Link>
                                             </Tooltip>,
                                             <Tooltip title="Xem chi tiết">
-                                                <Link to={`/course-detail/${course._id}`} target="_blank">
+                                                <Link to={`/course-detail/${course._id}`} >
                                                     <EyeOutlined key="view" />
                                                 </Link>
                                             </Tooltip>,
